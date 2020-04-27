@@ -1,3 +1,4 @@
+![Build](https://github.com/arturopala/buffer-and-slice/workflows/Build/badge.svg)
 
 Buffer\[T] and Slice\[T]
 ===
