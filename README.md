@@ -1,4 +1,4 @@
-![Build](https://github.com/arturopala/buffer-and-slice/workflows/Build/badge.svg)
+![Build](https://github.com/arturopala/buffer-and-slice/workflows/Build/badge.svg) [![Maven Central](https://maven-badges.herokuapp.com/maven-central/com.github.arturopala/buffer-and-slice/badge.svg)](https://maven-badges.herokuapp.com/maven-central/com.github.arturopala/buffer-and-slice)
 
 Buffer\[T] and Slice\[T]
 ===
@@ -31,6 +31,10 @@ Dependencies
 Depends only on a standard built-in Scala library.
 
 Cross-compiles to Scala versions `2.13.1`, `2.12.11`, `2.11.12`, and Dotty `0.23.0-RC1`.
+
+Available in Maven Central as 
+
+    "com.github.arturopala" %% "buffer-and-slice" % "1.0.0"
 
 API
 ---
