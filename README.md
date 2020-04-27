@@ -34,4 +34,6 @@ Cross-compiles to Scala versions `2.13.1`, `2.12.11`, `2.11.12`, and Dotty `0.23
 API
 ---
 
-For more details, see [Scaladoc](https://arturopala.github.io/buffer-and-slice/latest/api/com/github/arturopala/bufferandslice/index.html).
+For more details, see:
+- [Scaladoc of Buffer](https://arturopala.github.io/buffer-and-slice/latest/api/com/github/arturopala/bufferandslice/Buffer.html).
+- [Scaladoc of Slice](https://arturopala.github.io/buffer-and-slice/latest/api/com/github/arturopala/bufferandslice/Slice.html).
