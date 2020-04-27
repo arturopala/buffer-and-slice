@@ -22,6 +22,8 @@ A **Slice** role is to share an immutable view of the full or range of an Array.
 
 The usual workflow will use Buffer to elaborate an array and Slice to share it outside of component/function.
 
+Both Buffer and Slice come in two variants: generic and specialized for Int.
+
 Dependencies
 ---
 
