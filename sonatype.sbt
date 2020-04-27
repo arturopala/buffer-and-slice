@@ -1,11 +1,6 @@
 // To sync with Maven central, you need to supply the following information:
 pomExtra in Global := {
   <url>github.com/arturopala/buffer-and-slice</url>
-  <scm>
-    <connection>https://github.com/arturopala/buffer-and-slice.git</connection>
-    <developerConnection>git@github.com:arturopala/buffer-and-slice.git</developerConnection>
-    <url>github.com/arturopala/buffer-and-slice</url>
-  </scm>
   <developers>
     <developer>
       <id>arturopala</id>
