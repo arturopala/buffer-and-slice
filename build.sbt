@@ -22,7 +22,7 @@ lazy val root = (project in file("."))
     scalacOptions in (Compile, doc) ++= Seq(
       "-groups"
     ),
-    git.remoteRepo := "git@github.com:arturopala/scala-tree.git",
+    git.remoteRepo := "git@github.com:arturopala/buffer-and-slice.git",
     testFrameworks += new TestFramework("munit.Framework"),
     testFrameworks += new TestFramework("org.scalameter.ScalaMeterFramework"),
     logBuffered := false,
