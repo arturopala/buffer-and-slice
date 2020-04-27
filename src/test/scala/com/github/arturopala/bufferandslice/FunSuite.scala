@@ -18,9 +18,6 @@ package com.github.arturopala.bufferandslice
 
 class FunSuite extends munit.FunSuite {
 
-  val Inflated = "InflatedTree"
-  val Deflated = "DeflatedTree"
-
   def all[T]: T => Boolean = _ => true
   def none[T]: T => Boolean = _ => false
 
