@@ -1,0 +1,3 @@
+-XX:+TieredCompilation
+-XX:+CMSClassUnloadingEnabled
+-Dfile.encoding=UTF-8
