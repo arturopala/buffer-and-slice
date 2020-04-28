@@ -28,6 +28,7 @@ import scala.reflect.ClassTag
   * @groupprio Shift 5
   * @groupprio Stack Ops 6
   * @groupprio Limit 7
+  * @groupprio Slice 8
   */
 trait Buffer[T] extends (Int => T) {
 
@@ -140,6 +141,10 @@ trait Buffer[T] extends (Int => T) {
     }
     this
   }
+
+  /** Returns value at the topIndex.
+    * @group Properties */
+  final def head: T = apply(topIndex)
 
   /** Length of the accessible part of the buffer.
     * @group Properties */
@@ -291,6 +296,26 @@ trait Buffer[T] extends (Int => T) {
     topIndex = topIndex - 1
     value
   }
+
+  /** Takes range and returns a Slice.
+    * @group Slice */
+  final def slice(from: Int, to: Int): Slice[T] = toSlice.slice(from, to)
+
+  /** Takes first N items and returns a Slice.
+    * @group Slice */
+  final def take(n: Int): Slice[T] = toSlice.take(n)
+
+  /** Takes last N items and returns a Slice.
+    * @group Slice */
+  final def takeRight(n: Int): Slice[T] = toSlice.takeRight(n)
+
+  /** Drops first N items and returns a Slice.
+    * @group Slice */
+  final def drop(n: Int): Slice[T] = toSlice.drop(n)
+
+  /** Drops last N items and returns a Slice.
+    * @group Slice */
+  final def dropRight(n: Int): Slice[T] = toSlice.dropRight(n)
 
 }
 

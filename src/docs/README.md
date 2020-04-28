@@ -56,13 +56,15 @@ import com.github.arturopala.bufferandslice._
 
 Buffer.apply[String]()
 
+Buffer("a","b","c")
+
 Buffer(1,2,3).apply(1)
 
 Buffer(1,2,3).update(1,0)
 
-Buffer("a","b","c")
-
 Buffer("a").append("a")
+
+Buffer("a","b","c").head
 
 Buffer("a").appendSequence(IndexedSeq("a","a","a"))
 
@@ -107,6 +109,16 @@ Buffer(1,2,3,4,5,6,7,8,9).toArray
 Buffer(1,2,3).top
 
 Buffer(1,2,3).reset
+
+Buffer(1,2,3,4,5,6,7,8,9).slice(2,6)
+
+Buffer(1,2,3,4,5,6,7,8,9).take(3)
+
+Buffer(1,2,3,4,5,6,7,8,9).drop(3)
+
+Buffer(1,2,3,4,5,6,7,8,9).takeRight(3)
+
+Buffer(1,2,3,4,5,6,7,8,9).dropRight(3)
 ```
 
 Slice
