@@ -45,3 +45,12 @@ def dependencies(scalaVersion: String) = {
     )
   }
 }
+
+lazy val docs = project
+  .in(file("project-mdoc"))
+  .dependsOn(root)
+  .settings(
+    mdocIn := root.base / "src" /"docs",
+    mdocOut := root.base
+  )
+  .enablePlugins(MdocPlugin)

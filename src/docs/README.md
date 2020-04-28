@@ -51,74 +51,52 @@ Buffer
 
 [Open in Scastie](https://scastie.scala-lang.org/hQkIThU8S0ynsbnNzji08g)
 
-```scala
+```scala mdoc
 import com.github.arturopala.bufferandslice._
 
 Buffer.apply[String]()
-// res0: ArrayBuffer[String] = []
 
 Buffer(1,2,3).apply(1)
-// res1: Int = 2
 
 Buffer(1,2,3).update(1,0)
-// res2: ArrayBuffer[Int] = [1,0,3]
 
 Buffer("a","b","c")
-// res3: ArrayBuffer[String] = [a,b,c]
 
 Buffer("a").append("a")
-// res4: ArrayBuffer[String] = [a,a]
 
 Buffer("a").appendSequence(IndexedSeq("a","a","a"))
-// res5: ArrayBuffer[String] = [a,a,a,a]
 
 Buffer(0).appendIterable(1 to 10)
-// res6: ArrayBuffer[Int] = [0,1,2,3,4,5,6,7,8,9,10]
 
 Buffer("b").appendFromIterator(Iterator.fill(10)("a"))
-// res7: ArrayBuffer[String] = [b,a,a,a,a,a,a,a,a,a,a]
 
 Buffer(0,1,1).appendArray(Array(0,1,2,3))
-// res8: ArrayBuffer[Int] = [0,1,1,0,1,2,3]
 
 Buffer(0,1,2).appendArray(Array(0,1,2,3))
-// res9: ArrayBuffer[Int] = [0,1,2,0,1,2,3]
 
 Buffer(0,0,0).insertValues(1,2,3,List(0,1,2,3,4,5))
-// res10: ArrayBuffer[Int] = [0,2,3,4,0,0]
 
 Buffer(0,0,0).insertFromIterator(2,3,Iterator.continually(1))
-// res11: ArrayBuffer[Int] = [0,0,1,1,1,0]
 
 Buffer(0,0,0).insertArray(1,2,3,Array(0,1,2,3,4,5))
-// res12: ArrayBuffer[Int] = [0,2,3,4,0,0]
 
 Buffer(0,0,0).modify(1,_ + 1)
-// res13: ArrayBuffer[Int] = [0,1,0]
 
 Buffer(0,0,0,0,0).modifyRange(1,3,_ + 1)
-// res14: ArrayBuffer[Int] = [0,1,1,0,0]
 
 Buffer(1,2,3).peek
-// res15: Int = 3
 
 Buffer(1,2,3).pop
-// res16: Int = 3
 
 Buffer(1,2,3).push(1).push(1).push(0)
-// res17: ArrayBuffer[Int] = [1,2,3,1,1,0]
 
 Buffer(1,2,3,4,5,6,7,8,9).shiftLeft(5,3)
-// res18: ArrayBuffer[Int] = [1,2,6,7,8,9]
 
 Buffer(1,2,3,4,5,6,7,8,9).shiftRight(5,3)
-// res19: ArrayBuffer[Int] = [1,2,3,4,5,6,7,8,6,7,8,9]
 
 Buffer(1,2,3,4,5,6,7,8,9).toSlice
-// res20: Slice[Int] = Slice(1,2,3,4,5,6,7,8,9)
 
 Buffer(1,2,3,4,5,6,7,8,9).toArray
-// res21: Array[Int] = Array(1, 2, 3, 4, 5, 6, 7, 8, 9)
 ```
 
 Slice
@@ -126,146 +104,63 @@ Slice
 
 [Open in Scastie](https://scastie.scala-lang.org/VbObn3VXQsCHdDFdI6DO8w)
 
-```scala
+```scala mdoc
 import com.github.arturopala.bufferandslice._
 
 val array = Array("a","b","c","d","ee","f","g","h","i","j")
-// array: Array[String] = Array(
-//   "a",
-//   "b",
-//   "c",
-//   "d",
-//   "ee",
-//   "f",
-//   "g",
-//   "h",
-//   "i",
-//   "j"
-// )
 
 val slice = Slice.of(array)
-// slice: ArraySlice[String] = Slice(a,b,c,d,ee,f,g,h,i,j)
 
 slice.apply(0)
-// res22: String = "a"
 
 slice.apply(5)
-// res23: String = "f"
 
 slice.update(4,"a")
-// res24: Slice[String] = Slice(a,b,c,d,a,f,g,h,i,j)
 
 slice.update(5,"b")
-// res25: Slice[String] = Slice(a,b,c,d,ee,b,g,h,i,j)
 
 slice.array
-// res26: Array[slice.A] = Array(
-//   "a",
-//   "b",
-//   "c",
-//   "d",
-//   "ee",
-//   "f",
-//   "g",
-//   "h",
-//   "i",
-//   "j"
-// )
 
 slice.slice(1,5)
-// res27: Slice[String] = Slice(b,c,d,ee)
 
 slice.take(5)
-// res28: Slice[String] = Slice(a,b,c,d,ee)
 
 slice.drop(5)
-// res29: Slice[String] = Slice(f,g,h,i,j)
 
 slice.takeRight(5)
-// res30: Slice[String] = Slice(f,g,h,i,j)
 
 slice.dropRight(5)
-// res31: Slice[String] = Slice(a,b,c,d,ee)
 
 slice.slice(2,6)
-// res32: Slice[String] = Slice(c,d,ee,f)
 
 slice.head
-// res33: String = "a"
 
 slice.headOption
-// res34: Option[String] = Some("a")
 
 slice.init
-// res35: Slice[String] = Slice(a,b,c,d,ee,f,g,h,i)
 
 slice.last
-// res36: String = "j"
 
 slice.count(_.length > 1)
-// res37: Int = 1
 
 slice.count(_.length == 1)
-// res38: Int = 9
 
 slice.map(s => s+s)
-// res39: Slice[String] = Slice(aa,bb,cc,dd,eeee,ff,gg,hh,ii,jj)
 
 slice.map(s => s"($s)")
-// res40: Slice[String] = Slice((a),(b),(c),(d),(ee),(f),(g),(h),(i),(j))
 
 slice.asIterable
-// res41: Iterable[String] = Iterable(
-//   "a",
-//   "b",
-//   "c",
-//   "d",
-//   "ee",
-//   "f",
-//   "g",
-//   "h",
-//   "i",
-//   "j"
-// )
 
 slice.iterator
-// res42: Iterator[String] = non-empty iterator
 
 slice.reverseIterator
-// res43: Iterator[String] = non-empty iterator
 
 slice.reverseIterator("adgh".contains(_))
-// res44: Iterator[String] = non-empty iterator
 
 slice.toList
-// res45: List[String] = List(
-//   "a",
-//   "b",
-//   "c",
-//   "d",
-//   "ee",
-//   "f",
-//   "g",
-//   "h",
-//   "i",
-//   "j"
-// )
 
 slice.toArray
-// res46: Array[String] = Array(
-//   "a",
-//   "b",
-//   "c",
-//   "d",
-//   "ee",
-//   "f",
-//   "g",
-//   "h",
-//   "i",
-//   "j"
-// )
 
 slice.toBuffer
-// res47: Buffer[String] = [a,b,c,d,ee,f,g,h,i,j]
 ```
 
