@@ -21,5 +21,4 @@ dist
 project/metals.sbt
 launch.json
 .DS_Store
-
-    
+/_site/
