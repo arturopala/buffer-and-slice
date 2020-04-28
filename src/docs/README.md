@@ -82,7 +82,13 @@ Buffer(0,0,0).insertArray(1,2,3,Array(0,1,2,3,4,5))
 
 Buffer(0,0,0).modify(1,_ + 1)
 
-Buffer(0,0,0,0,0).modifyRange(1,3,_ + 1)
+Buffer(1,2,3,5,6).modifyAll(_ + 1)
+
+Buffer(1,2,3,5,6).modifyAllWhen(_ + 1, _ % 2 == 0)
+
+Buffer(0,0,0,0,0).modifyRange(1, 3, _ + 1)
+
+Buffer(1,2,3,4,5).modifyRangeWhen(1, 3, _ + 1, _ % 2 != 0)
 
 Buffer(1,2,3).peek
 
@@ -97,6 +103,10 @@ Buffer(1,2,3,4,5,6,7,8,9).shiftRight(5,3)
 Buffer(1,2,3,4,5,6,7,8,9).toSlice
 
 Buffer(1,2,3,4,5,6,7,8,9).toArray
+
+Buffer(1,2,3).top
+
+Buffer(1,2,3).reset
 ```
 
 Slice

@@ -78,6 +78,27 @@ class IntBufferSpec extends AnyWordSpecCompat {
       buffer.modify(1, _ - 1).toArray shouldBe Array(10, 2, 1, 3, 4, 5, 6, 7, 8, 9)
     }
 
+    "modify all values" in {
+      val buffer = IntBuffer(0, 1, 2, 3, 4, 5, 6, 7, 8, 9)
+      buffer.modifyAll(_ + 1).toArray shouldBe Array(1, 2, 3, 4, 5, 6, 7, 8, 9, 10)
+      buffer.modifyAll(_ * 2).toArray shouldBe Array(2, 4, 6, 8, 10, 12, 14, 16, 18, 20)
+      buffer.modifyAll(_ - 1).toArray shouldBe Array(1, 3, 5, 7, 9, 11, 13, 15, 17, 19)
+    }
+
+    "modify all values fulfilling the predicate" in {
+      val even: Int => Boolean = _ % 2 == 0
+      val odd: Int => Boolean = _  % 2 != 0
+      val d3: Int => Boolean = _   % 3 == 0
+      val buffer = IntBuffer(0, 1, 2, 3, 4, 5, 6, 7, 8, 9)
+      buffer.modifyAllWhen(_ + 1, odd).toArray shouldBe Array(0, 2, 2, 4, 4, 6, 6, 8, 8, 10)
+      buffer.modifyAllWhen(_ * 2, odd).toArray shouldBe Array(0, 2, 2, 4, 4, 6, 6, 8, 8, 10)
+      buffer.modifyAllWhen(_ * 2, even).toArray shouldBe Array(0, 4, 4, 8, 8, 12, 12, 16, 16, 20)
+      buffer.modifyAllWhen(_ - 1, odd).toArray shouldBe Array(0, 4, 4, 8, 8, 12, 12, 16, 16, 20)
+      buffer.modifyAllWhen(_ - 1, d3).toArray shouldBe Array(-1, 4, 4, 8, 8, 11, 11, 16, 16, 20)
+      buffer.modifyAllWhen(_ - 2, odd).toArray shouldBe Array(-3, 4, 4, 8, 8, 9, 9, 16, 16, 20)
+      buffer.modifyAllWhen(_ + 1, even).toArray shouldBe Array(-3, 5, 5, 9, 9, 9, 9, 17, 17, 21)
+    }
+
     "modify values in the range" in {
       val buffer = IntBuffer(0, 1, 2, 3, 4, 5, 6, 7, 8, 9)
       buffer.modifyRange(0, 2, _ + 10).toArray shouldBe Array(10, 11, 2, 3, 4, 5, 6, 7, 8, 9)
@@ -88,6 +109,20 @@ class IntBufferSpec extends AnyWordSpecCompat {
 
       IntBuffer(0, 1).modifyRange(2, 5, _ + 1).toArray shouldBe Array(0, 1)
       IntBuffer(0, 1).modifyRange(0, 0, _ + 1).toArray shouldBe Array(0, 1)
+    }
+
+    "modify values in the range fulfilling the predicate" in {
+      val even: Int => Boolean = _ % 2 == 0
+      val odd: Int => Boolean = _  % 2 == 1
+      val buffer = IntBuffer(0, 1, 2, 3, 4, 5, 6, 7, 8, 9)
+      buffer.modifyRangeWhen(0, 2, _ + 10, even).toArray shouldBe Array(10, 1, 2, 3, 4, 5, 6, 7, 8, 9)
+      buffer.modifyRangeWhen(1, 5, _ + 1, even).toArray shouldBe Array(10, 1, 3, 3, 5, 5, 6, 7, 8, 9)
+      buffer.modifyRangeWhen(2, 9, _ + 1, odd).toArray shouldBe Array(10, 1, 4, 4, 6, 6, 6, 8, 8, 9)
+      buffer.modifyRangeWhen(2, 1, _ - 1, even).toArray shouldBe Array(10, 1, 4, 4, 6, 6, 6, 8, 8, 9)
+      buffer.modifyRangeWhen(0, 1, _ - 1, even).toArray shouldBe Array(9, 1, 4, 4, 6, 6, 6, 8, 8, 9)
+
+      IntBuffer(0, 1).modifyRangeWhen(2, 5, _ + 1, even).toArray shouldBe Array(0, 1)
+      IntBuffer(0, 1).modifyRangeWhen(0, 0, _ + 1, even).toArray shouldBe Array(0, 1)
     }
   }
 

@@ -57,26 +57,82 @@ trait Buffer[T] extends (Int => T) {
 
   /** Updates value at the provided index using the function.
     * Index must fall within range [0,length).
+    * @param index value's index
+    * @param map map function
     * @throws IndexOutOfBoundsException if index lower than zero.
     * @group Update */
-  def modify(index: Int, f: T => T): this.type = {
+  final def modify(index: Int, map: T => T): this.type = {
     if (index >= 0 && index < length) {
-      update(index, f(apply(index)))
+      update(index, map(apply(index)))
       topIndex = Math.max(index, topIndex)
+    }
+    this
+  }
+
+  /** Updates all values in the range [0,length) using the function.
+    * @param map map function
+    * @throws IndexOutOfBoundsException if index lower than zero.
+    * @group Update */
+  final def modifyAll(map: T => T): this.type = {
+    var i = 0
+    while (i < length) {
+      update(i, map(apply(i)))
+      i = i + 1
+    }
+    this
+  }
+
+  /** Updates all accepted values in the range [0,length) using the function.
+    * @param map map function
+    * @param pred filter function
+    * @throws IndexOutOfBoundsException if index lower than zero.
+    * @group Update */
+  final def modifyAllWhen(map: T => T, pred: T => Boolean): this.type = {
+    var i = 0
+    while (i < length) {
+      val v = apply(i)
+      if (pred(v)) update(i, map(v))
+      i = i + 1
     }
     this
   }
 
   /** Updates values in the range [startIndex,toIndex)^^[0,length) using the function.
     * One of {startIndex,toIndex} must fall within range [0,length).
+    * @param fromIndex index of the first value inclusive
+    * @param toIndex index of the last value exclusive
+    * @param map      map function
     * @throws IndexOutOfBoundsException if index lower than zero.
     * @group Update */
-  def modifyRange(fromIndex: Int, toIndex: Int, f: T => T): this.type = {
+  final def modifyRange(fromIndex: Int, toIndex: Int, map: T => T): this.type = {
     if (toIndex > 0 && fromIndex < length) {
       var i = Math.max(0, fromIndex)
       val limit = Math.min(length, toIndex)
       while (i < limit) {
-        update(i, f(apply(i)))
+        update(i, map(apply(i)))
+        i = i + 1
+      }
+      topIndex = Math.max(topIndex, i - 1)
+
+    }
+    this
+  }
+
+  /** Updates values in the range [startIndex,toIndex)^^[0,length) using the function.
+    * One of {startIndex,toIndex} must fall within range [0,length).
+    * @param fromIndex index of the first value inclusive
+    * @param toIndex index of the last value exclusive
+    * @param map map function
+    * @param pred filter function
+    * @throws IndexOutOfBoundsException if index lower than zero.
+    * @group Update */
+  final def modifyRangeWhen(fromIndex: Int, toIndex: Int, map: T => T, pred: T => Boolean): this.type = {
+    if (toIndex > 0 && fromIndex < length) {
+      var i = Math.max(0, fromIndex)
+      val limit = Math.min(length, toIndex)
+      while (i < limit) {
+        val v = apply(i)
+        if (pred(v)) update(i, map(v))
         i = i + 1
       }
       topIndex = Math.max(topIndex, i - 1)

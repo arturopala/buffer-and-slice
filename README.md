@@ -96,29 +96,44 @@ Buffer(0,0,0).insertArray(1,2,3,Array(0,1,2,3,4,5))
 Buffer(0,0,0).modify(1,_ + 1)
 // res13: ArrayBuffer[Int] = [0,1,0]
 
-Buffer(0,0,0,0,0).modifyRange(1,3,_ + 1)
-// res14: ArrayBuffer[Int] = [0,1,1,0,0]
+Buffer(1,2,3,5,6).modifyAll(_ + 1)
+// res14: ArrayBuffer[Int] = [2,3,4,6,7]
+
+Buffer(1,2,3,5,6).modifyAllWhen(_ + 1, _ % 2 == 0)
+// res15: ArrayBuffer[Int] = [1,3,3,5,7]
+
+Buffer(0,0,0,0,0).modifyRange(1, 3, _ + 1)
+// res16: ArrayBuffer[Int] = [0,1,1,0,0]
+
+Buffer(1,2,3,4,5).modifyRangeWhen(1, 3, _ + 1, _ % 2 != 0)
+// res17: ArrayBuffer[Int] = [1,2,4,4,5]
 
 Buffer(1,2,3).peek
-// res15: Int = 3
+// res18: Int = 3
 
 Buffer(1,2,3).pop
-// res16: Int = 3
+// res19: Int = 3
 
 Buffer(1,2,3).push(1).push(1).push(0)
-// res17: ArrayBuffer[Int] = [1,2,3,1,1,0]
+// res20: ArrayBuffer[Int] = [1,2,3,1,1,0]
 
 Buffer(1,2,3,4,5,6,7,8,9).shiftLeft(5,3)
-// res18: ArrayBuffer[Int] = [1,2,6,7,8,9]
+// res21: ArrayBuffer[Int] = [1,2,6,7,8,9]
 
 Buffer(1,2,3,4,5,6,7,8,9).shiftRight(5,3)
-// res19: ArrayBuffer[Int] = [1,2,3,4,5,6,7,8,6,7,8,9]
+// res22: ArrayBuffer[Int] = [1,2,3,4,5,6,7,8,6,7,8,9]
 
 Buffer(1,2,3,4,5,6,7,8,9).toSlice
-// res20: Slice[Int] = Slice(1,2,3,4,5,6,7,8,9)
+// res23: Slice[Int] = Slice(1,2,3,4,5,6,7,8,9)
 
 Buffer(1,2,3,4,5,6,7,8,9).toArray
-// res21: Array[Int] = Array(1, 2, 3, 4, 5, 6, 7, 8, 9)
+// res24: Array[Int] = Array(1, 2, 3, 4, 5, 6, 7, 8, 9)
+
+Buffer(1,2,3).top
+// res25: Int = 2
+
+Buffer(1,2,3).reset
+// res26: Int = 2
 ```
 
 Slice
@@ -147,19 +162,19 @@ val slice = Slice.of(array)
 // slice: ArraySlice[String] = Slice(a,b,c,d,ee,f,g,h,i,j)
 
 slice.apply(0)
-// res22: String = "a"
+// res27: String = "a"
 
 slice.apply(5)
-// res23: String = "f"
+// res28: String = "f"
 
 slice.update(4,"a")
-// res24: Slice[String] = Slice(a,b,c,d,a,f,g,h,i,j)
+// res29: Slice[String] = Slice(a,b,c,d,a,f,g,h,i,j)
 
 slice.update(5,"b")
-// res25: Slice[String] = Slice(a,b,c,d,ee,b,g,h,i,j)
+// res30: Slice[String] = Slice(a,b,c,d,ee,b,g,h,i,j)
 
 slice.array
-// res26: Array[slice.A] = Array(
+// res31: Array[slice.A] = Array(
 //   "a",
 //   "b",
 //   "c",
@@ -173,49 +188,49 @@ slice.array
 // )
 
 slice.slice(1,5)
-// res27: Slice[String] = Slice(b,c,d,ee)
+// res32: Slice[String] = Slice(b,c,d,ee)
 
 slice.take(5)
-// res28: Slice[String] = Slice(a,b,c,d,ee)
+// res33: Slice[String] = Slice(a,b,c,d,ee)
 
 slice.drop(5)
-// res29: Slice[String] = Slice(f,g,h,i,j)
+// res34: Slice[String] = Slice(f,g,h,i,j)
 
 slice.takeRight(5)
-// res30: Slice[String] = Slice(f,g,h,i,j)
+// res35: Slice[String] = Slice(f,g,h,i,j)
 
 slice.dropRight(5)
-// res31: Slice[String] = Slice(a,b,c,d,ee)
+// res36: Slice[String] = Slice(a,b,c,d,ee)
 
 slice.slice(2,6)
-// res32: Slice[String] = Slice(c,d,ee,f)
+// res37: Slice[String] = Slice(c,d,ee,f)
 
 slice.head
-// res33: String = "a"
+// res38: String = "a"
 
 slice.headOption
-// res34: Option[String] = Some("a")
+// res39: Option[String] = Some("a")
 
 slice.init
-// res35: Slice[String] = Slice(a,b,c,d,ee,f,g,h,i)
+// res40: Slice[String] = Slice(a,b,c,d,ee,f,g,h,i)
 
 slice.last
-// res36: String = "j"
+// res41: String = "j"
 
 slice.count(_.length > 1)
-// res37: Int = 1
+// res42: Int = 1
 
 slice.count(_.length == 1)
-// res38: Int = 9
+// res43: Int = 9
 
 slice.map(s => s+s)
-// res39: Slice[String] = Slice(aa,bb,cc,dd,eeee,ff,gg,hh,ii,jj)
+// res44: Slice[String] = Slice(aa,bb,cc,dd,eeee,ff,gg,hh,ii,jj)
 
 slice.map(s => s"($s)")
-// res40: Slice[String] = Slice((a),(b),(c),(d),(ee),(f),(g),(h),(i),(j))
+// res45: Slice[String] = Slice((a),(b),(c),(d),(ee),(f),(g),(h),(i),(j))
 
 slice.asIterable
-// res41: Iterable[String] = Iterable(
+// res46: Iterable[String] = Iterable(
 //   "a",
 //   "b",
 //   "c",
@@ -229,16 +244,16 @@ slice.asIterable
 // )
 
 slice.iterator
-// res42: Iterator[String] = non-empty iterator
+// res47: Iterator[String] = non-empty iterator
 
 slice.reverseIterator
-// res43: Iterator[String] = non-empty iterator
+// res48: Iterator[String] = non-empty iterator
 
 slice.reverseIterator("adgh".contains(_))
-// res44: Iterator[String] = non-empty iterator
+// res49: Iterator[String] = non-empty iterator
 
 slice.toList
-// res45: List[String] = List(
+// res50: List[String] = List(
 //   "a",
 //   "b",
 //   "c",
@@ -252,7 +267,7 @@ slice.toList
 // )
 
 slice.toArray
-// res46: Array[String] = Array(
+// res51: Array[String] = Array(
 //   "a",
 //   "b",
 //   "c",
@@ -266,6 +281,6 @@ slice.toArray
 // )
 
 slice.toBuffer
-// res47: Buffer[String] = [a,b,c,d,ee,f,g,h,i,j]
+// res52: Buffer[String] = [a,b,c,d,ee,f,g,h,i,j]
 ```
 
