@@ -5,7 +5,7 @@ Buffer\[T] and Slice\[T]
 
 This is a micro-library for Scala providing lightweight Buffer and Slice implementations.
 
-    "com.github.arturopala" %% "buffer-and-slice" % "1.2.1"
+    "com.github.arturopala" %% "buffer-and-slice" % "1.2.2"
 
 Cross-compiles to Scala versions `2.13.1`, `2.12.11`, `2.11.12`, and Dotty `0.23.0-RC1`.
 
@@ -341,7 +341,7 @@ slice.toList
 // )
 
 slice.toArray
-// res69: Array[Nothing] = Array(
+// res69: Array[String] = Array(
 //   "a",
 //   "b",
 //   "c",
