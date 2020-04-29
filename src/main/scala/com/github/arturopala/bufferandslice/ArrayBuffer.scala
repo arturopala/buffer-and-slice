@@ -22,7 +22,9 @@ final class ArrayBuffer[T](initialArray: Array[T]) extends ArrayBufferLike[T] {
 
   private var _array: Array[T] = initialArray
 
-  protected override def array: Array[T] = _array
+  /** Very unsafe access to the underlying array, if you really need it.
+    * @group Unsafe */
+  override def underlyingUnsafe: Array[T] = _array
 
   set(initialArray.length - 1)
 

@@ -22,7 +22,9 @@ final class IntBuffer(initialSize: Int = 8) extends ArrayBufferLike[Int] {
 
   private var _array = new Array[Int](initialSize)
 
-  protected override def array: Array[Int] = _array
+  /** Very unsafe access to the underlying array, if you really need it.
+    * @group Unsafe */
+  override def underlyingUnsafe: Array[Int] = _array
 
   /** Returns value at the given index or 0 if out of scope. */
   @`inline` def apply(index: Int): Int =
