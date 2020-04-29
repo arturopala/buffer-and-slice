@@ -60,11 +60,25 @@ Buffer("a","b","c")
 
 Buffer(1,2,3).apply(1)
 
+Buffer("a","b","c").head
+
+Buffer(1,2,3,4,5,6,7,8,9).toArray
+```
+
+- Specialized `IntBuffer`:
+
+```scala mdoc
+IntBuffer(0,1,2,3)
+
+IntBuffer(0,1,2,3).toSlice
+```
+
+- Modifying the content:
+
+```scala mdoc
 Buffer(1,2,3).update(1,0)
 
 Buffer("a").append("a")
-
-Buffer("a","b","c").head
 
 Buffer("a").appendSequence(IndexedSeq("a","a","a"))
 
@@ -82,6 +96,16 @@ Buffer(0,0,0).insertFromIterator(2,3,Iterator.continually(1))
 
 Buffer(0,0,0).insertArray(1,2,3,Array(0,1,2,3,4,5))
 
+Buffer(0,0,0).replaceValues(1,2,3,List(0,1,2,3,4,5))
+
+Buffer(0,0,0).replaceFromIterator(2,3,Iterator.continually(1))
+
+Buffer(0,0,0).replaceFromArray(1,2,3,Array(0,1,2,3,4,5))
+
+Buffer(1,2,3).remove(1)
+
+Buffer(1,2,3,4,5).removeRange(1,4)
+
 Buffer(0,0,0).modify(1,_ + 1)
 
 Buffer(1,2,3,5,6).modifyAll(_ + 1)
@@ -92,23 +116,39 @@ Buffer(0,0,0,0,0).modifyRange(1, 3, _ + 1)
 
 Buffer(1,2,3,4,5).modifyRangeWhen(1, 3, _ + 1, _ % 2 != 0)
 
+Buffer(1,2,3,4,5,6,7,8,9).shiftLeft(5,3)
+
+Buffer(1,2,3,4,5,6,7,8,9).shiftRight(5,3)
+```
+
+- Using `Buffer` as a stack:
+
+```scala mdoc
 Buffer(1,2,3).peek
 
 Buffer(1,2,3).pop
 
 Buffer(1,2,3).push(1).push(1).push(0)
+```
 
-Buffer(1,2,3,4,5,6,7,8,9).shiftLeft(5,3)
+- Manipulating `topIndex` limit:
 
-Buffer(1,2,3,4,5,6,7,8,9).shiftRight(5,3)
-
-Buffer(1,2,3,4,5,6,7,8,9).toSlice
-
-Buffer(1,2,3,4,5,6,7,8,9).toArray
-
+```scala mdoc
 Buffer(1,2,3).top
 
+Buffer(1,2,3).set(1)
+
+Buffer(1,2,3).forward(3)
+
+Buffer(1,2,3).rewind(2)
+
 Buffer(1,2,3).reset
+```
+
+- Making a `Slice` of a `Buffer`:
+
+```scala mdoc
+Buffer(1,2,3,4,5,6,7,8,9).toSlice
 
 Buffer(1,2,3,4,5,6,7,8,9).slice(2,6)
 

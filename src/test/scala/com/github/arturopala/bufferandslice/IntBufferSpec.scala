@@ -78,6 +78,13 @@ class IntBufferSpec extends AnyWordSpecCompat {
       buffer.modify(1, _ - 1).toArray shouldBe Array(10, 2, 1, 3, 4, 5, 6, 7, 8, 9)
     }
 
+    "map all values" in {
+      val buffer = IntBuffer(0, 1, 2, 3, 4, 5, 6, 7, 8, 9)
+      buffer.map(_ + 1).toArray shouldBe Array(1, 2, 3, 4, 5, 6, 7, 8, 9, 10)
+      buffer.map(_ * 2).toArray shouldBe Array(2, 4, 6, 8, 10, 12, 14, 16, 18, 20)
+      buffer.map(_ - 1).toArray shouldBe Array(1, 3, 5, 7, 9, 11, 13, 15, 17, 19)
+    }
+
     "modify all values" in {
       val buffer = IntBuffer(0, 1, 2, 3, 4, 5, 6, 7, 8, 9)
       buffer.modifyAll(_ + 1).toArray shouldBe Array(1, 2, 3, 4, 5, 6, 7, 8, 9, 10)

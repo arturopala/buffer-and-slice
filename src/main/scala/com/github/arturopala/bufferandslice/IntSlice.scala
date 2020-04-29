@@ -42,7 +42,7 @@ final class IntSlice private (
   def update(index: Int, value: Int): IntSlice = {
     if (index < 0 || index >= length)
       throw new IndexOutOfBoundsException(s"Expected an `update` index in the interval [0,$length), but was $index.")
-    val modified = toArray
+    val modified = toArray[Int]
     modified.update(index, value)
     new IntSlice(0, length, modified)
   }
@@ -174,8 +174,8 @@ final class IntSlice private (
 
   /** Returns minimal copy of an underlying array, trimmed to the actual range.
     * @group Read */
-  def toArray(implicit tag: ClassTag[Int]): Array[Int] = {
-    val newArray = new Array[Int](length)
+  def toArray[T1 <: Int: ClassTag](implicit tag: ClassTag[Int]): Array[T1] = {
+    val newArray = new Array[T1](length)
     Array.copy(array, fromIndex, newArray, 0, length)
     newArray
   }

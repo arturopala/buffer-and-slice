@@ -25,10 +25,12 @@ import scala.reflect.ClassTag
   * @groupprio Update 2
   * @groupprio Append 3
   * @groupprio Insert 4
-  * @groupprio Shift 5
-  * @groupprio Stack Ops 6
-  * @groupprio Limit 7
-  * @groupprio Slice 8
+  * @groupprio Replace 5
+  * @groupprio Remove 6
+  * @groupprio Shift 7
+  * @groupprio Stack Ops 8
+  * @groupprio Limit 9
+  * @groupprio Slice 10
   */
 trait Buffer[T] extends (Int => T) {
 
@@ -69,6 +71,12 @@ trait Buffer[T] extends (Int => T) {
     }
     this
   }
+
+  /** Updates all values in the range [0,length) using the function.
+    * @param f map function
+    * @throws IndexOutOfBoundsException if index lower than zero.
+    * @group Update */
+  @`inline` final def map(f: T => T): this.type = modifyAll(f)
 
   /** Updates all values in the range [0,length) using the function.
     * @param map map function
@@ -158,6 +166,10 @@ trait Buffer[T] extends (Int => T) {
     * @group Properties */
   @`inline` final def nonEmpty: Boolean = length > 0
 
+  /** Returns topIndex value.
+    * @group Limit */
+  final def top: Int = topIndex
+
   /** Sets topIndex value.
     * @group Limit */
   final def set(index: Int): this.type = {
@@ -166,9 +178,23 @@ trait Buffer[T] extends (Int => T) {
     this
   }
 
-  /** Returns topIndex value.
+  /** Moves topIndex value left by the distance.
     * @group Limit */
-  final def top: Int = topIndex
+  final def rewind(distance: Int): this.type = {
+    ensureIndex(Math.max(-1, topIndex - distance))
+    topIndex = Math.max(-1, topIndex - distance)
+    this
+  }
+
+  /** Moves topIndex value right by the distance.
+    * @group Limit */
+  final def forward(distance: Int): this.type = {
+    ensureIndex(topIndex + distance)
+    topIndex =
+      if (topIndex < 0) distance
+      else topIndex + distance
+    this
+  }
 
   /** Resets buffer, sets topIndex to -1.
     * Does not clear existing values.
@@ -253,6 +279,56 @@ trait Buffer[T] extends (Int => T) {
     }
     this
   }
+
+  /** Replaces current values in the range [index, index + replaceLength)
+    * with values of the array range [sourceIndex, sourceIndex + replaceLength).
+    * @group Replace */
+  def replaceFromArray(index: Int, sourceIndex: Int, replaceLength: Int, sourceArray: Array[T]): this.type
+
+  /** Replaces current values in the range [index, index + replaceLength) with values returned by the function
+    * when iterating argument in the range [sourceIndex, sourceIndex + replaceLength).
+    * @group Replace */
+  final def replaceValues(index: Int, sourceIndex: Int, replaceLength: Int, source: Int => T): this.type = {
+    if (index >= 0 && sourceIndex >= 0) {
+      if (replaceLength > 0) {
+        ensureIndex(index + replaceLength)
+        var i = 0
+        while (i < replaceLength) {
+          update(index + i, source(sourceIndex + i))
+          i = i + 1
+        }
+      }
+      topIndex = Math.max(topIndex, index + replaceLength - 1)
+    }
+    this
+  }
+
+  /** Replaces current values in the range [index, index + replaceLength) with values returned from the iterator.
+    * @group Replace */
+  final def replaceFromIterator(index: Int, replaceLength: Int, iterator: Iterator[T]): this.type = {
+    if (index >= 0) {
+      if (replaceLength > 0) {
+        ensureIndex(index + replaceLength)
+        var i = 0
+        while (i < replaceLength && iterator.hasNext) {
+          update(index + i, iterator.next())
+          i = i + 1
+        }
+      }
+      topIndex = Math.max(topIndex, index + replaceLength - 1)
+    }
+    this
+  }
+
+  /** Removes value at index and shifts content in [index+1, length) to the left.
+    * @group Remove
+    */
+  @`inline` final def remove(index: Int): this.type = shiftLeft(index + 1, 1)
+
+  /** Removes values in the range [fromIndex, toIndex) and shifts content in [toIndex, length) to the left.
+    * @group Remove */
+  @`inline` final def removeRange(fromIndex: Int, toIndex: Int): this.type =
+    shiftLeft(toIndex, toIndex - fromIndex)
 
   /** Moves values [index, length) right to [index+distance, length + distance).
     * Effectively creates a new range [index, index+distance).

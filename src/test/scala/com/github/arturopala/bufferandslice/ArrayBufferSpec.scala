@@ -16,8 +16,6 @@
 
 package com.github.arturopala.bufferandslice
 
-import com.github.arturopala.bufferandslice.ArrayBuffer
-
 class ArrayBufferSpec extends AnyWordSpecCompat {
 
   "Buffer" should {
@@ -76,6 +74,26 @@ class ArrayBufferSpec extends AnyWordSpecCompat {
       buffer(1000) shouldBe "bar"
       an[IndexOutOfBoundsException] shouldBe thrownBy(buffer(1001))
       buffer.length shouldBe 1001
+    }
+
+    "remove value at an index" in {
+      val buffer = new ArrayBuffer(Array("a", "b", "c"))
+      buffer.remove(1)
+      buffer.toArray shouldBe Array("a", "c")
+      buffer.remove(0)
+      buffer.toArray shouldBe Array("c")
+      buffer.remove(0)
+      buffer.toArray shouldBe Array.empty[String]
+    }
+
+    "remove values in the range" in {
+      val buffer = new ArrayBuffer(Array("a", "b", "c", "e", "f", "g", "h"))
+      buffer.removeRange(1, 5)
+      buffer.toArray shouldBe Array("a", "g", "h")
+      buffer.removeRange(0, 2)
+      buffer.toArray shouldBe Array("h")
+      buffer.removeRange(0, 2)
+      buffer.toArray shouldBe Array.empty[String]
     }
 
     "shift values right" in {
@@ -146,6 +164,31 @@ class ArrayBufferSpec extends AnyWordSpecCompat {
       buffer.length shouldBe 12
     }
 
+    "replace with new array of values" in {
+      val buffer = new ArrayBuffer(Array.empty[String])
+      buffer.replaceFromArray(0, 0, 3, Array("a", "b", "c"))
+      buffer.toArray shouldBe Array("a", "b", "c")
+      buffer.length shouldBe 3
+      buffer.replaceFromArray(1, 0, 2, Array("d", "e"))
+      buffer.toArray shouldBe Array("a", "d", "e")
+      buffer.length shouldBe 3
+      buffer.replaceFromArray(0, 1, 1, Array("d", "e"))
+      buffer.toArray shouldBe Array("e", "d", "e")
+      buffer.length shouldBe 3
+      buffer.replaceFromArray(0, 1, 0, Array("d", "e"))
+      buffer.toArray shouldBe Array("e", "d", "e")
+      buffer.length shouldBe 3
+      buffer.replaceFromArray(5, 0, 2, Array("d", "e"))
+      buffer.toArray shouldBe Array("e", "d", "e", null, null, "d", "e")
+      buffer.length shouldBe 7
+      buffer.replaceFromArray(3, 0, 5, Array("d", "e"))
+      buffer.toArray shouldBe Array("e", "d", "e", "d", "e", "d", "e")
+      buffer.length shouldBe 7
+      buffer.replaceFromArray(5, 0, -5, Array("d", "e"))
+      buffer.toArray shouldBe Array("e", "d", "e", "d", "e", "d", "e")
+      buffer.length shouldBe 7
+    }
+
     "insert new values from indexed source" in {
       val buffer = new ArrayBuffer(Array.empty[String])
       buffer.insertValues(0, 0, 3, Array("a", "b", "c"))
@@ -171,6 +214,31 @@ class ArrayBufferSpec extends AnyWordSpecCompat {
       buffer.length shouldBe 12
     }
 
+    "replace with values from indexed source" in {
+      val buffer = Buffer("a", "b", "c")
+      buffer.replaceValues(1, 0, 3, Array("e", "f", "g"))
+      buffer.toArray shouldBe Array("a", "e", "f", "g")
+      buffer.length shouldBe 4
+      buffer.replaceValues(1, 0, 2, Array("d", "e"))
+      buffer.toArray shouldBe Array("a", "d", "e", "g")
+      buffer.length shouldBe 4
+      buffer.replaceValues(0, 1, 1, Array("d", "e"))
+      buffer.toArray shouldBe Array("e", "d", "e", "g")
+      buffer.length shouldBe 4
+      buffer.replaceValues(0, 1, 0, Array("d", "e"))
+      buffer.toArray shouldBe Array("e", "d", "e", "g")
+      buffer.length shouldBe 4
+      buffer.replaceValues(5, 0, 2, Array("d", "e"))
+      buffer.toArray shouldBe Array("e", "d", "e", "g", null, "d", "e")
+      buffer.length shouldBe 7
+      buffer.replaceValues(4, 0, 2, Array("d", "e"))
+      buffer.toArray shouldBe Array("e", "d", "e", "g", "d", "e", "e")
+      buffer.length shouldBe 7
+      buffer.replaceValues(10, 0, -5, Array("d", "e"))
+      buffer.toArray shouldBe Array("e", "d", "e", "g", "d", "e", "e")
+      buffer.length shouldBe 7
+    }
+
     "insert new values from iterator" in {
       val buffer = new ArrayBuffer(Array.empty[String])
       buffer.insertFromIterator(0, 3, Array("a", "b", "c").iterator)
@@ -194,6 +262,31 @@ class ArrayBufferSpec extends AnyWordSpecCompat {
       buffer.insertFromIterator(10, -5, Array("d", "e").iterator)
       buffer.toArray shouldBe Array("e", "a", "d", "e", "b", "d", "e", "c", null, null, "d", "e")
       buffer.length shouldBe 12
+    }
+
+    "replace with values from iterator" in {
+      val buffer = new ArrayBuffer(Array.empty[String])
+      buffer.replaceFromIterator(0, 3, Array("a", "b", "c").iterator)
+      buffer.toArray shouldBe Array("a", "b", "c")
+      buffer.length shouldBe 3
+      buffer.replaceFromIterator(1, 2, Array("d", "e").iterator)
+      buffer.toArray shouldBe Array("a", "d", "e")
+      buffer.length shouldBe 3
+      buffer.replaceFromIterator(0, 1, Array("e").iterator)
+      buffer.toArray shouldBe Array("e", "d", "e")
+      buffer.length shouldBe 3
+      buffer.replaceFromIterator(0, 0, Array("e").iterator)
+      buffer.toArray shouldBe Array("e", "d", "e")
+      buffer.length shouldBe 3
+      buffer.replaceFromIterator(5, 2, Array("d", "e").iterator)
+      buffer.toArray shouldBe Array("e", "d", "e", null, null, "d", "e")
+      buffer.length shouldBe 7
+      buffer.replaceFromIterator(3, 3, Array("d", "e", "f").iterator)
+      buffer.toArray shouldBe Array("e", "d", "e", "d", "e", "f", "e")
+      buffer.length shouldBe 7
+      buffer.replaceFromIterator(10, -5, Array("d", "e").iterator)
+      buffer.toArray shouldBe Array("e", "d", "e", "d", "e", "f", "e")
+      buffer.length shouldBe 7
     }
 
     "append an array" in {
@@ -258,6 +351,27 @@ class ArrayBufferSpec extends AnyWordSpecCompat {
       buffer.length shouldBe 0
       buffer.reset shouldBe -1
       buffer.length shouldBe 0
+    }
+
+    "rewind and forward top index" in {
+      val buffer = new ArrayBuffer(Array("a", "b", "c"))
+      buffer.top shouldBe 2
+      buffer.set(10)
+      buffer.top shouldBe 10
+      buffer.rewind(3)
+      buffer.top shouldBe 7
+      buffer.rewind(10)
+      buffer.top shouldBe -1
+      buffer.rewind(10)
+      buffer.top shouldBe -1
+      buffer.forward(9)
+      buffer.top shouldBe 9
+      buffer.forward(3)
+      buffer.top shouldBe 12
+      buffer.rewind(1)
+      buffer.top shouldBe 11
+      buffer.forward(2)
+      buffer.top shouldBe 13
     }
 
   }

@@ -20,15 +20,15 @@ class IntSliceSpec extends AnyWordSpecCompat {
 
   "IntSlice" should {
     "wrap a whole array" in {
-      IntSlice.of(Array(0, 1, 2, 3, 4)).toArray shouldBe Array(0, 1, 2, 3, 4)
-      IntSlice.of(Array(7, 13, 17, 19, 23)).toArray shouldBe Array(7, 13, 17, 19, 23)
-      IntSlice.of(Array.empty[Int]).toArray shouldBe Array.empty[Int]
+      IntSlice.of(Array(0, 1, 2, 3, 4)).toArray[Int] shouldBe Array(0, 1, 2, 3, 4)
+      IntSlice.of(Array(7, 13, 17, 19, 23)).toArray[Int] shouldBe Array(7, 13, 17, 19, 23)
+      IntSlice.of(Array.empty[Int]).toArray[Int] shouldBe Array.empty[Int]
     }
 
     "wrap a slice of an array" in {
-      IntSlice.of(Array(0, 1, 2, 3, 4), 1, 3).toArray shouldBe Array(1, 2)
-      IntSlice.of(Array(7, 13, 17, 19, 23), 2, 5).toArray shouldBe Array(17, 19, 23)
-      IntSlice.of(Array(7, 13, 17, 19, 23), 4, 4).toArray shouldBe Array.empty[Int]
+      IntSlice.of(Array(0, 1, 2, 3, 4), 1, 3).toArray[Int] shouldBe Array(1, 2)
+      IntSlice.of(Array(7, 13, 17, 19, 23), 2, 5).toArray[Int] shouldBe Array(17, 19, 23)
+      IntSlice.of(Array(7, 13, 17, 19, 23), 4, 4).toArray[Int] shouldBe Array.empty[Int]
     }
 
     "have isEmpty" in {
@@ -72,13 +72,13 @@ class IntSliceSpec extends AnyWordSpecCompat {
     }
 
     "map slice of values" in {
-      IntSlice.of(Array(1, 2, 3, 4, 5, 6, 7, 8, 9)).map(_ * 10).toArray shouldBe Array(10, 20, 30, 40, 50, 60, 70, 80,
-        90)
-      IntSlice.of(Array(1, 2, 3, 4, 5, 6, 7, 8, 9), 2, 6).map(_ * 10).toArray shouldBe Array(30, 40, 50, 60)
-      IntSlice.of(Array(1, 2, 3, 4, 5, 6, 7, 8, 9), 2, 3).map(_ * 10).toArray shouldBe Array(30)
-      IntSlice.of(Array(1, 2, 3, 4, 5, 6, 7, 8, 9), 2, 2).map(_ * 10).toArray shouldBe Array.empty[Int]
-      IntSlice.of(Array(1, 2, 3, 4, 5, 6, 7, 8, 9), 0, 0).map(_ * 10).toArray shouldBe Array.empty[Int]
-      IntSlice.of(Array(1, 2, 3, 4, 5, 6, 7, 8, 9), 9, 9).map(_ * 10).toArray shouldBe Array.empty[Int]
+      IntSlice.of(Array(1, 2, 3, 4, 5, 6, 7, 8, 9)).map(_ * 10).toArray[Int] shouldBe Array(10, 20, 30, 40, 50, 60, 70,
+        80, 90)
+      IntSlice.of(Array(1, 2, 3, 4, 5, 6, 7, 8, 9), 2, 6).map(_ * 10).toArray[Int] shouldBe Array(30, 40, 50, 60)
+      IntSlice.of(Array(1, 2, 3, 4, 5, 6, 7, 8, 9), 2, 3).map(_ * 10).toArray[Int] shouldBe Array(30)
+      IntSlice.of(Array(1, 2, 3, 4, 5, 6, 7, 8, 9), 2, 2).map(_ * 10).toArray[Int] shouldBe Array.empty[Int]
+      IntSlice.of(Array(1, 2, 3, 4, 5, 6, 7, 8, 9), 0, 0).map(_ * 10).toArray[Int] shouldBe Array.empty[Int]
+      IntSlice.of(Array(1, 2, 3, 4, 5, 6, 7, 8, 9), 9, 9).map(_ * 10).toArray[Int] shouldBe Array.empty[Int]
     }
 
     "count values in slice matching predicate" in {

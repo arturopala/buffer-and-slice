@@ -20,13 +20,13 @@ class ArraySliceSpec extends AnyWordSpecCompat {
 
   "Slice" should {
     "wrap a whole array" in {
-      Slice.of(Array("a", "b", "c", "d", "e")).toArray shouldBe Array("a", "b", "c", "d", "e")
-      Slice.of(Array.empty[String]).toArray shouldBe Array.empty[String]
+      Slice.of(Array("a", "b", "c", "d", "e")).toArray[String] shouldBe Array("a", "b", "c", "d", "e")
+      Slice.of(Array.empty[String]).toArray[String] shouldBe Array.empty[String]
     }
 
     "wrap a slice of an array" in {
-      Slice.of(Array("a", "b", "c", "d", "e"), 2, 5).toArray shouldBe Array("c", "d", "e")
-      Slice.of(Array("a", "b", "c", "d", "e"), 4, 4).toArray shouldBe Array.empty[String]
+      Slice.of(Array("a", "b", "c", "d", "e"), 2, 5).toArray[String] shouldBe Array("c", "d", "e")
+      Slice.of(Array("a", "b", "c", "d", "e"), 4, 4).toArray[String] shouldBe Array.empty[String]
     }
 
     "have isEmpty" in {
@@ -74,12 +74,13 @@ class ArraySliceSpec extends AnyWordSpecCompat {
     }
 
     "map slice of values" in {
-      Slice.of(Array(1, 2, 3, 4, 5, 6, 7, 8, 9)).map(_ * 10).toArray shouldBe Array(10, 20, 30, 40, 50, 60, 70, 80, 90)
-      Slice.of(Array(1, 2, 3, 4, 5, 6, 7, 8, 9), 2, 6).map(_ * 10).toArray shouldBe Array(30, 40, 50, 60)
-      Slice.of(Array(1, 2, 3, 4, 5, 6, 7, 8, 9), 2, 3).map(_ * 10).toArray shouldBe Array(30)
-      Slice.of(Array(1, 2, 3, 4, 5, 6, 7, 8, 9), 2, 2).map(_ * 10).toArray shouldBe Array.empty[Int]
-      Slice.of(Array(1, 2, 3, 4, 5, 6, 7, 8, 9), 0, 0).map(_ * 10).toArray shouldBe Array.empty[Int]
-      Slice.of(Array(1, 2, 3, 4, 5, 6, 7, 8, 9), 9, 9).map(_ * 10).toArray shouldBe Array.empty[Int]
+      Slice.of(Array(1, 2, 3, 4, 5, 6, 7, 8, 9)).map(_ * 10).toArray[Int] shouldBe Array(10, 20, 30, 40, 50, 60, 70, 80,
+        90)
+      Slice.of(Array(1, 2, 3, 4, 5, 6, 7, 8, 9), 2, 6).map(_ * 10).toArray[Int] shouldBe Array(30, 40, 50, 60)
+      Slice.of(Array(1, 2, 3, 4, 5, 6, 7, 8, 9), 2, 3).map(_ * 10).toArray[Int] shouldBe Array(30)
+      Slice.of(Array(1, 2, 3, 4, 5, 6, 7, 8, 9), 2, 2).map(_ * 10).toArray[Int] shouldBe Array.empty[Int]
+      Slice.of(Array(1, 2, 3, 4, 5, 6, 7, 8, 9), 0, 0).map(_ * 10).toArray[Int] shouldBe Array.empty[Int]
+      Slice.of(Array(1, 2, 3, 4, 5, 6, 7, 8, 9), 9, 9).map(_ * 10).toArray[Int] shouldBe Array.empty[Int]
     }
 
     "count values in slice matching predicate" in {

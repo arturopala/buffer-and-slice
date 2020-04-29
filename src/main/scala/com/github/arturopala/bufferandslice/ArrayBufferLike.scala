@@ -34,18 +34,33 @@ trait ArrayBufferLike[T] extends Buffer[T] {
       this
     }
 
-  override final def toString: String =
+  final override def toString: String =
     array.take(Math.min(20, length)).mkString("[", ",", if (length > 20) ", ... ]" else "]")
 
   /** Shift current content to the right starting from `index`at the `insertLength` distance,
     * and copies array chunk into the gap.
     * Sets topIndex to be at least at the end of the new chunk of values.
     * @group Insert */
-  final def insertArray(index: Int, sourceIndex: Int, insertLength: Int, sourceArray: Array[T]): this.type = {
+  final override def insertArray(index: Int, sourceIndex: Int, insertLength: Int, sourceArray: Array[T]): this.type = {
     if (index >= 0 && sourceIndex >= 0) {
       val copyLength = Math.min(insertLength, sourceArray.length)
       if (copyLength > 0) {
         shiftRight(index, copyLength)
+        java.lang.System.arraycopy(sourceArray, sourceIndex, array, index, copyLength)
+      }
+      set(Math.max(top, index + copyLength - 1))
+    }
+    this
+  }
+
+  /** Replaces current values in the range [index, index + replaceLength)
+    * with values of the array range [sourceIndex, sourceIndex + replaceLength).
+    * @group Replace */
+  final def replaceFromArray(index: Int, sourceIndex: Int, replaceLength: Int, sourceArray: Array[T]): this.type = {
+    if (index >= 0 && sourceIndex >= 0) {
+      val copyLength = Math.min(replaceLength, sourceArray.length)
+      if (copyLength > 0) {
+        ensureIndex(index + replaceLength)
         java.lang.System.arraycopy(sourceArray, sourceIndex, array, index, copyLength)
       }
       set(Math.max(top, index + copyLength - 1))
@@ -59,7 +74,7 @@ trait ArrayBufferLike[T] extends Buffer[T] {
     * Does not clear existing values inside [index, index+distance).
     * Moves topIndex if affected.
     * @group Shift */
-  final def shiftRight(index: Int, distance: Int): this.type = {
+  final override def shiftRight(index: Int, distance: Int): this.type = {
     if (distance > 0 && index >= 0) {
       ensureIndex(length + distance)
       if (length - index > 0) {
