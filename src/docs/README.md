@@ -58,6 +58,8 @@ Buffer.apply[String]()
 
 Buffer("a","b","c")
 
+Buffer(Array("a","b","c"))
+
 Buffer(1,2,3).apply(1)
 
 Buffer("a","b","c").head
@@ -69,6 +71,8 @@ Buffer(1,2,3,4,5,6,7,8,9).toArray
 
 ```scala mdoc
 IntBuffer(0,1,2,3)
+
+IntBuffer(Array(0,1,2,3))
 
 IntBuffer(0,1,2,3).toSlice
 ```
@@ -86,9 +90,9 @@ Buffer(0).appendIterable(1 to 10)
 
 Buffer("b").appendFromIterator(Iterator.fill(10)("a"))
 
-Buffer(0,1,1).appendArray(Array(0,1,2,3))
+IntBuffer(0,1,1).appendArray(Array(0,1,2,3))
 
-Buffer(0,1,2).appendArray(Array(0,1,2,3))
+IntBuffer(0,1,2).appendArray(Array(0,1,2,3))
 
 Buffer(0,0,0).insertValues(1,2,3,List(0,1,2,3,4,5))
 
@@ -102,9 +106,9 @@ Buffer(0,0,0).replaceFromIterator(2,3,Iterator.continually(1))
 
 Buffer(0,0,0).replaceFromArray(1,2,3,Array(0,1,2,3,4,5))
 
-Buffer(1,2,3).remove(1)
+Buffer("a","b","c").remove(1)
 
-Buffer(1,2,3,4,5).removeRange(1,4)
+Buffer("a","b","c","d","e").removeRange(1,4)
 
 Buffer(0,0,0).modify(1,_ + 1)
 
@@ -116,7 +120,7 @@ Buffer(0,0,0,0,0).modifyRange(1, 3, _ + 1)
 
 Buffer(1,2,3,4,5).modifyRangeWhen(1, 3, _ + 1, _ % 2 != 0)
 
-Buffer(1,2,3,4,5,6,7,8,9).shiftLeft(5,3)
+IntBuffer(1,2,3,4,5,6,7,8,9).shiftLeft(5,3)
 
 Buffer(1,2,3,4,5,6,7,8,9).shiftRight(5,3)
 ```
