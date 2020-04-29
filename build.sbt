@@ -51,6 +51,9 @@ lazy val docs = project
   .dependsOn(root)
   .settings(
     mdocIn := root.base / "src" /"docs",
-    mdocOut := root.base
+    mdocOut := root.base,
+    mdocVariables := Map(
+      "VERSION" -> version.value
+    )
   )
   .enablePlugins(MdocPlugin)
