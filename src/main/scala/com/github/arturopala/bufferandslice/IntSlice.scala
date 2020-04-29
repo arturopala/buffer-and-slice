@@ -174,7 +174,7 @@ final class IntSlice private (
 
   /** Returns minimal copy of an underlying array, trimmed to the actual range.
     * @group Read */
-  def toArray[T1 <: Int: ClassTag](implicit tag: ClassTag[Int]): Array[T1] = {
+  def toArray[T1 >: Int: ClassTag](implicit tag: ClassTag[Int]): Array[T1] = {
     val newArray = new Array[T1](length)
     Array.copy(array, fromIndex, newArray, 0, length)
     newArray

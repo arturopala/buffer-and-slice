@@ -226,6 +226,14 @@ class ArraySliceSpec extends AnyWordSpecCompat {
       Slice.of(Array(4)).init.toList shouldBe Nil
       Slice.of(Array.empty[String]).init.toList shouldBe Nil
     }
+
+    "return an Array of a wider type" in {
+      class A
+      class B extends A
+      val slice = Slice(new B, new B, new B)
+      slice.toArray[B]
+      slice.toArray[A]
+    }
   }
 
 }

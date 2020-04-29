@@ -120,7 +120,7 @@ trait Slice[T] extends (Int => T) {
 
   /** Returns minimal copy of an underlying array, trimmed to the actual range.
     * @group Read */
-  def toArray[T1 <: T: ClassTag](implicit tag: ClassTag[T]): Array[T1]
+  def toArray[T1 >: T: ClassTag](implicit tag: ClassTag[T]): Array[T1]
 
   /** Returns buffer with a copy of this Slice.
     * @group Read */
