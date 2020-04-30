@@ -5,6 +5,7 @@ val dottyNext = "0.24.0-RC1"
 val dottyStable = "0.23.0"
 val scalaJSVersion = "1.0.1"
 val scalaNativeVersion = "0.4.0-M2"
+val mUnitVersion = "0.7.4"
 
 val scala2Versions = List(scala213, scala212, scala211)
 val scala3Versions = List(dottyNext, dottyStable)
@@ -26,8 +27,12 @@ lazy val sharedSettings = Seq(
   testFrameworks += new TestFramework("munit.Framework"),
   logBuffered := false,
   parallelExecution in Test := false,
-  libraryDependencies += "org.scalameta" %%% "munit" % "0.7.4" % Test
+  libraryDependencies += "org.scalameta" %%% "munit" % mUnitVersion % Test
 )
+
+skip in publish := true
+crossScalaVersions := List()
+libraryDependencies += "org.scalameta" %%% "munit" % mUnitVersion % Test
 
 lazy val jVMSettings = List(
   crossScalaVersions := allScalaVersions
@@ -71,6 +76,7 @@ lazy val docs = project
   .in(file("project-mdoc"))
   .dependsOn(rootJVM)
   .settings(
+    sharedSettings,
     mdocIn := baseDirectory.in(rootJVM).value  / ".." / "src" / "docs",
     mdocOut := baseDirectory.in(rootJVM).value / "..",
     mdocVariables := Map(
@@ -81,7 +87,6 @@ lazy val docs = project
       "DOTTY_STABLE_VERSION" -> dottyStable,
       "SUPPORTED_SCALA_VERSIONS" -> allScalaVersions.map(v => s"`$v`").mkString(", ")
     ),
-    skip in publish := true,
-    skip in test := true
+    skip in publish := true
   )
   .enablePlugins(MdocPlugin)
