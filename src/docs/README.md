@@ -7,7 +7,8 @@ This is a micro-library for Scala providing lightweight Buffer and Slice impleme
 
     "com.github.arturopala" %% "buffer-and-slice" % "@VERSION@"
 
-Cross-compiles to Scala versions `2.13.1`, `2.12.11`, `2.11.12`, and Dotty `0.23.0-RC1`.
+Cross-compiles to Scala versions @SUPPORTED_SCALA_VERSIONS@, 
+and ScalaJS version `@SCALA_JS_VERSION@`, and ScalaNative version `@SCALA_NATIVE_VERSION@`.
 
 Motivation
 ---

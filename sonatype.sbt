@@ -29,4 +29,4 @@ releaseProcess := Seq[ReleaseStep](
   pushChanges
 )
 
-releaseUseGlobalVersion := false
+releaseUseGlobalVersion := true
