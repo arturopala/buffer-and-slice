@@ -4,7 +4,7 @@ ThisBuild / organization := "com.github.arturopala"
 ThisBuild / organizationName := "Artur Opala"
 ThisBuild / startYear := Some(2020)
 ThisBuild / licenses += ("Apache-2.0", new URL("https://www.apache.org/licenses/LICENSE-2.0.txt"))
-ThisBuild / libraryDependencies += "org.scalameta" %%% "munit" % "0.7.3" % Test
+ThisBuild / libraryDependencies += "org.scalameta" %%% "munit" % "0.7.4" % Test
 
 val scala213 = "2.13.2"
 val scala212 = "2.12.11"
@@ -55,7 +55,7 @@ lazy val root = crossProject(JSPlatform, JVMPlatform/*, NativePlatform*/)
       sharedJVMSettings
     )
     .jsSettings(
-      sharedJVMSettings,
+      sharedJSSettings,
       libraryDependencies ++= List(
         "org.scala-js" %% "scalajs-test-interface" % scalaJSVersion,
         "org.scala-js" %% "scalajs-junit-test-runtime" % scalaJSVersion
