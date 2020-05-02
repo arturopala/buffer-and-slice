@@ -14,8 +14,10 @@ pomExtra in Global := {
 
 import ReleaseTransformations._
 
-releaseCrossBuild := false
+releaseCrossBuild := true
 releaseUseGlobalVersion := true
+
+usePgpKeyHex("3FB5C97965AFEFFE50E462D2C054F59D2084B5BA")
 
 releaseProcess := Seq[ReleaseStep](
   checkSnapshotDependencies,
@@ -27,8 +29,8 @@ releaseProcess := Seq[ReleaseStep](
   commitReleaseVersion,
   tagRelease,
   releaseStepCommandAndRemaining("+publishSigned"),
+  releaseStepCommand("sonatypeBundleRelease"),
   setNextVersion,
   commitNextVersion,
-  releaseStepCommand("sonatypeBundleRelease"),
   pushChanges
 )
