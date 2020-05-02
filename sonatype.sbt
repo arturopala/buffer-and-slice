@@ -17,7 +17,7 @@ import ReleaseTransformations._
 releaseCrossBuild := true
 releaseUseGlobalVersion := true
 
-usePgpKeyHex("3FB5C97965AFEFFE50E462D2C054F59D2084B5BA")
+usePgpKeyHex("D9267F3ECB3CF847330BA02AAAC19B29BEF3DCBF")
 
 releaseProcess := Seq[ReleaseStep](
   checkSnapshotDependencies,
