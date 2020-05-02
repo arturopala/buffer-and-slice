@@ -33,6 +33,8 @@ trait Slice[T] extends (Int => T) {
     * @group Access */
   def apply(index: Int): T
 
+  def update(index: Int, value: T)(implicit tag: ClassTag[T]): Slice[T]
+
   /** Returns length of the Slice.
     * @group Properties */
   def length: Int
@@ -135,27 +137,15 @@ trait Slice[T] extends (Int => T) {
 object Slice {
 
   /** Creates new Slice of given values. */
-  def apply[T: ClassTag](is: T*): Slice[T] = Slice.of(Array(is: _*))
-
-  private[bufferandslice] def of[T, K](fromIndex: Int, toIndex: Int, _array: Array[K], _mapF: K => T): ArraySlice[T] =
-    new ArraySlice[T](fromIndex, toIndex) {
-      type A = K
-      val array: Array[A] = _array
-      val mapF: A => T = _mapF
-    }
+  def apply[T: ClassTag](is: T*): Slice[T] = ArraySlice.of(Array(is: _*))
 
   /** Creates new Slice of given array values. */
-  def of[T](array: Array[T]): ArraySlice[T] = Slice.of[T, T](0, array.length, array, identity)
+  def of[T](array: Array[T]): Slice[T] = ArraySlice.of(array)
 
   /** Creates new Slice of given subset of array values. */
-  def of[T](array: Array[T], from: Int, to: Int): ArraySlice[T] = {
-    assert(from >= 0, "When creating a Slice, parameter `from` must be greater or equal to zero.")
-    assert(to <= array.length, "When creating a Slice, parameter `to` must be lower or equal to the array length.")
-    assert(from <= to, "When creating a Slice, parameter `from` must be lower or equal to the parameter `to`.")
-    Slice.of[T, T](from, to, array, identity)
-  }
+  def of[T](array: Array[T], from: Int, to: Int): Slice[T] = ArraySlice.of(array, from, to)
 
   /** Creates an empty Slice of given type. */
-  def empty[T: ClassTag]: Slice[T] = Slice.of(Array.empty[T])
+  def empty[T: ClassTag]: Slice[T] = ArraySlice.empty[T]
 
 }

@@ -417,6 +417,8 @@ object Buffer {
 
   def apply[T: ClassTag](array: Array[T]): ArrayBuffer[T] = new ArrayBuffer[T](array)
 
+  def apply[T: ClassTag](array: Array[T], length: Int): ArrayBuffer[T] = new ArrayBuffer[T](array).set(length)
+
   def ofSize[T: ClassTag](size: Int): ArrayBuffer[T] = new ArrayBuffer[T](new Array[T](size))
 
   def empty[T: ClassTag] = new ArrayBuffer[T](Array.empty[T])

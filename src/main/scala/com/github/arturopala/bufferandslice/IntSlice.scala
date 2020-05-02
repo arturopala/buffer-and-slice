@@ -22,11 +22,7 @@ import scala.collection.AbstractIterable
 import scala.reflect.ClassTag
 
 /** Lazy, specialized slice of the array of integers. */
-final class IntSlice private (
-  private[bufferandslice] val fromIndex: Int,
-  private[bufferandslice] val toIndex: Int,
-  private[bufferandslice] val array: Array[Int]
-) extends Slice[Int] {
+final class IntSlice private (fromIndex: Int, toIndex: Int, array: Array[Int]) extends Slice[Int] {
 
   /** Sliced range length. */
   val length: Int = toIndex - fromIndex
@@ -39,7 +35,7 @@ final class IntSlice private (
   }
 
   /** Creates a copy of the slice with modified value. */
-  def update(index: Int, value: Int): IntSlice = {
+  def update(index: Int, value: Int)(implicit tag: ClassTag[Int]): IntSlice = {
     if (index < 0 || index >= length)
       throw new IndexOutOfBoundsException(s"Expected an `update` index in the interval [0,$length), but was $index.")
     val modified = toArray[Int]
@@ -49,7 +45,7 @@ final class IntSlice private (
 
   /** Lazily composes mapping function and returns new Slice.
     * Does not modify nor copy underlying array. */
-  def map[B](f: Int => B): Slice[B] = Slice.of[B, Int](fromIndex, toIndex, array, f)
+  def map[B](f: Int => B): Slice[B] = MappedArraySlice.lazyMapped[B, Int](fromIndex, toIndex, array, f)
 
   /** Counts values fulfilling the predicate. */
   def count(pred: Int => Boolean): Int = {

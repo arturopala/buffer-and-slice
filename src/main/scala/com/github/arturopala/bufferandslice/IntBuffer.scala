@@ -50,12 +50,6 @@ final class IntBuffer(initialSize: Int = 8) extends ArrayBufferLike[Int] {
   /** Wraps underlying array as a Slice. */
   def toSlice: IntSlice = IntSlice.of(_array, 0, length)
 
-  /** Copy values directly from IntSlice's array into the buffer array. */
-  def copyFrom(index: Int, slice: IntSlice): Unit = {
-    ensureIndex(index + slice.length - 1)
-    java.lang.System.arraycopy(slice.array, slice.fromIndex, _array, index, slice.length)
-  }
-
 }
 
 /** IntBuffer factory. */

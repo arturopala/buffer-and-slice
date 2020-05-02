@@ -44,6 +44,40 @@ For more details, see:
 - [Scaladoc of Buffer](https://arturopala.github.io/buffer-and-slice/latest/api/com/github/arturopala/bufferandslice/Buffer.html).
 - [Scaladoc of Slice](https://arturopala.github.io/buffer-and-slice/latest/api/com/github/arturopala/bufferandslice/Slice.html).
 
+Performance
+---
+
+The principle of this library is to avoid creating intermediary arrays as much as possible, 
+and use native `java.lang.System.arraycopy` and `java.util.Arrays.copyOf` where applicable.
+
+Lightweight operations:
+
+- creating new `Buffer` or `Slice` from an array
+- slicing (`toSlice`, `slice`, `take`, `drop`, `takeRight`, `dropRight`)
+- mapping the slice
+- using iterators or `toIterable`
+- making `Slice.copyToArray`
+
+Heavy operations, making a copy of an array:
+
+- exporting (`toArray`, `toList`, `toBuffer`)
+- updating a slice
+
+E.g. the following code makes no copy of an array:
+
+```scala mdoc:silent
+import com.github.arturopala.bufferandslice._
+
+val a = Array.fill(1000)(1)
+val buffer = Buffer(a,100)
+val slice1 = buffer.slice(13,31).map(_ * 2)
+buffer.insertSlice(23, slice1.map(_ * 3))
+buffer.replaceFromSlice(87, slice1.drop(7))
+val slice2 = buffer.slice(17,71)
+slice2.map(_+10).iterator.mkString("[",",","]")
+buffer.appendSlice(slice2)
+```
+
 Examples
 ---
 
@@ -85,21 +119,25 @@ Buffer(1,2,3).update(1,0)
 
 Buffer("a").append("a")
 
+IntBuffer(0,1,1).appendSlice(Slice(0,1,2,3))
+
+IntBuffer(0,1,1).appendArray(Array(0,1,2,3))
+
 Buffer("a").appendSequence(IndexedSeq("a","a","a"))
 
 Buffer(0).appendIterable(1 to 10)
 
 Buffer("b").appendFromIterator(Iterator.fill(10)("a"))
 
-IntBuffer(0,1,1).appendArray(Array(0,1,2,3))
-
-IntBuffer(0,1,2).appendArray(Array(0,1,2,3))
-
 Buffer(0,0,0).insertValues(1,2,3,List(0,1,2,3,4,5))
 
 Buffer(0,0,0).insertFromIterator(2,3,Iterator.continually(1))
 
+Buffer("a","b","c").insertSlice(1, Slice("e","f"))
+
 Buffer(0,0,0).insertArray(1,2,3,Array(0,1,2,3,4,5))
+
+Buffer("a","b","c","d","e","f").replaceFromSlice(4,Slice("a","b","c"))
 
 Buffer(0,0,0).replaceValues(1,2,3,List(0,1,2,3,4,5))
 
@@ -186,8 +224,6 @@ slice.update(4,"a")
 
 slice.update(5,"b")
 
-slice.array
-
 slice.slice(1,5)
 
 slice.take(5)
@@ -218,15 +254,17 @@ slice.map(s => s"($s)")
 
 slice.asIterable
 
-slice.iterator
+slice.iterator.toList
 
-slice.reverseIterator
+slice.reverseIterator.toList
 
-slice.reverseIterator("adgh".contains(_))
+slice.reverseIterator("adgh".contains(_)).toList
 
 slice.toList
 
 slice.toArray
+
+slice.copyToArray(3, new Array[String](15))
 
 slice.toBuffer
 ```
