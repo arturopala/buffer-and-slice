@@ -1,4 +1,6 @@
 // To sync with Maven central, you need to supply the following information:
+sonatypeProfileName := "com.github.arturopala"
+
 pomExtra in Global := {
   <url>github.com/arturopala/buffer-and-slice</url>
   <developers>
@@ -13,6 +15,8 @@ pomExtra in Global := {
 import ReleaseTransformations._
 
 releaseCrossBuild := false
+releaseUseGlobalVersion := true
+
 releaseProcess := Seq[ReleaseStep](
   checkSnapshotDependencies,
   inquireVersions,
@@ -25,8 +29,6 @@ releaseProcess := Seq[ReleaseStep](
   releaseStepCommandAndRemaining("+publishSigned"),
   setNextVersion,
   commitNextVersion,
-  ReleaseStep(action = Command.process("sonatypeRelease", _)),
+  releaseStepCommand("sonatypeBundleRelease"),
   pushChanges
 )
-
-releaseUseGlobalVersion := true
