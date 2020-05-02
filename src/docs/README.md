@@ -84,7 +84,7 @@ Examples
 Buffer
 ---
 
-[Open in Scastie](https://scastie.scala-lang.org/hQkIThU8S0ynsbnNzji08g)
+[Open in Scastie](https://scastie.scala-lang.org/arturopala/AeuggR2xTYC4lpNWLZoyug/3)
 
 ```scala mdoc
 import com.github.arturopala.bufferandslice._
@@ -207,7 +207,7 @@ Buffer(1,2,3,4,5,6,7,8,9).dropRight(3)
 Slice
 --
 
-[Open in Scastie](https://scastie.scala-lang.org/VbObn3VXQsCHdDFdI6DO8w)
+[Open in Scastie](https://scastie.scala-lang.org/arturopala/jo2JWppuRRyCkYL3SjmS7A/1)
 
 ```scala mdoc
 import com.github.arturopala.bufferandslice._
