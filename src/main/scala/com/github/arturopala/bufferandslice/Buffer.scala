@@ -206,24 +206,29 @@ trait Buffer[T] extends (Int => T) {
     i
   }
 
-  /** Appends value at the end of buffer and advances topIndex.
+  /** Appends value at the end of the buffer and advances topIndex.
     * @group Append */
   @`inline` final def append(value: T): this.type = {
     update(length, value)
     this
   }
 
-  /** Appends values from the given array at the end of buffer and advances topIndex.
+  /** Appends values from the given array at the end of the buffer and advances topIndex.
     * @group Append */
   @`inline` final def appendArray(values: Array[T]): this.type =
     insertArray(length, 0, values.length, values)
 
-  /** Appends values from the given sequence at the end of buffer and advances topIndex.
+  /** Appends values from the given slice at the end of the buffer and advances topIndex.
+    * @group Append */
+  @`inline` final def appendSlice(slice: Slice[T]): this.type =
+    insertSlice(length, slice)
+
+  /** Appends values from the given sequence at the end of the buffer and advances topIndex.
     * @group Append */
   @`inline` final def appendSequence(values: IndexedSeq[T]): this.type =
     insertValues(length, 0, values.length, values)
 
-  /** Appends values from the given iterator at the end of buffer and advances topIndex.
+  /** Appends values from the given iterator at the end of the buffer and advances topIndex.
     * @group Append */
   final def appendFromIterator(iterator: Iterator[T]): this.type = {
     while (iterator.hasNext) {
@@ -232,15 +237,21 @@ trait Buffer[T] extends (Int => T) {
     this
   }
 
-  /** Appends values from the given iterable at the end of buffer and advances topIndex.
+  /** Appends values from the given iterable at the end of the buffer and advances topIndex.
     * @group Append */
   @`inline` final def appendIterable(iterable: Iterable[T]): this.type = appendFromIterator(iterable.iterator)
 
-  /** Shift current content to the right starting from `index`at the `insertLength` distance,
+  /** Shift current content to the right starting from `index` at the `insertLength` distance,
     * and copies array chunk into the gap.
     * Sets topIndex to be at least at the end of the new chunk of values.
     * @group Insert */
   def insertArray(index: Int, sourceIndex: Int, insertLength: Int, sourceArray: Array[T]): this.type
+
+  /** Shift current content to the right starting from `index` at the `slice.length` distance,
+    * and copies slice into the gap.
+    * Sets topIndex to be at least at the end of the new chunk of values.
+    * @group Insert */
+  def insertSlice(index: Int, slice: Slice[T]): this.type
 
   /** Shift current content to the right starting from `index`at the `insertLength` distance,
     * iterates over the source indexes and copies values into the gap.
@@ -284,6 +295,10 @@ trait Buffer[T] extends (Int => T) {
     * with values of the array range [sourceIndex, sourceIndex + replaceLength).
     * @group Replace */
   def replaceFromArray(index: Int, sourceIndex: Int, replaceLength: Int, sourceArray: Array[T]): this.type
+
+  /** Replaces current values in the range [index, index + slice.length) with values of the slice.
+    * @group Replace */
+  def replaceFromSlice(index: Int, slice: Slice[T]): this.type
 
   /** Replaces current values in the range [index, index + replaceLength) with values returned by the function
     * when iterating argument in the range [sourceIndex, sourceIndex + replaceLength).

@@ -181,10 +181,21 @@ abstract class ArraySlice[T] private[bufferandslice] (fromIndex: Int, toIndex: I
 
   /** Returns minimal copy of an underlying array, trimmed to the actual range.
     * @group Read */
-  final def toArray[T1 >: T: ClassTag](implicit tag: ClassTag[T]): Array[T1] = {
-    val newArray: Array[A] = ArrayOps.copyOf(array, length)
-    Array.copy(array, fromIndex, newArray, 0, length)
-    newArray.map(mapF.andThen(_.asInstanceOf[T1]))
+  final def toArray[T1 >: T: ClassTag]: Array[T1] = {
+    val newArray = new Array[T1](length)
+    copyToArray(0, newArray)
+    newArray
+  }
+
+  /** Dumps content to the array, starting from an index.
+    * @group Read*/
+  final def copyToArray[T1 >: T](targetIndex: Int, targetArray: Array[T1]): Array[T1] = {
+    var i = 0
+    while (i < length) {
+      targetArray(targetIndex + i) = mapF(array(fromIndex + i))
+      i = i + 1
+    }
+    targetArray
   }
 
   /** Returns buffer with a copy of this Slice.

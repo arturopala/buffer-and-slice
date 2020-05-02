@@ -164,6 +164,17 @@ class ArrayBufferSpec extends AnyWordSpecCompat {
       buffer.length shouldBe 12
     }
 
+    "insert a slice" in {
+      val buffer = new ArrayBuffer(Array.empty[String])
+      buffer.insertSlice(0, Slice("a", "b", "c")).toArray shouldBe Array("a", "b", "c")
+      buffer.insertSlice(0, Slice("c", "b", "a")).toArray shouldBe Array("c", "b", "a", "a", "b", "c")
+      buffer.insertSlice(3, Slice("e", "f")).toArray shouldBe Array("c", "b", "a", "e", "f", "a", "b", "c")
+      buffer.insertSlice(5, Slice.empty[String]).toArray shouldBe Array("c", "b", "a", "e", "f", "a", "b", "c")
+      buffer
+        .insertSlice(10, Slice("e", "f", "g", "h"))
+        .toArray shouldBe Array("c", "b", "a", "e", "f", "a", "b", "c", null, null, "e", "f", "g", "h")
+    }
+
     "replace with new array of values" in {
       val buffer = new ArrayBuffer(Array.empty[String])
       buffer.replaceFromArray(0, 0, 3, Array("a", "b", "c"))
@@ -187,6 +198,13 @@ class ArrayBufferSpec extends AnyWordSpecCompat {
       buffer.replaceFromArray(5, 0, -5, Array("d", "e"))
       buffer.toArray shouldBe Array("e", "d", "e", "d", "e", "d", "e")
       buffer.length shouldBe 7
+    }
+
+    "replace with a values from slice" in {
+      val buffer = new ArrayBuffer(Array.empty[String])
+      buffer.replaceFromSlice(3, Slice("e", "f", "g", "h")).toArray shouldBe Array(null, null, null, "e", "f", "g", "h")
+      buffer.replaceFromSlice(0, Slice("e", "f", "g", "h")).toArray shouldBe Array("e", "f", "g", "h", "f", "g", "h")
+      buffer.replaceFromSlice(5, Slice("a", "b", "c")).toArray shouldBe Array("e", "f", "g", "h", "f", "a", "b", "c")
     }
 
     "insert new values from indexed source" in {
@@ -302,6 +320,16 @@ class ArrayBufferSpec extends AnyWordSpecCompat {
       buffer.toArray shouldBe Array("a", "b", "c", "a", "b", "c", "d", "e")
       buffer.appendArray(Array())
       buffer.length shouldBe 8
+    }
+
+    "append a slice" in {
+      val buffer = new ArrayBuffer(Array.empty[String])
+      buffer.appendSlice(Slice.empty[String]).toArray shouldBe Array.empty[String]
+      buffer.appendSlice(Slice("a", "b", "c")).toArray shouldBe Array("a", "b", "c")
+      buffer.appendSlice(Slice("a", "b", "c")).toArray shouldBe Array("a", "b", "c", "a", "b", "c")
+      buffer.appendSlice(Slice("e")).toArray shouldBe Array("a", "b", "c", "a", "b", "c", "e")
+      buffer.appendSlice(Slice("e", "f", "g")).toArray shouldBe Array("a", "b", "c", "a", "b", "c", "e", "e", "f", "g")
+      buffer.appendSlice(Slice.empty[String]).toArray shouldBe Array("a", "b", "c", "a", "b", "c", "e", "e", "f", "g")
     }
 
     "append sequence of values" in {

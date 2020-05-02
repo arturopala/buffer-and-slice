@@ -234,6 +234,14 @@ class ArraySliceSpec extends AnyWordSpecCompat {
       slice.toArray[B]
       slice.toArray[A]
     }
+
+    "have a copyToArray" in {
+      Slice.empty[String].copyToArray(0, new Array[String](0)) shouldBe Array.empty[String]
+      Slice("a", "b", "c")
+        .copyToArray(0, new Array[String](10)) shouldBe Array("a", "b", "c", null, null, null, null, null, null, null)
+      Slice("a", "b", "c")
+        .copyToArray(5, new Array[String](10)) shouldBe Array(null, null, null, null, null, "a", "b", "c", null, null)
+    }
   }
 
 }

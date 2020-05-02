@@ -44,14 +44,27 @@ trait ArrayBufferLike[T] extends Buffer[T] {
     * Sets topIndex to be at least at the end of the new chunk of values.
     * @group Insert */
   final override def insertArray(index: Int, sourceIndex: Int, insertLength: Int, sourceArray: Array[T]): this.type = {
-    if (index >= 0 && sourceIndex >= 0) {
-      val copyLength = Math.min(insertLength, sourceArray.length)
-      if (copyLength > 0) {
-        shiftRight(index, copyLength)
-        java.lang.System.arraycopy(sourceArray, sourceIndex, underlyingUnsafe, index, copyLength)
-      }
-      set(Math.max(top, index + copyLength - 1))
+    if (index < 0 || sourceIndex < 0) throw new IndexOutOfBoundsException
+    val copyLength = Math.min(insertLength, sourceArray.length)
+    if (copyLength > 0) {
+      shiftRight(index, copyLength)
+      java.lang.System.arraycopy(sourceArray, sourceIndex, underlyingUnsafe, index, copyLength)
     }
+    set(Math.max(top, index + copyLength - 1))
+
+    this
+  }
+
+  /** Shift current content to the right starting from `index` at the `slice.length` distance,
+    * and copies slice content into the gap.
+    * Sets topIndex to be at least at the end of the new chunk of values.
+    * @group Insert */
+  final override def insertSlice(index: Int, slice: Slice[T]): this.type = {
+    if (index < 0) throw new IndexOutOfBoundsException
+    shiftRight(index, slice.length)
+    slice.copyToArray(index, underlyingUnsafe)
+    set(Math.max(top, index + slice.length - 1))
+
     this
   }
 
@@ -59,14 +72,25 @@ trait ArrayBufferLike[T] extends Buffer[T] {
     * with values of the array range [sourceIndex, sourceIndex + replaceLength).
     * @group Replace */
   final def replaceFromArray(index: Int, sourceIndex: Int, replaceLength: Int, sourceArray: Array[T]): this.type = {
-    if (index >= 0 && sourceIndex >= 0) {
-      val copyLength = Math.min(replaceLength, sourceArray.length)
-      if (copyLength > 0) {
-        ensureIndex(index + replaceLength)
-        java.lang.System.arraycopy(sourceArray, sourceIndex, underlyingUnsafe, index, copyLength)
-      }
-      set(Math.max(top, index + copyLength - 1))
+    if (index < 0 || sourceIndex < 0) throw new IndexOutOfBoundsException
+    val copyLength = Math.min(replaceLength, sourceArray.length)
+    if (copyLength > 0) {
+      ensureIndex(index + replaceLength)
+      java.lang.System.arraycopy(sourceArray, sourceIndex, underlyingUnsafe, index, copyLength)
     }
+    set(Math.max(top, index + copyLength - 1))
+
+    this
+  }
+
+  /** Replaces current values in the range [index, index + slice.length) with values of the slice.
+    * @group Replace */
+  final def replaceFromSlice(index: Int, slice: Slice[T]): this.type = {
+    if (index < 0) throw new IndexOutOfBoundsException
+    ensureIndex(index + slice.length)
+    slice.copyToArray(index, underlyingUnsafe)
+    set(Math.max(top, index + slice.length - 1))
+
     this
   }
 
@@ -78,7 +102,7 @@ trait ArrayBufferLike[T] extends Buffer[T] {
     * @group Shift */
   final override def shiftRight(index: Int, distance: Int): this.type = {
     if (distance > 0 && index >= 0) {
-      ensureIndex(length + distance)
+      ensureIndex(Math.max(length, index) + distance)
       if (length - index > 0) {
         java.lang.System.arraycopy(underlyingUnsafe, index, underlyingUnsafe, index + distance, length - index)
       }

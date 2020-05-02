@@ -131,6 +131,41 @@ class IntBufferSpec extends AnyWordSpecCompat {
       IntBuffer(0, 1).modifyRangeWhen(2, 5, _ + 1, even).toArray shouldBe Array(0, 1)
       IntBuffer(0, 1).modifyRangeWhen(0, 0, _ + 1, even).toArray shouldBe Array(0, 1)
     }
+
+    "append a slice" in {
+      val buffer = IntBuffer()
+      buffer.appendSlice(IntSlice()).toArray shouldBe Array.empty[Int]
+      buffer.appendSlice(IntSlice(1, 2, 3, 4, 5)).toArray shouldBe Array(1, 2, 3, 4, 5)
+      buffer.appendSlice(IntSlice(2, 3, 4, 5)).toArray shouldBe Array(1, 2, 3, 4, 5, 2, 3, 4, 5)
+      buffer.appendSlice(IntSlice(3, 4, 5)).toArray shouldBe Array(1, 2, 3, 4, 5, 2, 3, 4, 5, 3, 4, 5)
+      buffer.appendSlice(IntSlice()).toArray shouldBe Array(1, 2, 3, 4, 5, 2, 3, 4, 5, 3, 4, 5)
+      buffer.appendSlice(IntSlice(0, 0, 0, 0)).toArray shouldBe Array(1, 2, 3, 4, 5, 2, 3, 4, 5, 3, 4, 5, 0, 0, 0, 0)
+    }
+
+    "insert a slice" in {
+      val buffer = IntBuffer()
+      buffer.insertSlice(0, IntSlice()).toArray shouldBe Array.empty[Int]
+      buffer.insertSlice(3, IntSlice(1, 2, 3, 4, 5)).toArray shouldBe Array(0, 0, 0, 1, 2, 3, 4, 5)
+      buffer.insertSlice(1, IntSlice(2, 3, 4, 5)).toArray shouldBe Array(0, 2, 3, 4, 5, 0, 0, 1, 2, 3, 4, 5)
+      buffer.insertSlice(10, IntSlice(3, 4, 5)).toArray shouldBe Array(0, 2, 3, 4, 5, 0, 0, 1, 2, 3, 3, 4, 5, 4, 5)
+      buffer.insertSlice(7, IntSlice()).toArray shouldBe Array(0, 2, 3, 4, 5, 0, 0, 1, 2, 3, 3, 4, 5, 4, 5)
+      buffer.insertSlice(0, IntSlice(1, 2, 3, 4, 5)).toArray shouldBe Array(1, 2, 3, 4, 5, 0, 2, 3, 4, 5, 0, 0, 1, 2, 3,
+        3, 4, 5, 4, 5)
+      buffer.insertSlice(25, IntSlice(1, 2, 3, 4, 5)).toArray shouldBe Array(1, 2, 3, 4, 5, 0, 2, 3, 4, 5, 0, 0, 1, 2,
+        3, 3, 4, 5, 4, 5, 0, 0, 0, 0, 0, 1, 2, 3, 4, 5)
+    }
+
+    "replace from a slice" in {
+      val buffer = IntBuffer()
+      buffer.replaceFromSlice(0, IntSlice()).toArray shouldBe Array.empty[Int]
+      buffer.replaceFromSlice(3, IntSlice(1, 2, 3, 4, 5)).toArray shouldBe Array(0, 0, 0, 1, 2, 3, 4, 5)
+      buffer.replaceFromSlice(0, IntSlice(1, 2, 3, 4, 5)).toArray shouldBe Array(1, 2, 3, 4, 5, 3, 4, 5)
+      buffer.replaceFromSlice(10, IntSlice(1, 2, 3, 4, 5)).toArray shouldBe Array(1, 2, 3, 4, 5, 3, 4, 5, 0, 0, 1, 2, 3,
+        4, 5)
+      buffer.replaceFromSlice(7, IntSlice(1, 2, 3)).toArray shouldBe Array(1, 2, 3, 4, 5, 3, 4, 1, 2, 3, 1, 2, 3, 4, 5)
+      buffer.replaceFromSlice(4, IntSlice(0, 0, 0, 0, 0, 0, 0, 0)).toArray shouldBe Array(1, 2, 3, 4, 0, 0, 0, 0, 0, 0,
+        0, 0, 3, 4, 5)
+    }
   }
 
 }

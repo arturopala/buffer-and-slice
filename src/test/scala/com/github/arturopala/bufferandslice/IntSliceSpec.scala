@@ -224,6 +224,14 @@ class IntSliceSpec extends AnyWordSpecCompat {
       IntSlice.of(Array(4)).init.toList shouldBe Nil
       IntSlice.empty.init.toList shouldBe Nil
     }
+
+    "have a copyToArray" in {
+      IntSlice().copyToArray(0, new Array[Int](0)) shouldBe Array.empty[Int]
+      IntSlice(1, 2, 3).copyToArray(0, new Array[Int](10)) shouldBe Array(1, 2, 3, 0, 0, 0, 0, 0, 0, 0)
+      IntSlice(1, 2, 3).copyToArray(5, new Array[Int](10)) shouldBe Array(0, 0, 0, 0, 0, 1, 2, 3, 0, 0)
+      IntSlice(1, 1, 1, 1, 1).copyToArray(5, new Array[Int](10)) shouldBe Array(0, 0, 0, 0, 0, 1, 1, 1, 1, 1)
+      IntSlice(3, 2, 1, 2, 3).copyToArray(0, new Array[Int](5)) shouldBe Array(3, 2, 1, 2, 3)
+    }
   }
 
 }
