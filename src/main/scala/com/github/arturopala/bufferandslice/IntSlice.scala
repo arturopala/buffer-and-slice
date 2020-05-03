@@ -35,7 +35,7 @@ final class IntSlice private (fromIndex: Int, toIndex: Int, array: Array[Int]) e
   }
 
   /** Creates a copy of the slice with modified value. */
-  def update[T1 >: Int: ClassTag](index: Int, value: Int): Slice[T1] = {
+  def update[T1 >: Int: ClassTag](index: Int, value: T1): Slice[T1] = {
     if (index < 0 || index >= length)
       throw new IndexOutOfBoundsException(s"Expected an `update` index in the interval [0,$length), but was $index.")
     val modified = toArray[T1]
