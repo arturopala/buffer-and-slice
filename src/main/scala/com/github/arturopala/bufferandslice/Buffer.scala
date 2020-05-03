@@ -413,11 +413,17 @@ trait Buffer[T] extends (Int => T) {
 /** Buffer factory. */
 object Buffer {
 
-  def apply[T: ClassTag](elems: T*): ArrayBuffer[T] = new ArrayBuffer[T](elems.toArray)
+  @`inline` def apply[T: ClassTag](elems: T*): Buffer[T] = apply(elems.toArray)
 
-  def apply[T: ClassTag](array: Array[T]): ArrayBuffer[T] = new ArrayBuffer[T](array)
+  def apply[T: ClassTag](array: Array[T]): Buffer[T] =
+    if (array.isInstanceOf[Array[Int]])
+      new IntBuffer().appendArray(array.asInstanceOf[Array[Int]]).asInstanceOf[Buffer[T]]
+    else if (array.isInstanceOf[Array[Byte]])
+      new ByteBuffer().appendArray(array.asInstanceOf[Array[Byte]]).asInstanceOf[Buffer[T]]
+    else
+      new ArrayBuffer[T](array)
 
-  def apply[T: ClassTag](array: Array[T], length: Int): ArrayBuffer[T] = new ArrayBuffer[T](array).set(length)
+  @`inline` def apply[T: ClassTag](array: Array[T], length: Int): Buffer[T] = apply(array).set(length)
 
   def ofSize[T: ClassTag](size: Int): ArrayBuffer[T] = new ArrayBuffer[T](new Array[T](size))
 

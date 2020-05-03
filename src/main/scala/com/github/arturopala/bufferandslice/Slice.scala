@@ -143,12 +143,16 @@ object Slice {
   def of[T: ClassTag](array: Array[T]): Slice[T] =
     if (array.isInstanceOf[Array[Int]])
       IntSlice.of(array.asInstanceOf[Array[Int]]).asInstanceOf[Slice[T]]
+    else if (array.isInstanceOf[Array[Byte]])
+      ByteSlice.of(array.asInstanceOf[Array[Byte]]).asInstanceOf[Slice[T]]
     else ArraySlice.of(array)
 
   /** Creates new Slice of given subset of array values. */
   def of[T: ClassTag](array: Array[T], from: Int, to: Int): Slice[T] =
     if (array.isInstanceOf[Array[Int]])
       IntSlice.of(array.asInstanceOf[Array[Int]], from, to).asInstanceOf[Slice[T]]
+    else if (array.isInstanceOf[Array[Byte]])
+      ByteSlice.of(array.asInstanceOf[Array[Byte]], from, to).asInstanceOf[Slice[T]]
     else ArraySlice.of(array, from, to)
 
   /** Creates an empty Slice of given type. */

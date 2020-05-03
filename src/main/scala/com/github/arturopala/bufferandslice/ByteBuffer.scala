@@ -16,50 +16,45 @@
 
 package com.github.arturopala.bufferandslice
 
-/** Growable, mutable array of integers. */
-final class IntBuffer(initialSize: Int = 8) extends ArrayBufferLike[Int] {
+/** Growable, mutable array of bytes. */
+final class ByteBuffer(initialSize: Int = 8) extends ArrayBufferLike[Byte] {
 
-  private var _array = new Array[Int](initialSize)
+  private var _array = new Array[Byte](initialSize)
 
   /** Very unsafe access to the underlying array, if you really need it.
     * @group Unsafe */
-  override def underlyingUnsafe: Array[Int] = _array
+  override def underlyingUnsafe: Array[Byte] = _array
 
   /** Returns value at the given index or 0 if out of scope. */
-  @`inline` def apply(index: Int): Int =
+  @`inline` def apply(index: Int): Byte =
     if (index < 0 || index >= _array.length) 0
     else _array(index)
 
   override protected def ensureIndex(index: Int): Unit =
     if (index >= _array.length) {
-      val newArray: Array[Int] = new Array(Math.max(_array.length * 2, index + 1))
+      val newArray: Array[Byte] = new Array(Math.max(_array.length * 2, index + 1))
       java.lang.System.arraycopy(_array, 0, newArray, 0, _array.length)
       _array = newArray
     }
 
-  /** Increments the value at index.s */
-  def increment(index: Int): this.type = {
-    update(index, apply(index) + 1)
-    this
-  }
-
   /** Returns copy of the underlying array trimmed to length. */
-  def toArray: Array[Int] = java.util.Arrays.copyOf(_array, length)
+  def toArray: Array[Byte] = java.util.Arrays.copyOf(_array, length)
 
   /** Wraps underlying array as a Slice. */
-  def toSlice: IntSlice = IntSlice.of(_array, 0, length)
+  def toSlice: ByteSlice = ByteSlice.of(_array, 0, length)
 
 }
 
-/** IntBuffer factory. */
-object IntBuffer {
+/** ByteBuffer factory. */
+object ByteBuffer {
 
   /** Create buffer with initial values. */
-  def apply(elems: Int*): IntBuffer = new IntBuffer(elems.size).appendArray(elems.toArray)
+  def apply(elems: Int*): ByteBuffer =
+    new ByteBuffer(elems.size).appendArray(elems.toArray.map(_.toByte))
 
   /** Create buffer from an array copy. */
-  def apply(array: Array[Int]): IntBuffer = new IntBuffer(array.length).appendArray(array)
+  def apply(array: Array[Byte]): ByteBuffer = new ByteBuffer(array.length).appendArray(array)
 
   /** An empty buffer. */
-  def empty = new IntBuffer(0)
+  def empty = new ByteBuffer(0)
 }
