@@ -106,6 +106,7 @@ class ArraySliceSpec extends AnyWordSpecCompat {
     }
 
     "update a value within a slice" in {
+      ArraySlice.of(Array("a", "b", "c")).update(1, "d").apply(1) shouldBe "d"
       ArraySlice.of(Array(1, 2, 3, 4, 5, 6, 7, 8, 9)).update(3, 12).apply(3) shouldBe 12
       ArraySlice.of(Array(1, 2, 3, 4, 5, 6, 7, 8, 9)).update(3, 12).apply(4) shouldBe 5
       ArraySlice.of(Array(1, 2, 3, 4, 5, 6, 7, 8, 9), 2, 9).update(3, -13).apply(3) shouldBe -13

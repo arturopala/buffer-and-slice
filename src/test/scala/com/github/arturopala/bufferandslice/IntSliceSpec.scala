@@ -78,13 +78,13 @@ class IntSliceSpec extends AnyWordSpecCompat {
       IntSlice.of(Array(1, 2, 3, 4, 5, 6, 7, 8, 9), 2, 3).map(_ * 10).toArray[Int] shouldBe Array(30)
       IntSlice.of(Array(1, 2, 3, 4, 5, 6, 7, 8, 9), 2, 2).map(_ * 10).toArray[Int] shouldBe Array.empty[Int]
       IntSlice.of(Array(1, 2, 3, 4, 5, 6, 7, 8, 9), 0, 0).map(_ * 10).toArray[Int] shouldBe Array.empty[Int]
-      IntSlice.of(Array(1, 2, 3, 4, 5, 6, 7, 8, 9), 9, 9).map(_ * 10).toArray[Int] shouldBe Array.empty[Int]
+      Slice.of(Array(1, 2, 3, 4, 5, 6, 7, 8, 9), 9, 9).map(_ * 10).toArray[Int] shouldBe Array.empty[Int]
     }
 
     "count values in slice matching predicate" in {
       IntSlice(0, 2, 0, 4, 5, 0, 7, 8, 0).count(_ == 0) shouldBe 4
       IntSlice(3, 4, 5).count(_ == 0) shouldBe 0
-      IntSlice(0, 0, 0, 0, 0).count(_ == 0) shouldBe 5
+      Slice(0, 0, 0, 0, 0).count(_ == 0) shouldBe 5
       IntSlice(0).count(_ == 0) shouldBe 1
       IntSlice(1).count(_ == 0) shouldBe 0
       IntSlice().count(_ == 0) shouldBe 0
@@ -92,7 +92,7 @@ class IntSliceSpec extends AnyWordSpecCompat {
 
     "top a value by an index" in {
       IntSlice.of(Array(1, 2, 3, 4, 5, 6, 7, 8, 9)).apply(3) shouldBe 4
-      IntSlice.of(Array(1, 2, 3, 4, 5, 6, 7, 8, 9), 2, 9).apply(3) shouldBe 6
+      Slice.of(Array(1, 2, 3, 4, 5, 6, 7, 8, 9), 2, 9).apply(3) shouldBe 6
       IntSlice.of(Array(1, 2, 3, 4, 5, 6, 7, 8, 9), 5, 9).apply(3) shouldBe 9
       IntSlice.of(Array(1, 2, 3, 4, 5, 6, 7, 8, 9), 2, 6).apply(3) shouldBe 6
       an[IndexOutOfBoundsException] shouldBe thrownBy {

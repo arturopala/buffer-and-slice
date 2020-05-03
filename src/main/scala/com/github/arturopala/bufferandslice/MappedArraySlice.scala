@@ -45,12 +45,12 @@ abstract class MappedArraySlice[T] private (fromIndex: Int, toIndex: Int) extend
   }
 
   /** Creates a copy of the slice with modified value. */
-  final def update(index: Int, value: T)(implicit tag: ClassTag[T]): Slice[T] = {
+  final def update[T1 >: T: ClassTag](index: Int, value: T): Slice[T1] = {
     if (index < 0 || index >= length)
       throw new IndexOutOfBoundsException(s"Expected an `update` index in the interval [0,$length), but was $index.")
-    val modified: Array[T] = toArray
+    val modified: Array[T1] = toArray[T1]
     modified.update(index, value)
-    MappedArraySlice.lazyMapped[T, T](0, length, modified, identity)
+    MappedArraySlice.lazyMapped[T1, T1](0, length, modified, identity)
   }
 
   /** Lazily composes mapping function and returns new Slice.

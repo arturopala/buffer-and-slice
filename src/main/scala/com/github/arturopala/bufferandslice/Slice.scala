@@ -33,7 +33,7 @@ trait Slice[T] extends (Int => T) {
     * @group Access */
   def apply(index: Int): T
 
-  def update(index: Int, value: T)(implicit tag: ClassTag[T]): Slice[T]
+  def update[T1 >: T: ClassTag](index: Int, value: T): Slice[T1]
 
   /** Returns length of the Slice.
     * @group Properties */
@@ -140,10 +140,16 @@ object Slice {
   def apply[T: ClassTag](is: T*): Slice[T] = ArraySlice.of(Array(is: _*))
 
   /** Creates new Slice of given array values. */
-  def of[T](array: Array[T]): Slice[T] = ArraySlice.of(array)
+  def of[T: ClassTag](array: Array[T]): Slice[T] =
+    if (array.isInstanceOf[Array[Int]])
+      IntSlice.of(array.asInstanceOf[Array[Int]]).asInstanceOf[Slice[T]]
+    else ArraySlice.of(array)
 
   /** Creates new Slice of given subset of array values. */
-  def of[T](array: Array[T], from: Int, to: Int): Slice[T] = ArraySlice.of(array, from, to)
+  def of[T: ClassTag](array: Array[T], from: Int, to: Int): Slice[T] =
+    if (array.isInstanceOf[Array[Int]])
+      IntSlice.of(array.asInstanceOf[Array[Int]], from, to).asInstanceOf[Slice[T]]
+    else ArraySlice.of(array, from, to)
 
   /** Creates an empty Slice of given type. */
   def empty[T: ClassTag]: Slice[T] = ArraySlice.empty[T]

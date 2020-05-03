@@ -45,5 +45,5 @@ final class ArrayBuffer[T](initialArray: Array[T]) extends ArrayBufferLike[T] {
   def toArray: Array[T] = ArrayOps.copyOf(_array, length)
 
   /** Wraps underlying array as a Slice. */
-  def toSlice: Slice[T] = Slice.of(_array, 0, length)
+  def toSlice: Slice[T] = ArraySlice.of(_array, 0, length)
 }
