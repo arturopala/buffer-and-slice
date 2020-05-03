@@ -33,7 +33,7 @@ trait Slice[T] extends (Int => T) {
     * @group Access */
   def apply(index: Int): T
 
-  def update[T1 >: T: ClassTag](index: Int, value: T): Slice[T1]
+  def update[T1 >: T: ClassTag](index: Int, value: T1): Slice[T1]
 
   /** Returns length of the Slice.
     * @group Properties */

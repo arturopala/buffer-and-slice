@@ -45,7 +45,7 @@ abstract class MappedArraySlice[T] private (fromIndex: Int, toIndex: Int) extend
   }
 
   /** Creates a copy of the slice with modified value. */
-  final def update[T1 >: T: ClassTag](index: Int, value: T): Slice[T1] = {
+  final def update[T1 >: T: ClassTag](index: Int, value: T1): Slice[T1] = {
     if (index < 0 || index >= length)
       throw new IndexOutOfBoundsException(s"Expected an `update` index in the interval [0,$length), but was $index.")
     val modified: Array[T1] = toArray[T1]
