@@ -16,7 +16,7 @@ import ReleaseTransformations._
 
 releaseCrossBuild := true
 releaseUseGlobalVersion := true
-releaseVersionBump := sbtrelease.Version.Bump.Major
+releaseVersionBump := sbtrelease.Version.Bump.Minor
 
 usePgpKeyHex("D9267F3ECB3CF847330BA02AAAC19B29BEF3DCBF")
 
