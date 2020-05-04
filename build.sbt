@@ -11,6 +11,8 @@ val scala2Versions = List(scala213, scala212, scala211)
 val scala3Versions = List(dottyNext, dottyStable)
 val allScalaVersions = scala2Versions ++ scala3Versions
 
+ThisBuild / scalaVersion := scala213
+
 lazy val sharedSettings = Seq(
   name := "buffer-and-slice",
   organization := "com.github.arturopala",

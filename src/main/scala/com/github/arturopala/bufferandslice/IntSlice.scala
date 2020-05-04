@@ -16,12 +16,14 @@
 
 package com.github.arturopala.bufferandslice
 
+import scala.reflect.ClassTag
+
 /** Lazy, specialized slice of the array of integers. */
 final class IntSlice private (protected val fromIndex: Int, protected val toIndex: Int, protected val array: Array[Int])
     extends ArraySliceLike[Int] {
 
-  override protected def create(fromIndex: Int, toIndex: Int, array: Array[Int]): IntSlice =
-    new IntSlice(fromIndex, toIndex, array)
+  override protected def create(fromIndex: Int, toIndex: Int, array: Array[Int]): this.type =
+    new IntSlice(fromIndex, toIndex, array).asInstanceOf[this.type]
 }
 
 object IntSlice {

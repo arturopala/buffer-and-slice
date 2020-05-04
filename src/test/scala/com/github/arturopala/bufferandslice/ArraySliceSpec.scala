@@ -145,11 +145,11 @@ class ArraySliceSpec extends AnyWordSpecCompat {
       Slice[Int]().slice(-5, 10) shouldBe Slice[Int]()
       Slice(1, 2, 3).slice(-5, 10) shouldBe Slice(1, 2, 3)
       Slice(1, 2, 3, 4, 5, 6, 7, 8, 9).slice(-5, 5) shouldBe Slice(1, 2, 3, 4, 5)
-      ArraySlice.of(Array(1, 2, 3, 4, 5, 6, 7, 8, 9), 2, 7).slice(-5, 5) shouldBe Slice(3, 4, 5, 6, 7)
-      ArraySlice.of(Array(1, 2, 3, 4, 5, 6, 7, 8, 9), 2, 5).slice(5, 8) shouldBe Slice[Int]()
-      ArraySlice.of(Array(1, 2, 3, 4, 5, 6, 7, 8, 9), 5, 5).slice(1, 2) shouldBe Slice[Int]()
-      ArraySlice.of(Array(1, 2, 3, 4, 5, 6, 7, 8, 9), 3, 5).slice(1, 2) shouldBe Slice(5)
-      ArraySlice.of(Array(1, 2, 3, 4, 5, 6, 7, 8, 9), 0, 9).slice(7, 12) shouldBe Slice(8, 9)
+      ArraySlice.of(Array(1, 2, 3, 4, 5, 6, 7, 8, 9), 2, 7).slice(-5, 5) shouldBe ArraySlice(3, 4, 5, 6, 7)
+      ArraySlice.of(Array(1, 2, 3, 4, 5, 6, 7, 8, 9), 2, 5).slice(5, 8) shouldBe ArraySlice[Int]()
+      ArraySlice.of(Array(1, 2, 3, 4, 5, 6, 7, 8, 9), 5, 5).slice(1, 2) shouldBe ArraySlice[Int]()
+      ArraySlice.of(Array(1, 2, 3, 4, 5, 6, 7, 8, 9), 3, 5).slice(1, 2) shouldBe ArraySlice(5)
+      ArraySlice.of(Array(1, 2, 3, 4, 5, 6, 7, 8, 9), 0, 9).slice(7, 12) shouldBe ArraySlice(8, 9)
     }
 
     "have a drop" in {

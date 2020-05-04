@@ -27,8 +27,8 @@ final class ArraySlice[T] private (
   protected val array: Array[T]
 ) extends ArraySliceLike[T] {
 
-  override protected def create(fromIndex: Int, toIndex: Int, array: Array[T]): ArraySlice[T] =
-    new ArraySlice(fromIndex, toIndex, array)
+  override protected def create(fromIndex: Int, toIndex: Int, array: Array[T]): this.type =
+    new ArraySlice[T](fromIndex, toIndex, array).asInstanceOf[this.type]
 }
 
 object ArraySlice {

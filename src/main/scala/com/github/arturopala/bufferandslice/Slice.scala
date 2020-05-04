@@ -83,31 +83,31 @@ trait Slice[T] extends (Int => T) {
 
   /** Returns the Slice without first value.
     * @group Access */
-  def tail: Slice[T]
+  def tail: this.type
 
   /** Returns the Slice without last value.
     * @group Access */
-  def init: Slice[T]
+  def init: this.type
 
   /** Lazily narrows Slice to provided range.
     * @group Transform */
-  def slice(from: Int, to: Int): Slice[T]
+  def slice(from: Int, to: Int): this.type
 
   /** Lazily narrows Slice to first N items.
     * @group Transform */
-  def take(n: Int): Slice[T]
+  def take(n: Int): this.type
 
   /** Lazily narrows Slice to last N items.
     * @group Transform */
-  def takeRight(n: Int): Slice[T]
+  def takeRight(n: Int): this.type
 
   /** Lazily narrows Slice to exclude first N items.
     * @group Transform */
-  def drop(n: Int): Slice[T]
+  def drop(n: Int): this.type
 
   /** Lazily narrows Slice to exclude last N items.
     * @group Transform */
-  def dropRight(n: Int): Slice[T]
+  def dropRight(n: Int): this.type
 
   /** Returns iterator over Slice values.
     * @group Read */
@@ -142,7 +142,7 @@ trait Slice[T] extends (Int => T) {
 
   /** Detaches a slice creating a trimmed copy of an underlying data.
     * @group Access */
-  def detach(implicit tag: ClassTag[T]): Slice[T]
+  def detach(implicit tag: ClassTag[T]): this.type
 
   /** Dumps content to the array, starting from an index.
     * @group Read */

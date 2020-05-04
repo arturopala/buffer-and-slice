@@ -119,7 +119,7 @@ class IntSliceSpec extends AnyWordSpecCompat {
     }
 
     "have a length" in {
-      IntSlice.of(Array(1, 2, 3, 4, 5, 6, 7, 8, 9)).length shouldBe 9
+      IntSlice(1, 2, 3, 4, 5, 6, 7, 8, 9).length shouldBe 9
       IntSlice.of(Array(1, 2, 3, 4, 5, 6, 7, 8, 9), 0, 0).length shouldBe 0
       IntSlice.of(Array(1, 2, 3, 4, 5, 6, 7, 8, 9), 0, 1).length shouldBe 1
       IntSlice.of(Array(1, 2, 3, 4, 5, 6, 7, 8, 9), 2, 8).length shouldBe 6
@@ -139,6 +139,7 @@ class IntSliceSpec extends AnyWordSpecCompat {
       IntSlice.of(Array(1, 2, 3, 4, 5, 6, 7, 8, 9), 5, 5).slice(1, 2) shouldBe IntSlice()
       IntSlice.of(Array(1, 2, 3, 4, 5, 6, 7, 8, 9), 3, 5).slice(1, 2) shouldBe IntSlice(5)
       IntSlice.of(Array(1, 2, 3, 4, 5, 6, 7, 8, 9), 0, 9).slice(7, 12) shouldBe IntSlice(8, 9)
+      IntSlice(1, 2, 3, 4, 5, 6, 7, 8, 9).slice(2, 7).slice(2, 4) shouldBe IntSlice(5, 6)
     }
 
     "have a drop" in {
@@ -166,7 +167,7 @@ class IntSliceSpec extends AnyWordSpecCompat {
     }
 
     "have a take" in {
-      IntSlice.of(Array(1, 2, 3, 4, 5, 6, 7, 8, 9)).take(0).toList shouldBe Nil
+      IntSlice(1, 2, 3, 4, 5, 6, 7, 8, 9).take(0).toList shouldBe Nil
       IntSlice.of(Array(1, 2, 3, 4, 5, 6, 7, 8, 9)).take(3).toList shouldBe List(1, 2, 3)
       IntSlice.of(Array(1, 2, 3, 4, 5, 6, 7, 8, 9)).take(8).toList shouldBe List(1, 2, 3, 4, 5, 6, 7, 8)
       IntSlice.of(Array(1, 2, 3, 4, 5, 6, 7, 8, 9)).take(9).toList shouldBe List(1, 2, 3, 4, 5, 6, 7, 8, 9)
@@ -175,6 +176,7 @@ class IntSliceSpec extends AnyWordSpecCompat {
       IntSlice.of(Array(1, 2)).take(3).toList shouldBe List(1, 2)
       IntSlice.of(Array(1)).take(3).toList shouldBe List(1)
       IntSlice.of(Array.empty[Int]).take(3).toList shouldBe Nil
+      IntSlice(1, 2, 3, 4, 5, 6, 7, 8, 9).take(5).drop(2) shouldBe IntSlice(3, 4, 5)
     }
 
     "have a takeRight" in {

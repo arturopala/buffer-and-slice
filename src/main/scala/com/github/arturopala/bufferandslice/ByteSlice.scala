@@ -16,6 +16,8 @@
 
 package com.github.arturopala.bufferandslice
 
+import scala.reflect.ClassTag
+
 /** Lazy, specialized slice of the array of bytes. */
 final class ByteSlice private (
   protected val fromIndex: Int,
@@ -23,8 +25,8 @@ final class ByteSlice private (
   protected val array: Array[Byte]
 ) extends ArraySliceLike[Byte] {
 
-  override protected def create(fromIndex: Int, toIndex: Int, array: Array[Byte]): ByteSlice =
-    new ByteSlice(fromIndex, toIndex, array)
+  override protected def create(fromIndex: Int, toIndex: Int, array: Array[Byte]): this.type =
+    new ByteSlice(fromIndex, toIndex, array).asInstanceOf[this.type]
 }
 
 object ByteSlice {

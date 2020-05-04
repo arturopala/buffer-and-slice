@@ -94,34 +94,36 @@ abstract class MappedArraySlice[T] private (fromIndex: Int, toIndex: Int) extend
     else None
 
   /** Lazily narrows Slice to provided range. */
-  final override def slice(from: Int, to: Int): Slice[T] = {
+  final override def slice(from: Int, to: Int): this.type = {
     val t = fit(to, length)
     val f = fit(from, t)
     if (f == 0 && t == length) this
     else
-      MappedArraySlice.lazyMapped[T, A](fromIndex + f, fromIndex + t, array, mapF)
+      MappedArraySlice
+        .lazyMapped[T, A](fromIndex + f, fromIndex + t, array, mapF)
+        .asInstanceOf[this.type]
   }
 
   private def fit(value: Int, upper: Int): Int =
     Math.min(Math.max(0, value), upper)
 
   /** Returns the Slice without first value. */
-  @`inline` final override def tail: Slice[T] = drop(1)
+  @`inline` final override def tail: this.type = drop(1)
 
   /** Returns the Slice without last value. */
-  @`inline` final override def init: Slice[T] = dropRight(1)
+  @`inline` final override def init: this.type = dropRight(1)
 
   /** Lazily narrows Slice to first N items. */
-  @`inline` final override def take(n: Int): Slice[T] = slice(0, n)
+  @`inline` final override def take(n: Int): this.type = slice(0, n)
 
   /** Lazily narrows Slice to last N items. */
-  @`inline` final override def takeRight(n: Int): Slice[T] = slice(length - n, length)
+  @`inline` final override def takeRight(n: Int): this.type = slice(length - n, length)
 
   /** Lazily narrows Slice to exclude first N items. */
-  @`inline` final override def drop(n: Int): Slice[T] = slice(n, length)
+  @`inline` final override def drop(n: Int): this.type = slice(n, length)
 
   /** Lazily narrows Slice to exclude last N items. */
-  @`inline` final override def dropRight(n: Int): Slice[T] = slice(0, length - n)
+  @`inline` final override def dropRight(n: Int): this.type = slice(0, length - n)
 
   /** Returns iterator over Slice values. */
   final override def iterator: Iterator[T] = new Iterator[T] {
@@ -212,10 +214,12 @@ abstract class MappedArraySlice[T] private (fromIndex: Int, toIndex: Int) extend
   }
 
   /** Detaches a slice creating a trimmed copy of an underlying data. */
-  final override def detach(implicit tag: ClassTag[T]): Slice[T] = {
+  final override def detach(implicit tag: ClassTag[T]): this.type = {
     val newArray = ArrayOps.copyOf(array, length)
     java.lang.System.arraycopy(array, fromIndex, newArray, 0, length)
-    MappedArraySlice.lazyMapped[T, A](0, length, newArray, mapF)
+    MappedArraySlice
+      .lazyMapped[T, A](0, length, newArray, mapF)
+      .asInstanceOf[this.type]
   }
 
   /** Dumps content to the array, starting from an index.
