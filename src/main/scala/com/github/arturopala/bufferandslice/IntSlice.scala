@@ -24,6 +24,11 @@ final class IntSlice private (protected val fromIndex: Int, protected val toInde
 
   override protected def create(fromIndex: Int, toIndex: Int, array: Array[Int]): this.type =
     new IntSlice(fromIndex, toIndex, array).asInstanceOf[this.type]
+
+  /** Returns buffer with a copy of this Slice.
+    * @group Read */
+  @`inline` override def toBuffer(implicit tag: ClassTag[Int]): IntBuffer =
+    new IntBuffer(length).appendArray(toArray)
 }
 
 object IntSlice {

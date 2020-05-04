@@ -29,6 +29,11 @@ final class ArraySlice[T] private (
 
   override protected def create(fromIndex: Int, toIndex: Int, array: Array[T]): this.type =
     new ArraySlice[T](fromIndex, toIndex, array).asInstanceOf[this.type]
+
+  /** Returns buffer with a copy of this Slice.
+    * @group Read */
+  @`inline` override def toBuffer(implicit tag: ClassTag[T]): ArrayBuffer[T] =
+    new ArrayBuffer(toArray)
 }
 
 object ArraySlice {

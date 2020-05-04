@@ -218,11 +218,8 @@ trait ArraySliceLike[T] extends Slice[T] {
   }
 
   /** Detaches a slice creating a trimmed copy of an underlying data. */
-  @`inline` final override def detach(implicit tag: ClassTag[T]): this.type = create(0, length, toArray)
-
-  /** Returns buffer with a copy of this Slice.
-    * @group Read */
-  @`inline` final override def toBuffer(implicit tag: ClassTag[T]): Buffer[T] = new ArrayBuffer(toArray)
+  @`inline` final override def detach(implicit tag: ClassTag[T]): this.type =
+    create(0, length, toArray)
 
   /** Returns new list of Slice values.
     * @group Read */

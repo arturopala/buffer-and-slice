@@ -476,9 +476,13 @@ object Buffer {
 
   def apply[T: ClassTag](array: Array[T]): Buffer[T] =
     if (array.isInstanceOf[Array[Int]])
-      new IntBuffer().appendArray(array.asInstanceOf[Array[Int]]).asInstanceOf[Buffer[T]]
+      new IntBuffer(array.length)
+        .appendArray(array.asInstanceOf[Array[Int]])
+        .asInstanceOf[Buffer[T]]
     else if (array.isInstanceOf[Array[Byte]])
-      new ByteBuffer().appendArray(array.asInstanceOf[Array[Byte]]).asInstanceOf[Buffer[T]]
+      new ByteBuffer(array.length)
+        .appendArray(array.asInstanceOf[Array[Byte]])
+        .asInstanceOf[Buffer[T]]
     else
       new ArrayBuffer[T](array)
 

@@ -27,6 +27,11 @@ final class ByteSlice private (
 
   override protected def create(fromIndex: Int, toIndex: Int, array: Array[Byte]): this.type =
     new ByteSlice(fromIndex, toIndex, array).asInstanceOf[this.type]
+
+  /** Returns buffer with a copy of this Slice.
+    * @group Read */
+  @`inline` override def toBuffer(implicit tag: ClassTag[Byte]): ByteBuffer =
+    new ByteBuffer(length).appendArray(toArray)
 }
 
 object ByteSlice {
