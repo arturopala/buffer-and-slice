@@ -254,7 +254,8 @@ trait Buffer[T] extends (Int => T) {
 
   /** Appends values from the given iterable at the end of the buffer and advances topIndex.
     * @group Append */
-  @`inline` final def appendIterable(iterable: Iterable[T]): this.type = appendFromIterator(iterable.iterator)
+  @`inline` final def appendIterable(iterable: Iterable[T]): this.type =
+    appendFromIterator(iterable.iterator)
 
   /** Shift current content to the right starting from `index` at the `insertLength` distance,
     * and copies array chunk into the gap.
@@ -384,7 +385,7 @@ trait Buffer[T] extends (Int => T) {
     * - Moves topIndex if affected.
     * @group Move
     * */
-  def moveRangeRight(fromIndex: Int, toIndex: Int, distance: Int)(implicit tag: ClassTag[T]): this.type
+  def moveRangeRight(fromIndex: Int, toIndex: Int, distance: Int): this.type
 
   /** Moves values in [fromIndex,toIndex) to the left at a distance,
     * to become [fromIndex - distance, toIndex - distance),
@@ -395,7 +396,7 @@ trait Buffer[T] extends (Int => T) {
     * - Moves topIndex if affected.
     * @group Move
     * */
-  def moveRangeLeft(fromIndex: Int, toIndex: Int, distance: Int)(implicit tag: ClassTag[T]): this.type
+  def moveRangeLeft(fromIndex: Int, toIndex: Int, distance: Int): this.type
 
   /** Swap two values at the provided indexes.
     * Value at `first` becomes value at `second`, and vice versa.
@@ -417,7 +418,7 @@ trait Buffer[T] extends (Int => T) {
     *    then the later overwrites the former.
     * @group Swap
     */
-  def swapRange(first: Int, second: Int, swapLength: Int)(implicit tag: ClassTag[T]): this.type
+  def swapRange(first: Int, second: Int, swapLength: Int): this.type
 
   /** Replace value at the topIndex.
     * @group Stack Ops */

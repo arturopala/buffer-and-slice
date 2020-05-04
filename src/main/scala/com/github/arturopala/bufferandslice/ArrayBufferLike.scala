@@ -16,8 +16,6 @@
 
 package com.github.arturopala.bufferandslice
 
-import scala.reflect.ClassTag
-
 /** Common buffer functions impl for array-backend buffers. */
 trait ArrayBufferLike[T] extends Buffer[T] {
 
@@ -154,13 +152,11 @@ trait ArrayBufferLike[T] extends Buffer[T] {
     * Moves topIndex if affected.
     * @group Move
     * */
-  final override def moveRangeRight(fromIndex: Int, toIndex: Int, distance: Int)(
-    implicit tag: ClassTag[T]
-  ): this.type = {
+  final override def moveRangeRight(fromIndex: Int, toIndex: Int, distance: Int): this.type = {
     if (distance > 0 && fromIndex >= 0 && toIndex > fromIndex && fromIndex < length) {
       val to = Math.min(toIndex, length)
       ensureIndex(to + distance - 1)
-      val backup = new Array[T](distance)
+      val backup = ArrayOps.copyOf(ArrayOps.copyOf(underlyingUnsafe, 0), distance)
       this.slice(to, Math.min(to + distance, length)).copyToArray(0, backup)
       java.lang.System.arraycopy(underlyingUnsafe, fromIndex, underlyingUnsafe, fromIndex + distance, to - fromIndex)
       java.lang.System.arraycopy(backup, 0, underlyingUnsafe, fromIndex, backup.length)
@@ -177,14 +173,12 @@ trait ArrayBufferLike[T] extends Buffer[T] {
     * Moves topIndex if affected.
     * @group Move
     * */
-  final override def moveRangeLeft(fromIndex: Int, toIndex: Int, distance: Int)(
-    implicit tag: ClassTag[T]
-  ): this.type = {
+  final override def moveRangeLeft(fromIndex: Int, toIndex: Int, distance: Int): this.type = {
     if (distance > 0 && fromIndex >= 0 && toIndex > fromIndex && fromIndex < length) {
       val from = Math.max(fromIndex, distance)
       val gap = from - fromIndex
       val to = Math.min(toIndex, length)
-      val backup = new Array[T](distance)
+      val backup = ArrayOps.copyOf(ArrayOps.copyOf(underlyingUnsafe, 0), distance)
       val relocating = this.slice(Math.max(0, fromIndex - distance), fromIndex)
       relocating.copyToArray(backup.length - relocating.length, backup)
       shiftRight(0, gap)
@@ -200,11 +194,12 @@ trait ArrayBufferLike[T] extends Buffer[T] {
     *   then the later overwrites the former.
     * @group Swap
     */
-  final override def swapRange(first: Int, second: Int, swapLength: Int)(implicit tag: ClassTag[T]): this.type = {
+  final override def swapRange(first: Int, second: Int, swapLength: Int): this.type = {
     if (swapLength > 0 && first >= 0 && second >= 0 && first != second && first < length && second < length
         && first + swapLength >= 0 && second + swapLength >= 0) {
       val backupLength = Math.min(swapLength, length - Math.max(first, second))
-      val backup = slice(second, second + backupLength).toArray
+      val backup = ArrayOps.copyOf(underlyingUnsafe, backupLength)
+      slice(second, second + backupLength).copyToArray(0, backup)
       java.lang.System.arraycopy(underlyingUnsafe, first, underlyingUnsafe, second, backupLength)
       java.lang.System.arraycopy(backup, 0, underlyingUnsafe, first, backupLength)
     }

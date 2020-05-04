@@ -210,6 +210,14 @@ trait ArraySliceLike[T] extends Slice[T] {
     newArray
   }
 
+  /** Returns a minimal copy of an underlying array, trimmed to the actual range.
+    * @group Read */
+  final def asArray: Array[T] = {
+    val newArray = ArrayOps.copyOf(array, length)
+    java.lang.System.arraycopy(array, fromIndex, newArray, 0, length)
+    newArray
+  }
+
   /** Dumps content to the array, starting from an index.
     * @group Read*/
   @`inline` final override def copyToArray[T1 >: T](targetIndex: Int, targetArray: Array[T1]): Array[T1] = {
