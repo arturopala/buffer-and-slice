@@ -127,11 +127,11 @@ class ByteSliceSpec extends AnyWordSpecCompat {
       ByteSlice().slice(-5, 10) shouldBe ByteSlice()
       ByteSlice(1, 2, 3).slice(-5, 10) shouldBe ByteSlice(1, 2, 3)
       ByteSlice(1, 2, 3, 4, 5, 6, 2, 0, 1).slice(-5, 5) shouldBe ByteSlice(1, 2, 3, 4, 5)
-      ByteSlice.of(Array(1, 2, 3, 4, 5, 6, 2, 0, 1), 2, 2).slice(-5, 5) shouldBe ByteSlice(3, 4, 5, 6, 2)
+      ByteSlice.of(Array(1, 2, 3, 4, 5, 6, 2, 0, 1), 2, 8).slice(-5, 5) shouldBe ByteSlice(3, 4, 5, 6, 2)
       ByteSlice.of(Array(1, 2, 3, 4, 5, 6, 2, 0, 1), 2, 5).slice(5, 8) shouldBe ByteSlice()
       ByteSlice.of(Array(1, 2, 3, 4, 5, 6, 2, 0, 1), 5, 5).slice(1, 2) shouldBe ByteSlice()
       ByteSlice.of(Array(1, 2, 3, 4, 5, 6, 2, 0, 1), 3, 5).slice(1, 2) shouldBe ByteSlice(5)
-      ByteSlice.of(Array(1, 2, 3, 4, 5, 6, 2, 0, 1), 0, 9).slice(2, 3) shouldBe ByteSlice(8, 9)
+      ByteSlice.of(Array(1, 2, 3, 4, 5, 6, 2, 0, 1), 0, 9).slice(2, 3) shouldBe ByteSlice(3)
     }
 
     "have a drop" in {

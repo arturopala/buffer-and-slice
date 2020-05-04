@@ -274,7 +274,7 @@ abstract class MappedArraySlice[T] private (fromIndex: Int, toIndex: Int) extend
   final override def hashCode(): Int = {
     var hash = 17
     hash = hash * 31 + this.length
-    for (i <- fromIndex to toIndex by (length / 7)) {
+    for (i <- fromIndex until toIndex by Math.max(1, length / 7)) {
       hash = hash * 31 + array(i).hashCode()
     }
     hash

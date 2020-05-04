@@ -117,7 +117,7 @@ IntBuffer(Array(0,1,2,3))
 // res11: IntBuffer = [0,1,2,3]
 
 IntBuffer(0,1,2,3).toSlice
-// res12: IntSlice = <function1>
+// res12: IntSlice = Slice(0,1,2,3)
 ```
 
 - Modifying the content:
@@ -244,22 +244,22 @@ Buffer(1,2,3).reset
 
 ```scala
 Buffer(1,2,3,4,5,6,7,8,9).toSlice
-// res49: Slice[Int] = <function1>
+// res49: Slice[Int] = Slice(1,2,3,4,5,6,7,8,9)
 
 Buffer(1,2,3,4,5,6,7,8,9).slice(2,6)
-// res50: Slice[Int] = <function1>
+// res50: Slice[Int] = Slice(3,4,5,6)
 
 Buffer(1,2,3,4,5,6,7,8,9).take(3)
-// res51: Slice[Int] = <function1>
+// res51: Slice[Int] = Slice(1,2,3)
 
 Buffer(1,2,3,4,5,6,7,8,9).drop(3)
-// res52: Slice[Int] = <function1>
+// res52: Slice[Int] = Slice(4,5,6,7,8,9)
 
 Buffer(1,2,3,4,5,6,7,8,9).takeRight(3)
-// res53: Slice[Int] = <function1>
+// res53: Slice[Int] = Slice(7,8,9)
 
 Buffer(1,2,3,4,5,6,7,8,9).dropRight(3)
-// res54: Slice[Int] = <function1>
+// res54: Slice[Int] = Slice(1,2,3,4,5,6)
 ```
 
 Slice
@@ -285,7 +285,7 @@ val array = Array("a","b","c","d","ee","f","g","h","i","j")
 // )
 
 val slice = Slice.of(array)
-// slice: Slice[String] = <function1>
+// slice: Slice[String] = Slice(a,b,c,d,ee,f,g,h,i,j)
 
 slice.apply(0)
 // res55: String = "a"
@@ -294,28 +294,28 @@ slice.apply(5)
 // res56: String = "f"
 
 slice.update(4,"a")
-// res57: Slice[String] = <function1>
+// res57: Slice[String] = Slice(a,b,c,d,a,f,g,h,i,j)
 
 slice.update(5,"b")
-// res58: Slice[String] = <function1>
+// res58: Slice[String] = Slice(a,b,c,d,ee,b,g,h,i,j)
 
 slice.slice(1,5)
-// res59: Slice[String] = <function1>
+// res59: Slice[String] = Slice(b,c,d,ee)
 
 slice.take(5)
-// res60: Slice[String] = <function1>
+// res60: Slice[String] = Slice(a,b,c,d,ee)
 
 slice.drop(5)
-// res61: Slice[String] = <function1>
+// res61: Slice[String] = Slice(f,g,h,i,j)
 
 slice.takeRight(5)
-// res62: Slice[String] = <function1>
+// res62: Slice[String] = Slice(f,g,h,i,j)
 
 slice.dropRight(5)
-// res63: Slice[String] = <function1>
+// res63: Slice[String] = Slice(a,b,c,d,ee)
 
 slice.slice(2,6)
-// res64: Slice[String] = <function1>
+// res64: Slice[String] = Slice(c,d,ee,f)
 
 slice.head
 // res65: String = "a"
@@ -324,7 +324,7 @@ slice.headOption
 // res66: Option[String] = Some("a")
 
 slice.init
-// res67: Slice[String] = <function1>
+// res67: Slice[String] = Slice(a,b,c,d,ee,f,g,h,i)
 
 slice.last
 // res68: String = "j"
@@ -453,7 +453,7 @@ slice.copyToArray(3, new Array[String](15))
 slice.toBuffer
 // res82: Buffer[String] = [a,b,c,d,ee,f,g,h,i,j]
 
-slice.detach
-// res83: Slice[String] = <function1>
+val slice3 = slice.detach
+// slice3: Slice[String] = Slice(a,b,c,d,ee,f,g,h,i,j)
 ```
 

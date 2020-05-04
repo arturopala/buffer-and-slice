@@ -239,4 +239,35 @@ trait ArraySliceLike[T] extends Slice[T] {
     override def toString(): String = ArraySliceLike.this.toString
   }
 
+  final override def toString: String =
+    iterator.take(Math.min(20, length)).mkString("Slice(", ",", if (length > 20) ", ... )" else ")")
+
+  final override def equals(obj: Any): Boolean = obj match {
+    case other: Slice[T] =>
+      this.length == other.length &&
+        sameElements(this.iterator, other.iterator)
+
+    case _ => false
+  }
+
+  /** Checks if two iterators would return same elements. */
+  private def sameElements(iterator1: Iterator[T], iterator2: Iterator[T]): Boolean = {
+    var result: Boolean = true
+    while (result && iterator1.hasNext && iterator2.hasNext) {
+      val t1 = iterator1.next()
+      val t2 = iterator2.next()
+      result = result && t1 == t2
+    }
+    result
+  }
+
+  final override def hashCode(): Int = {
+    var hash = 17
+    hash = hash * 31 + this.length
+    for (i <- fromIndex until toIndex by Math.max(1, length / 7)) {
+      hash = hash * 31 + array(i).hashCode()
+    }
+    hash
+  }
+
 }

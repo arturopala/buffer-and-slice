@@ -279,6 +279,6 @@ slice.copyToArray(3, new Array[String](15))
 
 slice.toBuffer
 
-slice.detach
+val slice3 = slice.detach
 ```
 
