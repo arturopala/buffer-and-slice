@@ -28,6 +28,9 @@ lazy val sharedSettings = Seq(
   git.remoteRepo := "git@github.com:arturopala/buffer-and-slice.git",
   testFrameworks += new TestFramework("munit.Framework"),
   logBuffered := false,
+  scalacOptions in (Compile, doc) ++= Seq(
+    "-groups"
+  ),
   parallelExecution in Test := false,
   libraryDependencies += "org.scalameta" %%% "munit" % mUnitVersion % Test
 )
