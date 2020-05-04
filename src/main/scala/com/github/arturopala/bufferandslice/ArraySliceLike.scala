@@ -23,23 +23,30 @@ import scala.reflect.ClassTag
 
 trait ArraySliceLike[T] extends Slice[T] {
 
+  /** @group Internal */
   protected def fromIndex: Int
+
+  /** @group Internal */
   protected def toIndex: Int
+
+  /** @group Internal */
   protected def array: Array[T]
+
+  /** @group Internal */
   protected def create(fromIndex: Int, toIndex: Int, array: Array[T]): Slice[T]
 
   /** Sliced range length. */
-  @`inline` final val length: Int = toIndex - fromIndex
+  @`inline` final override val length: Int = toIndex - fromIndex
 
   /** Returns value at the given index withing the range. */
-  final def apply(index: Int): T = {
+  final override def apply(index: Int): T = {
     if (index < 0 || index >= length)
       throw new IndexOutOfBoundsException(s"Expected an `apply` index in the interval [0,$length), but was $index.")
     array.apply(fromIndex + index)
   }
 
   /** Creates a copy of the slice with modified value. */
-  final def update[T1 >: T: ClassTag](index: Int, value: T1): Slice[T1] = {
+  final override def update[T1 >: T: ClassTag](index: Int, value: T1): Slice[T1] = {
     if (index < 0 || index >= length)
       throw new IndexOutOfBoundsException(s"Expected an `update` index in the interval [0,$length), but was $index.")
     val modified = toArray[T1]
@@ -49,11 +56,11 @@ trait ArraySliceLike[T] extends Slice[T] {
 
   /** Lazily composes mapping function and returns new [[MappedArraySlice]].
     * Does not modify nor copy underlying array. */
-  @`inline` final def map[K](f: T => K): Slice[K] =
+  @`inline` final override def map[K](f: T => K): Slice[K] =
     MappedArraySlice.lazyMapped[K, T](fromIndex, toIndex, array, f)
 
   /** Counts values fulfilling the predicate. */
-  final def count(pred: T => Boolean): Int = {
+  final override def count(pred: T => Boolean): Int = {
     var a = 0
     var i = fromIndex
     while (i < toIndex) {
@@ -64,30 +71,30 @@ trait ArraySliceLike[T] extends Slice[T] {
   }
 
   /** Returns true if Slice has values, otherwise false. */
-  @`inline` final def isEmpty: Boolean = length <= 0
+  @`inline` final override def isEmpty: Boolean = length <= 0
 
   /** Returns first value in the Slice. */
-  final def head: T =
+  final override def head: T =
     if (length > 0) array(fromIndex)
     else throw new NoSuchElementException
 
   /** Returns the last value in the Slice. */
-  final def last: T =
+  final override def last: T =
     if (length > 0) array(toIndex - 1)
     else throw new NoSuchElementException
 
   /** Returns first value in the Slice. */
-  final def headOption: Option[T] =
+  final override def headOption: Option[T] =
     if (length > 0) Some(array(fromIndex))
     else None
 
   /** Returns the last value in the Slice. */
-  final def lastOption: Option[T] =
+  final override def lastOption: Option[T] =
     if (length > 0) Some(array(toIndex - 1))
     else None
 
   /** Lazily narrows Slice to provided range. */
-  final def slice(from: Int, to: Int): Slice[T] = {
+  final override def slice(from: Int, to: Int): Slice[T] = {
     val t = fit(to, length)
     val f = fit(from, t)
     if (f == 0 && t == length) this
@@ -98,24 +105,24 @@ trait ArraySliceLike[T] extends Slice[T] {
     Math.min(Math.max(0, value), upper)
 
   /** Returns the Slice without first value. */
-  @`inline` final def tail: Slice[T] = drop(1)
+  @`inline` final override def tail: Slice[T] = drop(1)
 
   /** Returns the Slice without last value. */
-  @`inline` final def init: Slice[T] = dropRight(1)
+  @`inline` final override def init: Slice[T] = dropRight(1)
 
   /** Lazily narrows Slice to first N items. */
-  @`inline` final def take(n: Int): Slice[T] = slice(0, n)
+  @`inline` final override def take(n: Int): Slice[T] = slice(0, n)
 
   /** Lazily narrows Slice to last N items. */
-  @`inline` final def takeRight(n: Int): Slice[T] = slice(length - n, length)
+  @`inline` final override def takeRight(n: Int): Slice[T] = slice(length - n, length)
 
   /** Lazily narrows Slice to exclude first N items. */
-  @`inline` final def drop(n: Int): Slice[T] = slice(n, length)
+  @`inline` final override def drop(n: Int): Slice[T] = slice(n, length)
 
   /** Lazily narrows Slice to exclude last N items. */
-  @`inline` final def dropRight(n: Int): Slice[T] = slice(0, length - n)
+  @`inline` final override def dropRight(n: Int): Slice[T] = slice(0, length - n)
 
-  /** Returns iterator over Slice values. */
+  /** Returns iterator over slice's values. */
   final def iterator: Iterator[T] = new Iterator[T] {
 
     var i: Int = fromIndex
@@ -129,8 +136,34 @@ trait ArraySliceLike[T] extends Slice[T] {
     }
   }
 
-  /** Returns iterator over Slice values in the reverse order. */
-  final def reverseIterator: Iterator[T] = new Iterator[T] {
+  /** Returns iterator over slice's values fulfilling the predicate. */
+  final override def iterator(pred: T => Boolean): Iterator[T] = new Iterator[T] {
+
+    var i: Int = fromIndex
+
+    seekNext
+
+    def hasNext: Boolean = i < toIndex
+
+    def next(): T = {
+      val value = array(i)
+      i = i + 1
+      seekNext
+      value
+    }
+
+    def seekNext: Unit =
+      if (i < toIndex) {
+        var v = array(i)
+        while (!pred(v) && i < toIndex) {
+          i = i + 1
+          if (i < toIndex) v = array(i)
+        }
+      } else ()
+  }
+
+  /** Returns iterator over slice's values in the reverse order. */
+  final override def reverseIterator: Iterator[T] = new Iterator[T] {
 
     var i: Int = toIndex - 1
 
@@ -143,8 +176,8 @@ trait ArraySliceLike[T] extends Slice[T] {
     }
   }
 
-  /** Returns iterator over Slice values, fulfilling the predicate, in the reverse order. */
-  final def reverseIterator(pred: T => Boolean): Iterator[T] = new Iterator[T] {
+  /** Returns iterator over slice's values, fulfilling the predicate, in the reverse order. */
+  final override def reverseIterator(pred: T => Boolean): Iterator[T] = new Iterator[T] {
 
     var i: Int = toIndex - 1
 
@@ -171,30 +204,37 @@ trait ArraySliceLike[T] extends Slice[T] {
 
   /** Returns a minimal copy of an underlying array, trimmed to the actual range.
     * @group Read */
-  final def toArray[T1 >: T: ClassTag]: Array[T1] = {
+  final override def toArray[T1 >: T: ClassTag]: Array[T1] = {
     val newArray = new Array[T1](length)
     java.lang.System.arraycopy(array, fromIndex, newArray, 0, length)
     newArray
   }
 
+  /** Detaches a slice creating a trimmed copy of an underlying data. */
+  final override def detach(implicit tag: ClassTag[T]): Slice[T] = Slice.of(toArray[T])
+
   /** Dumps content to the array, starting from an index.
     * @group Read*/
-  @`inline` final def copyToArray[T1 >: T](targetIndex: Int, targetArray: Array[T1]): Array[T1] = {
+  @`inline` final override def copyToArray[T1 >: T](targetIndex: Int, targetArray: Array[T1]): Array[T1] = {
     java.lang.System.arraycopy(array, fromIndex, targetArray, targetIndex, length)
     targetArray
   }
 
   /** Returns buffer with a copy of this Slice.
     * @group Read */
-  @`inline` final def toBuffer(implicit tag: ClassTag[T]): Buffer[T] = new ArrayBuffer(toArray)
+  @`inline` final override def toBuffer(implicit tag: ClassTag[T]): Buffer[T] = new ArrayBuffer(toArray)
 
   /** Returns new list of Slice values.
     * @group Read */
-  @`inline` final def toList: List[T] = iterator.toList
+  @`inline` final override def toList: List[T] = iterator.toList
+
+  /** Returns new sequence of Slice values.
+    * @group Read */
+  @`inline` final override def toSeq: Seq[T] = iterator.toIndexedSeq
 
   /** Returns new iterable of Slice values.
     * @group Read */
-  final def asIterable: Iterable[T] = new AbstractIterable[T] {
+  final override def asIterable: Iterable[T] = new AbstractIterable[T] {
     override def iterator: Iterator[T] = ArraySliceLike.this.iterator
     override def toString(): String = ArraySliceLike.this.toString
   }

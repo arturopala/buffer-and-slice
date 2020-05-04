@@ -19,23 +19,29 @@ package com.github.arturopala.bufferandslice
 import scala.reflect.ClassTag
 
 /** Mutable indexed buffer abstraction.
+  * All modifications happens in-place.
   *
   * @groupprio Abstract 0
   * @groupprio Properties 1
   * @groupprio Update 2
   * @groupprio Append 3
-  * @groupprio Insert 4
-  * @groupprio Replace 5
-  * @groupprio Remove 6
-  * @groupprio Shift 7
-  * @groupprio Stack Ops 8
-  * @groupprio Limit 9
-  * @groupprio Slice 10
+  * @groupprio Stack Ops 4
+  * @groupprio Insert 5
+  * @groupprio Replace 6
+  * @groupprio Remove 7
+  * @groupprio Shift 8
+  * @groupprio Move 9
+  * @groupprio Swap 10
+  * @groupprio Limit 11
+  * @groupprio Slice 12
   */
 trait Buffer[T] extends (Int => T) {
 
   /** Index of the last accessible value in the buffer, or -1 if empty. */
   private var topIndex: Int = -1
+
+  protected def uncheckedApply(index: Int): T
+  protected def uncheckedUpdate(index: Int, value: T): Unit
 
   /** Returns value at the provided index.
     * @group Abstract */
@@ -66,7 +72,7 @@ trait Buffer[T] extends (Int => T) {
     * @group Update */
   final def modify(index: Int, map: T => T): this.type = {
     if (index >= 0 && index < length) {
-      update(index, map(apply(index)))
+      uncheckedUpdate(index, map(uncheckedApply(index)))
       topIndex = Math.max(index, topIndex)
     }
     this
@@ -85,7 +91,7 @@ trait Buffer[T] extends (Int => T) {
   final def modifyAll(map: T => T): this.type = {
     var i = 0
     while (i < length) {
-      update(i, map(apply(i)))
+      uncheckedUpdate(i, map(uncheckedApply(i)))
       i = i + 1
     }
     this
@@ -99,8 +105,8 @@ trait Buffer[T] extends (Int => T) {
   final def modifyAllWhen(map: T => T, pred: T => Boolean): this.type = {
     var i = 0
     while (i < length) {
-      val v = apply(i)
-      if (pred(v)) update(i, map(v))
+      val v = uncheckedApply(i)
+      if (pred(v)) uncheckedUpdate(i, map(v))
       i = i + 1
     }
     this
@@ -118,7 +124,7 @@ trait Buffer[T] extends (Int => T) {
       var i = Math.max(0, fromIndex)
       val limit = Math.min(length, toIndex)
       while (i < limit) {
-        update(i, map(apply(i)))
+        uncheckedUpdate(i, map(uncheckedApply(i)))
         i = i + 1
       }
       topIndex = Math.max(topIndex, i - 1)
@@ -140,8 +146,8 @@ trait Buffer[T] extends (Int => T) {
       var i = Math.max(0, fromIndex)
       val limit = Math.min(length, toIndex)
       while (i < limit) {
-        val v = apply(i)
-        if (pred(v)) update(i, map(v))
+        val v = uncheckedApply(i)
+        if (pred(v)) uncheckedUpdate(i, map(v))
         i = i + 1
       }
       topIndex = Math.max(topIndex, i - 1)
@@ -152,11 +158,11 @@ trait Buffer[T] extends (Int => T) {
 
   /** Returns value at the topIndex.
     * @group Properties */
-  final def head: T = apply(topIndex)
+  @`inline` final def head: T = apply(topIndex)
 
   /** Length of the accessible part of the buffer.
     * @group Properties */
-  final def length: Int = topIndex + 1
+  @`inline` final def length: Int = topIndex + 1
 
   /** Is the accessible part of the buffer empty?
     * @group Properties */
@@ -168,13 +174,22 @@ trait Buffer[T] extends (Int => T) {
 
   /** Returns topIndex value.
     * @group Limit */
-  final def top: Int = topIndex
+  @`inline` final def top: Int = topIndex
 
   /** Sets topIndex value.
     * @group Limit */
   final def set(index: Int): this.type = {
     ensureIndex(index)
     topIndex = Math.max(-1, index)
+    this
+  }
+
+  /** Trims the buffer, if needed, to be have at most the `size`.
+    * @group Limit */
+  final def trim(size: Int): this.type = {
+    if (size >= 0 && size < length) {
+      topIndex = size - 1
+    }
     this
   }
 
@@ -197,7 +212,7 @@ trait Buffer[T] extends (Int => T) {
   }
 
   /** Resets buffer, sets topIndex to -1.
-    * Does not clear existing values.
+    * - Does not clear existing values.
     * @return previous topIndex
     * @group Limit */
   final def reset: Int = {
@@ -243,19 +258,19 @@ trait Buffer[T] extends (Int => T) {
 
   /** Shift current content to the right starting from `index` at the `insertLength` distance,
     * and copies array chunk into the gap.
-    * Sets topIndex to be at least at the end of the new chunk of values.
+    * - Sets topIndex to be at least at the end of the new chunk of values.
     * @group Insert */
   def insertArray(index: Int, sourceIndex: Int, insertLength: Int, sourceArray: Array[T]): this.type
 
   /** Shift current content to the right starting from `index` at the `slice.length` distance,
     * and copies slice into the gap.
-    * Sets topIndex to be at least at the end of the new chunk of values.
+    * - Sets topIndex to be at least at the end of the new chunk of values.
     * @group Insert */
   def insertSlice(index: Int, slice: Slice[T]): this.type
 
   /** Shift current content to the right starting from `index`at the `insertLength` distance,
     * iterates over the source indexes and copies values into the gap.
-    * Sets topIndex to be at least at the end of the new chunk of values.
+    * - Sets topIndex to be at least at the end of the new chunk of values.
     * @group Insert */
   final def insertValues(index: Int, sourceIndex: Int, insertLength: Int, source: Int => T): this.type = {
     if (index >= 0 && sourceIndex >= 0) {
@@ -263,7 +278,7 @@ trait Buffer[T] extends (Int => T) {
         shiftRight(index, insertLength)
         var i = 0
         while (i < insertLength) {
-          update(index + i, source(sourceIndex + i))
+          uncheckedUpdate(index + i, source(sourceIndex + i))
           i = i + 1
         }
       }
@@ -274,7 +289,7 @@ trait Buffer[T] extends (Int => T) {
 
   /** Shift current content to the right starting from `index`at the `insertLength` distance,
     * and copies iterated values into the gap.
-    * Sets topIndex to be at least at the end of the new chunk of values.
+    * - Sets topIndex to be at least at the end of the new chunk of values.
     * @group Insert */
   final def insertFromIterator(index: Int, insertLength: Int, iterator: Iterator[T]): this.type = {
     if (index >= 0) {
@@ -282,7 +297,7 @@ trait Buffer[T] extends (Int => T) {
         shiftRight(index, insertLength)
         var i = 0
         while (i < insertLength && iterator.hasNext) {
-          update(index + i, iterator.next())
+          uncheckedUpdate(index + i, iterator.next())
           i = i + 1
         }
       }
@@ -309,7 +324,7 @@ trait Buffer[T] extends (Int => T) {
         ensureIndex(index + replaceLength)
         var i = 0
         while (i < replaceLength) {
-          update(index + i, source(sourceIndex + i))
+          uncheckedUpdate(index + i, source(sourceIndex + i))
           i = i + 1
         }
       }
@@ -326,7 +341,7 @@ trait Buffer[T] extends (Int => T) {
         ensureIndex(index + replaceLength)
         var i = 0
         while (i < replaceLength && iterator.hasNext) {
-          update(index + i, iterator.next())
+          uncheckedUpdate(index + i, iterator.next())
           i = i + 1
         }
       }
@@ -345,26 +360,70 @@ trait Buffer[T] extends (Int => T) {
   @`inline` final def removeRange(fromIndex: Int, toIndex: Int): this.type =
     shiftLeft(toIndex, toIndex - fromIndex)
 
-  /** Moves values [index, length) right to [index+distance, length + distance).
+  /** Moves values in [index, length) right to [index+distance, length + distance).
     * Effectively creates a new range [index, index+distance).
-    * Ignores negative distance.
-    * Does not clear existing values inside [index, index+distance).
-    * Moves topIndex if affected.
+    * - Ignores negative distance.
+    * - Does not clear existing values inside [index, index+distance).
+    * - Moves topIndex if affected.
     * @group Shift */
   def shiftRight(index: Int, distance: Int): this.type
 
-  /** Moves values [index, length) left to [index-distance, length - distance).
+  /** Moves values in [index, length) left to [index-distance, length - distance).
     * Effectively removes range (index-distance, index].
-    * Ignores negative distance.
-    * Moves topIndex if affected.
+    * - Ignores negative distance.
+    * - Moves topIndex if affected.
     * @group Shift */
   def shiftLeft(index: Int, distance: Int): this.type
+
+  /** Moves values in [fromIndex,toIndex) to the right at a distance,
+    * to become [fromIndex + distance, toIndex + distance),
+    * and moves left any existing values in [toIndex, toIndex + distance)
+    * to become [fromIndex, fromIndex + distance).
+    * - Ignores negative distance.
+    * - Does nothing if fromIndex > topIndex.
+    * - Moves topIndex if affected.
+    * @group Move
+    * */
+  def moveRangeRight(fromIndex: Int, toIndex: Int, distance: Int)(implicit tag: ClassTag[T]): this.type
+
+  /** Moves values in [fromIndex,toIndex) to the left at a distance,
+    * to become [fromIndex - distance, toIndex - distance),
+    * and moves right any existing values in [fromIndex - distance, fromIndex)
+    * to become [toIndex, toIndex + distance).
+    * - Ignores negative distance.
+    * - Does nothing if fromIndex > topIndex.
+    * - Moves topIndex if affected.
+    * @group Move
+    * */
+  def moveRangeLeft(fromIndex: Int, toIndex: Int, distance: Int)(implicit tag: ClassTag[T]): this.type
+
+  /** Swap two values at the provided indexes.
+    * Value at `first` becomes value at `second`, and vice versa.
+    * - Does nothing if any index falls outside [0,length) or if indexes are equal.
+    * @group Swap
+    */
+  final def swap(first: Int, second: Int): this.type = {
+    if (first >= 0 && second >= 0 && first != second && first < length && second < length) {
+      val v = uncheckedApply(first)
+      uncheckedUpdate(first, uncheckedApply(second))
+      uncheckedUpdate(second, v)
+    }
+    this
+  }
+
+  /** Swap values in range  [first, first + swapLength) with values in range [second, second + swapLength)
+    * - Does nothing if any index falls outside [0,length) or if indexes are equal.
+    *  - if [first, first + swapLength) overlaps with [second, second + swapLength)
+    *    then the later overwrites the former.
+    * @group Swap
+    */
+  def swapRange(first: Int, second: Int, swapLength: Int)(implicit tag: ClassTag[T]): this.type
 
   /** Replace value at the topIndex.
     * @group Stack Ops */
   final def store(value: T): this.type = {
     if (topIndex < 0) topIndex = 0
-    update(topIndex, value)
+    uncheckedUpdate(topIndex, value)
     this
   }
 

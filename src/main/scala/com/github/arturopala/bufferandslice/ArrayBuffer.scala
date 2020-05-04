@@ -24,7 +24,7 @@ final class ArrayBuffer[T](initialArray: Array[T]) extends ArrayBufferLike[T] {
 
   /** Very unsafe access to the underlying array, if you really need it.
     * @group Unsafe */
-  override def underlyingUnsafe: Array[T] = _array
+  @`inline` override def underlyingUnsafe: Array[T] = _array
 
   set(initialArray.length - 1)
 
@@ -38,7 +38,8 @@ final class ArrayBuffer[T](initialArray: Array[T]) extends ArrayBufferLike[T] {
 
   override protected def ensureIndex(index: Int): Unit =
     if (index >= _array.length) {
-      _array = ArrayOps.copyOf(_array, Math.max(_array.length * 2, index + 1))
+      val upswing = Math.min(_array.length, 1024 * 1024)
+      _array = ArrayOps.copyOf(_array, Math.max(_array.length + upswing, index + 1))
     }
 
   /** Returns a copy of the underlying array trimmed to length. */

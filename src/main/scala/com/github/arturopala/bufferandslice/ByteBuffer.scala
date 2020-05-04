@@ -23,7 +23,7 @@ final class ByteBuffer(initialSize: Int = 8) extends ArrayBufferLike[Byte] {
 
   /** Very unsafe access to the underlying array, if you really need it.
     * @group Unsafe */
-  override def underlyingUnsafe: Array[Byte] = _array
+  @`inline` override def underlyingUnsafe: Array[Byte] = _array
 
   /** Returns value at the given index or 0 if out of scope. */
   @`inline` def apply(index: Int): Byte =
@@ -32,7 +32,8 @@ final class ByteBuffer(initialSize: Int = 8) extends ArrayBufferLike[Byte] {
 
   override protected def ensureIndex(index: Int): Unit =
     if (index >= _array.length) {
-      val newArray: Array[Byte] = new Array(Math.max(_array.length * 2, index + 1))
+      val upswing = Math.min(_array.length, 1024 * 1024)
+      val newArray: Array[Byte] = new Array(Math.max(_array.length + upswing, index + 1))
       java.lang.System.arraycopy(_array, 0, newArray, 0, _array.length)
       _array = newArray
     }

@@ -43,6 +43,14 @@ class ArraySliceSpec extends AnyWordSpecCompat {
       ArraySlice.of(Array("a", "b", "c", "d", "e"), 2, 3).iterator.toList shouldBe List("c")
     }
 
+    "iterate with filter over slice of values" in {
+      val f = Set("b", "d", "e").contains _
+      ArraySlice.of(Array("a", "b", "c", "d", "e")).iterator(f).toList shouldBe List("b", "d", "e")
+      ArraySlice.of(Array("a", "b", "c", "d", "e"), 1, 5).iterator(f).toList shouldBe List("b", "d", "e")
+      ArraySlice.of(Array("a", "b", "c", "d", "e"), 1, 4).iterator(f).toList shouldBe List("b", "d")
+      ArraySlice.of(Array("a", "b", "c", "d", "e"), 2, 3).iterator(f).toList shouldBe List()
+    }
+
     "reverse-iterate over slice of values" in {
       Slice
         .of(Array("a", "b", "c", "d", "e"))
@@ -242,6 +250,20 @@ class ArraySliceSpec extends AnyWordSpecCompat {
         .copyToArray(0, new Array[String](10)) shouldBe Array("a", "b", "c", null, null, null, null, null, null, null)
       Slice("a", "b", "c")
         .copyToArray(5, new Array[String](10)) shouldBe Array(null, null, null, null, null, "a", "b", "c", null, null)
+    }
+
+    "have a detach" in {
+      val array = Array(1, 2, 3, 4, 5, 6)
+      val slice = ArraySlice.of(array)
+      slice(1) shouldBe 2
+      array(1) = 3
+      slice(1) shouldBe 3
+      val detached = slice.detach
+      slice(1) shouldBe 3
+      detached(1) shouldBe 3
+      array(1) = 7
+      slice(1) shouldBe 7
+      detached(1) shouldBe 3
     }
   }
 

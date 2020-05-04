@@ -78,22 +78,18 @@ class ArrayBufferSpec extends AnyWordSpecCompat {
 
     "remove value at an index" in {
       val buffer = new ArrayBuffer(Array("a", "b", "c"))
-      buffer.remove(1)
-      buffer.toArray shouldBe Array("a", "c")
-      buffer.remove(0)
-      buffer.toArray shouldBe Array("c")
-      buffer.remove(0)
-      buffer.toArray shouldBe Array.empty[String]
+      buffer.remove(3).toArray shouldBe Array("a", "b", "c")
+      buffer.remove(1).toArray shouldBe Array("a", "c")
+      buffer.remove(0).toArray shouldBe Array("c")
+      buffer.remove(0).toArray shouldBe Array.empty[String]
     }
 
     "remove values in the range" in {
       val buffer = new ArrayBuffer(Array("a", "b", "c", "e", "f", "g", "h"))
-      buffer.removeRange(1, 5)
-      buffer.toArray shouldBe Array("a", "g", "h")
-      buffer.removeRange(0, 2)
-      buffer.toArray shouldBe Array("h")
-      buffer.removeRange(0, 2)
-      buffer.toArray shouldBe Array.empty[String]
+      buffer.removeRange(7, 15).toArray shouldBe Array("a", "b", "c", "e", "f", "g", "h")
+      buffer.removeRange(1, 5).toArray shouldBe Array("a", "g", "h")
+      buffer.removeRange(0, 2).toArray shouldBe Array("h")
+      buffer.removeRange(0, 2).toArray shouldBe Array.empty[String]
     }
 
     "shift values right" in {
@@ -137,6 +133,32 @@ class ArrayBufferSpec extends AnyWordSpecCompat {
       val buffer2 = new ArrayBuffer(Array.empty[String])
       buffer2.shiftLeft(0, 10)
       buffer2.length shouldBe 0
+    }
+
+    "move values in range to the right at a distance" in {
+      val buffer = new ArrayBuffer(Array("a", "b", "c", "d", "e", "f", "g", "h"))
+      buffer.moveRangeRight(2, 5, 2).toArray shouldBe Array("a", "b", "f", "g", "c", "d", "e", "h")
+      buffer.moveRangeRight(0, 3, 3).toArray shouldBe Array("g", "c", "d", "a", "b", "f", "e", "h")
+      buffer.moveRangeRight(1, 7, 2).toArray shouldBe Array("g", "h", null, "c", "d", "a", "b", "f", "e")
+      buffer.moveRangeRight(15, 78, 25).toArray shouldBe Array("g", "h", null, "c", "d", "a", "b", "f", "e")
+      buffer.moveRangeRight(1, 3, 5).toArray shouldBe Array("g", "c", "d", "a", "b", "f", "h", null, "e")
+      buffer
+        .moveRangeRight(1, 4, 10)
+        .toArray shouldBe Array("g", "b", "f", "h", null, "e", null, null, null, null, null, "c", "d", "a")
+    }
+
+    "move values in range to the right at a distance" in {
+      val buffer = new ArrayBuffer(Array("a", "b", "c", "d", "e", "f", "g", "h"))
+      buffer.moveRangeLeft(3, 5, 2).toArray shouldBe Array("a", "d", "e", "b", "c", "f", "g", "h")
+      buffer.moveRangeLeft(6, 10, 4).toArray shouldBe Array("a", "d", "g", "h", "e", "b", "c", "f")
+      buffer.moveRangeLeft(2, 5, 4).toArray shouldBe Array("g", "h", "e", null, null, "a", "d", "b", "c", "f")
+      buffer
+        .moveRangeLeft(0, 5, 2)
+        .toArray shouldBe Array("g", "h", "e", null, null, null, null, "a", "d", "b", "c", "f")
+      buffer
+        .moveRangeLeft(7, 12, 4)
+        .toArray shouldBe Array("g", "h", "e", "a", "d", "b", "c", "f", null, null, null, null)
+      buffer.trim(8).toArray shouldBe Array("g", "h", "e", "a", "d", "b", "c", "f")
     }
 
     "insert new array of values" in {
@@ -402,6 +424,27 @@ class ArrayBufferSpec extends AnyWordSpecCompat {
       buffer.top shouldBe 13
     }
 
+    "swap two values" in {
+      val buffer = new ArrayBuffer(Array("a", "b", "c"))
+      buffer.swap(2, 2).toArray shouldBe Array("a", "b", "c")
+      buffer.swap(0, 2).toArray shouldBe Array("c", "b", "a")
+      buffer.swap(0, 1).toArray shouldBe Array("b", "c", "a")
+      buffer.swap(2, 1).toArray shouldBe Array("b", "a", "c")
+      buffer.swap(2, 3).toArray shouldBe Array("b", "a", "c")
+      buffer.swap(-1, 1).toArray shouldBe Array("b", "a", "c")
+      buffer.swap(-1, -5).toArray shouldBe Array("b", "a", "c")
+    }
+
+    "swap two ranges of values" in {
+      val buffer = new ArrayBuffer(Array("a", "b", "c", "d", "e", "f", "g", "h"))
+      buffer.swapRange(0, 5, 2).toArray shouldBe Array("f", "g", "c", "d", "e", "a", "b", "h")
+      buffer.swapRange(0, 3, 5).toArray shouldBe Array("d", "e", "a", "b", "h", "c", "d", "e")
+      buffer.swapRange(-2, 3, 5).toArray shouldBe Array("d", "e", "a", "b", "h", "c", "d", "e")
+      buffer.swapRange(3, -3, 5).toArray shouldBe Array("d", "e", "a", "b", "h", "c", "d", "e")
+      buffer.swapRange(3, 3, 5).toArray shouldBe Array("d", "e", "a", "b", "h", "c", "d", "e")
+      buffer.swapRange(3, 4, 0).toArray shouldBe Array("d", "e", "a", "b", "h", "c", "d", "e")
+      buffer.swapRange(4, 1, 3).toArray shouldBe Array("d", "h", "c", "d", "e", "a", "b", "e")
+    }
   }
 
 }

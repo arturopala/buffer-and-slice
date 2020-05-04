@@ -166,6 +166,20 @@ class IntBufferSpec extends AnyWordSpecCompat {
       buffer.replaceFromSlice(4, IntSlice(0, 0, 0, 0, 0, 0, 0, 0)).toArray shouldBe Array(1, 2, 3, 4, 0, 0, 0, 0, 0, 0,
         0, 0, 3, 4, 5)
     }
+
+    "increment a value at index" in {
+      val buffer = IntBuffer(1, 2, 3, 4, 5, 6)
+      buffer.increment(3).toArray shouldBe Array(1, 2, 3, 5, 5, 6)
+      buffer.increment(1).toArray shouldBe Array(1, 3, 3, 5, 5, 6)
+      buffer.increment(5).toArray shouldBe Array(1, 3, 3, 5, 5, 7)
+    }
+
+    "decrement a value at index" in {
+      val buffer = IntBuffer(1, 2, 3, 4, 5, 6)
+      buffer.decrement(3).toArray shouldBe Array(1, 2, 3, 3, 5, 6)
+      buffer.decrement(1).toArray shouldBe Array(1, 1, 3, 3, 5, 6)
+      buffer.decrement(5).toArray shouldBe Array(1, 1, 3, 3, 5, 5)
+    }
   }
 
 }

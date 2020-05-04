@@ -15,9 +15,7 @@ Motivation
 
 Working directly with mutable arrays, even in Scala, is not always as simple as it could be. 
 While `Array` features Scala Collections API, the first reason to use arrays is to fully exploit its compactness and mutability
-for performance reasons. 
-
-I've found it reasonable to have a separate, focused set of low-overhead tools dealing with an `Array`.
+for performance reasons. I've found it reasonable to have a separate, focused set of low-overhead tools dealing with an `Array`.
 
 Design
 ---
@@ -30,7 +28,7 @@ This library provides two complementary abstractions: mutable `Buffer` and immut
 
 The usual workflow will use `Buffer` to build an array and `Slice` to share the result outside of a component/function.
 
-Both `Buffer` and `Slice` come in two variants: generic and specialized for `Int`.
+Both `Buffer` and `Slice` come in three variants: generic, and specialized for `Int` and for `Byte`.
 
 Dependencies
 ---
@@ -58,10 +56,11 @@ Lightweight operations:
 - using iterators or `toIterable`
 - making `Slice.copyToArray`
 
-Heavy operations, making a copy of an array:
+Heavier operations, making a copy of an array:
 
-- exporting (`toArray`, `toList`, `toBuffer`)
+- detaching a slice
 - updating a slice
+- exporting slice or buffer (`toArray`, `toList`, `toBuffer`)
 
 E.g. the following code makes no copy of an array:
 
@@ -84,7 +83,7 @@ Examples
 Buffer
 ---
 
-[Open in Scastie](https://scastie.scala-lang.org/arturopala/AeuggR2xTYC4lpNWLZoyug/3)
+[Open in Scastie](https://scastie.scala-lang.org/arturopala/AeuggR2xTYC4lpNWLZoyug/4)
 
 ```scala mdoc
 import com.github.arturopala.bufferandslice._
@@ -162,6 +161,14 @@ Buffer(1,2,3,4,5).modifyRangeWhen(1, 3, _ + 1, _ % 2 != 0)
 IntBuffer(1,2,3,4,5,6,7,8,9).shiftLeft(5,3)
 
 Buffer(1,2,3,4,5,6,7,8,9).shiftRight(5,3)
+
+Buffer(1,2,3,4,5,6,7,8,9).moveRangeRight(1,4,3)
+
+Buffer(1,2,3,4,5,6,7,8,9).moveRangeLeft(6,8,4)
+
+Buffer(1,2,3,4).swap(0,3)
+
+Buffer(1,2,3,4,5,6,7,8,9).swapRange(0,5,3)
 ```
 
 - Using `Buffer` as a stack:
@@ -207,7 +214,7 @@ Buffer(1,2,3,4,5,6,7,8,9).dropRight(3)
 Slice
 --
 
-[Open in Scastie](https://scastie.scala-lang.org/arturopala/jo2JWppuRRyCkYL3SjmS7A/1)
+[Open in Scastie](https://scastie.scala-lang.org/arturopala/jo2JWppuRRyCkYL3SjmS7A/2)
 
 ```scala mdoc
 import com.github.arturopala.bufferandslice._
@@ -256,16 +263,22 @@ slice.asIterable
 
 slice.iterator.toList
 
+slice.iterator("abeij".contains(_)).toList
+
 slice.reverseIterator.toList
 
 slice.reverseIterator("adgh".contains(_)).toList
 
 slice.toList
 
+slice.toSeq
+
 slice.toArray
 
 slice.copyToArray(3, new Array[String](15))
 
 slice.toBuffer
+
+slice.detach
 ```
 

@@ -232,6 +232,20 @@ class IntSliceSpec extends AnyWordSpecCompat {
       IntSlice(1, 1, 1, 1, 1).copyToArray(5, new Array[Int](10)) shouldBe Array(0, 0, 0, 0, 0, 1, 1, 1, 1, 1)
       IntSlice(3, 2, 1, 2, 3).copyToArray(0, new Array[Int](5)) shouldBe Array(3, 2, 1, 2, 3)
     }
+
+    "have a detach" in {
+      val array = Array(1, 2, 3, 4, 5, 6)
+      val slice = IntSlice.of(array)
+      slice(1) shouldBe 2
+      array(1) = 3
+      slice(1) shouldBe 3
+      val detached = slice.detach
+      slice(1) shouldBe 3
+      detached(1) shouldBe 3
+      array(1) = 7
+      slice(1) shouldBe 7
+      detached(1) shouldBe 3
+    }
   }
 
 }

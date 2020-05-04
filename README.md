@@ -15,9 +15,7 @@ Motivation
 
 Working directly with mutable arrays, even in Scala, is not always as simple as it could be. 
 While `Array` features Scala Collections API, the first reason to use arrays is to fully exploit its compactness and mutability
-for performance reasons. 
-
-I've found it reasonable to have a separate, focused set of low-overhead tools dealing with an `Array`.
+for performance reasons. I've found it reasonable to have a separate, focused set of low-overhead tools dealing with an `Array`.
 
 Design
 ---
@@ -30,7 +28,7 @@ This library provides two complementary abstractions: mutable `Buffer` and immut
 
 The usual workflow will use `Buffer` to build an array and `Slice` to share the result outside of a component/function.
 
-Both `Buffer` and `Slice` come in two variants: generic and specialized for `Int`.
+Both `Buffer` and `Slice` come in three variants: generic, and specialized for `Int` and for `Byte`.
 
 Dependencies
 ---
@@ -58,10 +56,11 @@ Lightweight operations:
 - using iterators or `toIterable`
 - making `Slice.copyToArray`
 
-Heavy operations, making a copy of an array:
+Heavier operations, making a copy of an array:
 
-- exporting (`toArray`, `toList`, `toBuffer`)
+- detaching a slice
 - updating a slice
+- exporting slice or buffer (`toArray`, `toList`, `toBuffer`)
 
 E.g. the following code makes no copy of an array:
 
@@ -84,7 +83,7 @@ Examples
 Buffer
 ---
 
-[Open in Scastie](https://scastie.scala-lang.org/arturopala/AeuggR2xTYC4lpNWLZoyug/3)
+[Open in Scastie](https://scastie.scala-lang.org/arturopala/AeuggR2xTYC4lpNWLZoyug/4)
 
 ```scala
 import com.github.arturopala.bufferandslice._
@@ -195,66 +194,78 @@ IntBuffer(1,2,3,4,5,6,7,8,9).shiftLeft(5,3)
 
 Buffer(1,2,3,4,5,6,7,8,9).shiftRight(5,3)
 // res36: Buffer[Int] = [1,2,3,4,5,6,7,8,6,7,8,9]
+
+Buffer(1,2,3,4,5,6,7,8,9).moveRangeRight(1,4,3)
+// res37: Buffer[Int] = [1,5,6,7,2,3,4,8,9]
+
+Buffer(1,2,3,4,5,6,7,8,9).moveRangeLeft(6,8,4)
+// res38: Buffer[Int] = [1,2,7,8,3,4,5,6,9]
+
+Buffer(1,2,3,4).swap(0,3)
+// res39: Buffer[Int] = [4,2,3,1]
+
+Buffer(1,2,3,4,5,6,7,8,9).swapRange(0,5,3)
+// res40: Buffer[Int] = [6,7,8,4,5,1,2,3,9]
 ```
 
 - Using `Buffer` as a stack:
 
 ```scala
 Buffer(1,2,3).peek
-// res37: Int = 3
+// res41: Int = 3
 
 Buffer(1,2,3).pop
-// res38: Int = 3
+// res42: Int = 3
 
 Buffer(1,2,3).push(1).push(1).push(0)
-// res39: Buffer[Int] = [1,2,3,1,1,0]
+// res43: Buffer[Int] = [1,2,3,1,1,0]
 ```
 
 - Manipulating `topIndex` limit:
 
 ```scala
 Buffer(1,2,3).top
-// res40: Int = 2
+// res44: Int = 2
 
 Buffer(1,2,3).set(1)
-// res41: Buffer[Int] = [1,2]
+// res45: Buffer[Int] = [1,2]
 
 Buffer(1,2,3).forward(3)
-// res42: Buffer[Int] = [1,2,3,0,0,0]
+// res46: Buffer[Int] = [1,2,3,0,0,0]
 
 Buffer(1,2,3).rewind(2)
-// res43: Buffer[Int] = [1]
+// res47: Buffer[Int] = [1]
 
 Buffer(1,2,3).reset
-// res44: Int = 2
+// res48: Int = 2
 ```
 
 - Making a `Slice` of a `Buffer`:
 
 ```scala
 Buffer(1,2,3,4,5,6,7,8,9).toSlice
-// res45: Slice[Int] = <function1>
-
-Buffer(1,2,3,4,5,6,7,8,9).slice(2,6)
-// res46: Slice[Int] = <function1>
-
-Buffer(1,2,3,4,5,6,7,8,9).take(3)
-// res47: Slice[Int] = <function1>
-
-Buffer(1,2,3,4,5,6,7,8,9).drop(3)
-// res48: Slice[Int] = <function1>
-
-Buffer(1,2,3,4,5,6,7,8,9).takeRight(3)
 // res49: Slice[Int] = <function1>
 
-Buffer(1,2,3,4,5,6,7,8,9).dropRight(3)
+Buffer(1,2,3,4,5,6,7,8,9).slice(2,6)
 // res50: Slice[Int] = <function1>
+
+Buffer(1,2,3,4,5,6,7,8,9).take(3)
+// res51: Slice[Int] = <function1>
+
+Buffer(1,2,3,4,5,6,7,8,9).drop(3)
+// res52: Slice[Int] = <function1>
+
+Buffer(1,2,3,4,5,6,7,8,9).takeRight(3)
+// res53: Slice[Int] = <function1>
+
+Buffer(1,2,3,4,5,6,7,8,9).dropRight(3)
+// res54: Slice[Int] = <function1>
 ```
 
 Slice
 --
 
-[Open in Scastie](https://scastie.scala-lang.org/arturopala/jo2JWppuRRyCkYL3SjmS7A/1)
+[Open in Scastie](https://scastie.scala-lang.org/arturopala/jo2JWppuRRyCkYL3SjmS7A/2)
 
 ```scala
 import com.github.arturopala.bufferandslice._
@@ -277,61 +288,61 @@ val slice = Slice.of(array)
 // slice: Slice[String] = <function1>
 
 slice.apply(0)
-// res51: String = "a"
+// res55: String = "a"
 
 slice.apply(5)
-// res52: String = "f"
+// res56: String = "f"
 
 slice.update(4,"a")
-// res53: Slice[String] = <function1>
-
-slice.update(5,"b")
-// res54: Slice[String] = <function1>
-
-slice.slice(1,5)
-// res55: Slice[String] = <function1>
-
-slice.take(5)
-// res56: Slice[String] = <function1>
-
-slice.drop(5)
 // res57: Slice[String] = <function1>
 
-slice.takeRight(5)
+slice.update(5,"b")
 // res58: Slice[String] = <function1>
 
-slice.dropRight(5)
+slice.slice(1,5)
 // res59: Slice[String] = <function1>
 
-slice.slice(2,6)
+slice.take(5)
 // res60: Slice[String] = <function1>
 
-slice.head
-// res61: String = "a"
+slice.drop(5)
+// res61: Slice[String] = <function1>
 
-slice.headOption
-// res62: Option[String] = Some("a")
+slice.takeRight(5)
+// res62: Slice[String] = <function1>
 
-slice.init
+slice.dropRight(5)
 // res63: Slice[String] = <function1>
 
+slice.slice(2,6)
+// res64: Slice[String] = <function1>
+
+slice.head
+// res65: String = "a"
+
+slice.headOption
+// res66: Option[String] = Some("a")
+
+slice.init
+// res67: Slice[String] = <function1>
+
 slice.last
-// res64: String = "j"
+// res68: String = "j"
 
 slice.count(_.length > 1)
-// res65: Int = 1
+// res69: Int = 1
 
 slice.count(_.length == 1)
-// res66: Int = 9
+// res70: Int = 9
 
 slice.map(s => s+s)
-// res67: Slice[String] = Slice(aa,bb,cc,dd,eeee,ff,gg,hh,ii,jj)
+// res71: Slice[String] = Slice(aa,bb,cc,dd,eeee,ff,gg,hh,ii,jj)
 
 slice.map(s => s"($s)")
-// res68: Slice[String] = Slice((a),(b),(c),(d),(ee),(f),(g),(h),(i),(j))
+// res72: Slice[String] = Slice((a),(b),(c),(d),(ee),(f),(g),(h),(i),(j))
 
 slice.asIterable
-// res69: Iterable[String] = Iterable(
+// res73: Iterable[String] = Iterable(
 //   "a",
 //   "b",
 //   "c",
@@ -345,7 +356,7 @@ slice.asIterable
 // )
 
 slice.iterator.toList
-// res70: List[String] = List(
+// res74: List[String] = List(
 //   "a",
 //   "b",
 //   "c",
@@ -358,8 +369,11 @@ slice.iterator.toList
 //   "j"
 // )
 
+slice.iterator("abeij".contains(_)).toList
+// res75: List[String] = List("a", "b", "i", "j")
+
 slice.reverseIterator.toList
-// res71: List[String] = List(
+// res76: List[String] = List(
 //   "j",
 //   "i",
 //   "h",
@@ -373,10 +387,24 @@ slice.reverseIterator.toList
 // )
 
 slice.reverseIterator("adgh".contains(_)).toList
-// res72: List[String] = List("h", "g", "d", "a")
+// res77: List[String] = List("h", "g", "d", "a")
 
 slice.toList
-// res73: List[String] = List(
+// res78: List[String] = List(
+//   "a",
+//   "b",
+//   "c",
+//   "d",
+//   "ee",
+//   "f",
+//   "g",
+//   "h",
+//   "i",
+//   "j"
+// )
+
+slice.toSeq
+// res79: Seq[String] = Vector(
 //   "a",
 //   "b",
 //   "c",
@@ -390,7 +418,7 @@ slice.toList
 // )
 
 slice.toArray
-// res74: Array[String] = Array(
+// res80: Array[String] = Array(
 //   "a",
 //   "b",
 //   "c",
@@ -404,7 +432,7 @@ slice.toArray
 // )
 
 slice.copyToArray(3, new Array[String](15))
-// res75: Array[String] = Array(
+// res81: Array[String] = Array(
 //   null,
 //   null,
 //   null,
@@ -423,6 +451,9 @@ slice.copyToArray(3, new Array[String](15))
 // )
 
 slice.toBuffer
-// res76: Buffer[String] = [a,b,c,d,ee,f,g,h,i,j]
+// res82: Buffer[String] = [a,b,c,d,ee,f,g,h,i,j]
+
+slice.detach
+// res83: Slice[String] = <function1>
 ```
 

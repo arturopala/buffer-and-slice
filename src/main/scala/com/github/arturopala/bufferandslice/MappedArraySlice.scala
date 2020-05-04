@@ -21,8 +21,9 @@ import java.util.NoSuchElementException
 import scala.collection.AbstractIterable
 import scala.reflect.ClassTag
 
-/** Lazy mapped, immutable slice of an underlying array.
-  * @tparam T type of the array's items */
+/** Lazy mapped, possibly immutable slice of an underlying array.
+  * @tparam T type of the array's items
+  */
 abstract class MappedArraySlice[T] private (fromIndex: Int, toIndex: Int) extends Slice[T] {
 
   /** Type of the underlying array items. */
@@ -35,17 +36,17 @@ abstract class MappedArraySlice[T] private (fromIndex: Int, toIndex: Int) extend
   val mapF: A => T
 
   /** Sliced range length. */
-  final val length: Int = toIndex - fromIndex
+  final override val length: Int = toIndex - fromIndex
 
   /** Returns value at the given index withing the range. */
-  final def apply(index: Int): T = {
+  final override def apply(index: Int): T = {
     if (index < 0 || index >= length)
       throw new IndexOutOfBoundsException(s"Expected an `apply` index in the interval [0,$length), but was $index.")
     mapF(array.apply(fromIndex + index))
   }
 
   /** Creates a copy of the slice with modified value. */
-  final def update[T1 >: T: ClassTag](index: Int, value: T1): Slice[T1] = {
+  final override def update[T1 >: T: ClassTag](index: Int, value: T1): Slice[T1] = {
     if (index < 0 || index >= length)
       throw new IndexOutOfBoundsException(s"Expected an `update` index in the interval [0,$length), but was $index.")
     val modified: Array[T1] = toArray[T1]
@@ -55,11 +56,11 @@ abstract class MappedArraySlice[T] private (fromIndex: Int, toIndex: Int) extend
 
   /** Lazily composes mapping function and returns new Slice.
     * Does not modify nor copy underlying array. */
-  final def map[K](f: T => K): Slice[K] =
+  final override def map[K](f: T => K): Slice[K] =
     MappedArraySlice.lazyMapped[K, A](fromIndex, toIndex, array, mapF.andThen(f))
 
   /** Counts values fulfilling the predicate. */
-  final def count(pred: T => Boolean): Int = {
+  final override def count(pred: T => Boolean): Int = {
     var a = 0
     var i = fromIndex
     while (i < toIndex) {
@@ -70,30 +71,30 @@ abstract class MappedArraySlice[T] private (fromIndex: Int, toIndex: Int) extend
   }
 
   /** Returns true if Slice has values, otherwise false. */
-  final def isEmpty: Boolean = length <= 0
+  final override def isEmpty: Boolean = length <= 0
 
   /** Returns first value in the Slice. */
-  final def head: T =
+  final override def head: T =
     if (length > 0) mapF(array(fromIndex))
     else throw new NoSuchElementException
 
   /** Returns the last value in the Slice. */
-  final def last: T =
+  final override def last: T =
     if (length > 0) mapF(array(toIndex - 1))
     else throw new NoSuchElementException
 
   /** Returns first value in the Slice. */
-  final def headOption: Option[T] =
+  final override def headOption: Option[T] =
     if (length > 0) Some(mapF(array(fromIndex)))
     else None
 
   /** Returns the last value in the Slice. */
-  final def lastOption: Option[T] =
+  final override def lastOption: Option[T] =
     if (length > 0) Some(mapF(array(toIndex - 1)))
     else None
 
   /** Lazily narrows Slice to provided range. */
-  final def slice(from: Int, to: Int): Slice[T] = {
+  final override def slice(from: Int, to: Int): Slice[T] = {
     val t = fit(to, length)
     val f = fit(from, t)
     if (f == 0 && t == length) this
@@ -105,25 +106,25 @@ abstract class MappedArraySlice[T] private (fromIndex: Int, toIndex: Int) extend
     Math.min(Math.max(0, value), upper)
 
   /** Returns the Slice without first value. */
-  @`inline` final def tail: Slice[T] = drop(1)
+  @`inline` final override def tail: Slice[T] = drop(1)
 
   /** Returns the Slice without last value. */
-  @`inline` final def init: Slice[T] = dropRight(1)
+  @`inline` final override def init: Slice[T] = dropRight(1)
 
   /** Lazily narrows Slice to first N items. */
-  @`inline` final def take(n: Int): Slice[T] = slice(0, n)
+  @`inline` final override def take(n: Int): Slice[T] = slice(0, n)
 
   /** Lazily narrows Slice to last N items. */
-  @`inline` final def takeRight(n: Int): Slice[T] = slice(length - n, length)
+  @`inline` final override def takeRight(n: Int): Slice[T] = slice(length - n, length)
 
   /** Lazily narrows Slice to exclude first N items. */
-  @`inline` final def drop(n: Int): Slice[T] = slice(n, length)
+  @`inline` final override def drop(n: Int): Slice[T] = slice(n, length)
 
   /** Lazily narrows Slice to exclude last N items. */
-  @`inline` final def dropRight(n: Int): Slice[T] = slice(0, length - n)
+  @`inline` final override def dropRight(n: Int): Slice[T] = slice(0, length - n)
 
   /** Returns iterator over Slice values. */
-  final def iterator: Iterator[T] = new Iterator[T] {
+  final override def iterator: Iterator[T] = new Iterator[T] {
 
     var i: Int = fromIndex
 
@@ -136,8 +137,34 @@ abstract class MappedArraySlice[T] private (fromIndex: Int, toIndex: Int) extend
     }
   }
 
+  /** Returns iterator over Slice values fulfilling the predicate. */
+  final override def iterator(pred: T => Boolean): Iterator[T] = new Iterator[T] {
+
+    var i: Int = fromIndex
+
+    seekNext
+
+    def hasNext: Boolean = i < toIndex
+
+    def next(): T = {
+      val value = mapF(array(i))
+      i = i + 1
+      seekNext
+      value
+    }
+
+    def seekNext: Unit =
+      if (i < toIndex) {
+        var v = mapF(array(i))
+        while (!pred(v) && i < toIndex) {
+          i = i + 1
+          if (i < toIndex) v = mapF(array(i))
+        }
+      } else ()
+  }
+
   /** Returns iterator over Slice values in the reverse order. */
-  final def reverseIterator: Iterator[T] = new Iterator[T] {
+  final override def reverseIterator: Iterator[T] = new Iterator[T] {
 
     var i: Int = toIndex - 1
 
@@ -150,8 +177,8 @@ abstract class MappedArraySlice[T] private (fromIndex: Int, toIndex: Int) extend
     }
   }
 
-  /** Returns iterator over Slice values, fulfilling the predicate, in the reverse order. */
-  final def reverseIterator(pred: T => Boolean): Iterator[T] = new Iterator[T] {
+  /** Returns iterator over Slice values fulfilling the predicate, in the reverse order. */
+  final override def reverseIterator(pred: T => Boolean): Iterator[T] = new Iterator[T] {
 
     var i: Int = toIndex - 1
 
@@ -178,15 +205,22 @@ abstract class MappedArraySlice[T] private (fromIndex: Int, toIndex: Int) extend
 
   /** Returns minimal copy of an underlying array, trimmed to the actual range.
     * @group Read */
-  final def toArray[T1 >: T: ClassTag]: Array[T1] = {
+  final override def toArray[T1 >: T: ClassTag]: Array[T1] = {
     val newArray = new Array[T1](length)
     copyToArray(0, newArray)
     newArray
   }
 
+  /** Detaches a slice creating a trimmed copy of an underlying data. */
+  final override def detach(implicit tag: ClassTag[T]): Slice[T] = {
+    val newArray = ArrayOps.copyOf(array, length)
+    java.lang.System.arraycopy(array, fromIndex, newArray, 0, length)
+    MappedArraySlice.lazyMapped[T, A](0, length, newArray, mapF)
+  }
+
   /** Dumps content to the array, starting from an index.
     * @group Read*/
-  final def copyToArray[T1 >: T](targetIndex: Int, targetArray: Array[T1]): Array[T1] = {
+  final override def copyToArray[T1 >: T](targetIndex: Int, targetArray: Array[T1]): Array[T1] = {
     var i = 0
     while (i < length) {
       targetArray(targetIndex + i) = mapF(array(fromIndex + i))
@@ -197,16 +231,20 @@ abstract class MappedArraySlice[T] private (fromIndex: Int, toIndex: Int) extend
 
   /** Returns buffer with a copy of this Slice.
     * @group Read */
-  final def toBuffer(implicit tag: ClassTag[T]): Buffer[T] =
+  final override def toBuffer(implicit tag: ClassTag[T]): Buffer[T] =
     new ArrayBuffer(toArray)
 
   /** Returns new list of Slice values.
     * @group Read */
-  final def toList: List[T] = iterator.toList
+  @`inline` final override def toList: List[T] = iterator.toList
+
+  /** Returns new sequence of Slice values.
+    * @group Read */
+  @`inline` final override def toSeq: Seq[T] = iterator.toIndexedSeq
 
   /** Returns new iterable of Slice values.
     * @group Read */
-  final def asIterable: Iterable[T] = new AbstractIterable[T] {
+  final override def asIterable: Iterable[T] = new AbstractIterable[T] {
     override def iterator: Iterator[T] = MappedArraySlice.this.iterator
     override def toString(): String = MappedArraySlice.this.toString
   }
