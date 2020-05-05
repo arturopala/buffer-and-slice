@@ -3,9 +3,9 @@
 Buffer\[T] and Slice\[T]
 ===
 
-This is a micro-library for Scala providing lightweight Buffer and Slice implementations.
+This is a micro-library for Scala providing lightweight Buffer and Slice abstractions.
 
-    "com.github.arturopala" %% "buffer-and-slice" % "1.6.2"
+    "com.github.arturopala" %% "buffer-and-slice" % "1.7.0"
 
 Cross-compiles to Scala versions `2.13.2`, `2.12.11`, `2.11.12`, `0.24.0-RC1`, `0.23.0`, 
 and ScalaJS version `1.0.1`, and ScalaNative version `0.4.0-M2`.
@@ -13,14 +13,14 @@ and ScalaJS version `1.0.1`, and ScalaNative version `0.4.0-M2`.
 Motivation
 ---
 
-Working directly with mutable arrays, even in Scala, is not always as simple as it could be. 
+Working directly with mutable arrays, even in Scala, is not always as simple and efficient as it could be. 
 While `Array` features Scala Collections API, the first reason to use arrays is to fully exploit its compactness and mutability
 for performance reasons. I've found it reasonable to have a separate, focused set of low-overhead tools dealing with an `Array`.
 
 Design
 ---
 
-This library provides two complementary abstractions: mutable `Buffer` and immutable lazy `Slice`.
+This library provides two complementary abstractions, two sides of the coin: mutable `Buffer` and immutable lazy `Slice`.
 
 - A `Buffer` role is to help easily build a growable array using mixed buffer- and stack- like APIs.
 
@@ -28,7 +28,8 @@ This library provides two complementary abstractions: mutable `Buffer` and immut
 
 The usual workflow will use `Buffer` to build an array and `Slice` to share the result outside of a component/function.
 
-Both `Buffer` and `Slice` come in three variants: generic, and specialized for `Int` and for `Byte`.
+Both `Buffer` and `Slice` come in variants, generic and specialized: `ArrayBuffer[T]` and `ArraySlice[T]`, 
+`IntBuffer` and `IntSlice`, `ByteBuffer` and `ByteSlice`.
 
 Dependencies
 ---
@@ -55,10 +56,11 @@ Lightweight operations:
 - mapping the slice
 - using iterators or `toIterable`
 - making `Slice.copyToArray`
+- subsequent detaching
 
 Heavier operations, making a copy of an array:
 
-- detaching a slice
+- detaching a slice first-time, if not detached already
 - updating a slice
 - exporting slice or buffer (`toArray`, `toList`, `toBuffer`)
 
