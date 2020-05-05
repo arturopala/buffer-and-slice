@@ -176,13 +176,14 @@ trait ArrayBufferLike[T] extends Buffer[T] {
   final override def moveRangeLeft(fromIndex: Int, toIndex: Int, distance: Int): this.type = {
     if (distance > 0 && fromIndex >= 0 && toIndex > fromIndex && fromIndex < length) {
       val from = Math.max(fromIndex, distance)
-      val gap = from - fromIndex
       val to = Math.min(toIndex, length)
       val backup = ArrayOps.copyOf(ArrayOps.copyOf(underlyingUnsafe, 0), distance)
-      val relocating = this.slice(Math.max(0, fromIndex - distance), fromIndex)
+      val relocating = this.slice(from - distance, fromIndex)
       relocating.copyToArray(backup.length - relocating.length, backup)
+      val gap = Math.max(0, distance - fromIndex)
       shiftRight(0, gap)
-      java.lang.System.arraycopy(underlyingUnsafe, from, underlyingUnsafe, from - distance, to - from + gap)
+      java.lang.System
+        .arraycopy(underlyingUnsafe, fromIndex + gap, underlyingUnsafe, fromIndex - distance + gap, to - fromIndex)
       java.lang.System.arraycopy(backup, 0, underlyingUnsafe, to - distance + gap, backup.length)
     }
     this

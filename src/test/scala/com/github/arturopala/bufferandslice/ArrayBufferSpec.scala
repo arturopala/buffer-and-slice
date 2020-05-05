@@ -147,18 +147,30 @@ class ArrayBufferSpec extends AnyWordSpecCompat {
         .toArray shouldBe Array("g", "b", "f", "h", null, "e", null, null, null, null, null, "c", "d", "a")
     }
 
-    "move values in range to the right at a distance" in {
+    "move values in range to the left at a distance" in {
       val buffer = new ArrayBuffer(Array("a", "b", "c", "d", "e", "f", "g", "h"))
       buffer.moveRangeLeft(3, 5, 2).toArray shouldBe Array("a", "d", "e", "b", "c", "f", "g", "h")
       buffer.moveRangeLeft(6, 10, 4).toArray shouldBe Array("a", "d", "g", "h", "e", "b", "c", "f")
-      buffer.moveRangeLeft(2, 5, 4).toArray shouldBe Array("g", "h", "e", null, null, "a", "d", "b", "c", "f")
+      buffer.moveRangeLeft(2, 5, 2).toArray shouldBe Array("g", "h", "e", "a", "d", "b", "c", "f")
       buffer
         .moveRangeLeft(0, 5, 2)
-        .toArray shouldBe Array("g", "h", "e", null, null, null, null, "a", "d", "b", "c", "f")
+        .toArray shouldBe Array("g", "h", "e", "a", "d", null, null, "b", "c", "f")
       buffer
         .moveRangeLeft(7, 12, 4)
-        .toArray shouldBe Array("g", "h", "e", "a", "d", "b", "c", "f", null, null, null, null)
-      buffer.trim(8).toArray shouldBe Array("g", "h", "e", "a", "d", "b", "c", "f")
+        .toArray shouldBe Array("g", "h", "e", "b", "c", "f", "a", "d", null, null)
+      buffer.trim(8).toArray shouldBe Array("g", "h", "e", "b", "c", "f", "a", "d")
+      buffer
+        .moveRangeLeft(5, 8, 5)
+        .toArray shouldBe Array("f", "a", "d", "g", "h", "e", "b", "c")
+      buffer
+        .moveRangeLeft(5, 8, 4)
+        .toArray shouldBe Array("f", "e", "b", "c", "a", "d", "g", "h")
+      buffer
+        .moveRangeLeft(5, 7, 3)
+        .toArray shouldBe Array("f", "e", "d", "g", "b", "c", "a", "h")
+      buffer
+        .moveRangeLeft(7, 8, 7)
+        .toArray shouldBe Array("h", "f", "e", "d", "g", "b", "c", "a")
     }
 
     "insert new array of values" in {
