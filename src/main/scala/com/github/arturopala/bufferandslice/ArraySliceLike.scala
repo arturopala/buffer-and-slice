@@ -33,7 +33,11 @@ trait ArraySliceLike[T] extends Slice[T] {
   protected def array: Array[T]
 
   /** @group Internal */
-  protected def create(fromIndex: Int, toIndex: Int, array: Array[T]): this.type
+  protected def detached: Boolean
+
+  /** Wraps an array preserving current Slice type.
+    * @group Internal */
+  protected def wrap(fromIndex: Int, toIndex: Int, array: Array[T], detached: Boolean): this.type
 
   /** Sliced range length. */
   @`inline` final override val length: Int = toIndex - fromIndex
@@ -57,7 +61,7 @@ trait ArraySliceLike[T] extends Slice[T] {
   /** Lazily composes mapping function and returns new [[MappedArraySlice]].
     * Does not modify nor copy underlying array. */
   @`inline` final override def map[K](f: T => K): Slice[K] =
-    MappedArraySlice.lazyMapped[K, T](fromIndex, toIndex, array, f)
+    MappedArraySlice.lazyMapped[K, T](fromIndex, toIndex, array, f, detached)
 
   /** Counts values fulfilling the predicate. */
   final override def count(pred: T => Boolean): Int = {
@@ -98,7 +102,7 @@ trait ArraySliceLike[T] extends Slice[T] {
     val t = fit(to, length)
     val f = fit(from, t)
     if (f == 0 && t == length) this
-    else create(fromIndex + f, fromIndex + t, array)
+    else wrap(fromIndex + f, fromIndex + t, array, detached)
   }
 
   @`inline` private def fit(value: Int, upper: Int): Int =
@@ -202,43 +206,38 @@ trait ArraySliceLike[T] extends Slice[T] {
       } else ()
   }
 
-  /** Returns a minimal copy of an underlying array, trimmed to the actual range.
-    * @group Read */
+  /** Returns a minimal copy of an underlying array, trimmed to the actual range. */
   final override def toArray[T1 >: T: ClassTag]: Array[T1] = {
     val newArray = new Array[T1](length)
     java.lang.System.arraycopy(array, fromIndex, newArray, 0, length)
     newArray
   }
 
-  /** Returns a minimal copy of an underlying array, trimmed to the actual range.
-    * @group Read */
+  /** Returns a minimal copy of an underlying array, trimmed to the actual range. */
   final def asArray: Array[T] = {
     val newArray = ArrayOps.copyOf(array, length)
     java.lang.System.arraycopy(array, fromIndex, newArray, 0, length)
     newArray
   }
 
-  /** Dumps content to the array, starting from an index.
-    * @group Read*/
+  /** Dumps content to the array, starting from an index. */
   @`inline` final override def copyToArray[T1 >: T](targetIndex: Int, targetArray: Array[T1]): Array[T1] = {
     java.lang.System.arraycopy(array, fromIndex, targetArray, targetIndex, length)
     targetArray
   }
 
-  /** Detaches a slice creating a trimmed copy of an underlying data. */
-  @`inline` final override def detach(implicit tag: ClassTag[T]): this.type =
-    create(0, length, toArray)
+  /** Detaches a slice creating a trimmed copy of an underlying data, if needed.
+    * Subsequent detach operations will return the same instance without making new copies. */
+  @`inline` final override def detach: this.type =
+    if (detached) this else wrap(0, length, asArray, detached = true)
 
-  /** Returns new list of Slice values.
-    * @group Read */
+  /** Returns new list of Slice values. */
   @`inline` final override def toList: List[T] = iterator.toList
 
-  /** Returns new sequence of Slice values.
-    * @group Read */
+  /** Returns new sequence of Slice values. */
   @`inline` final override def toSeq: Seq[T] = iterator.toIndexedSeq
 
-  /** Returns new iterable of Slice values.
-    * @group Read */
+  /** Returns new iterable of Slice values. */
   final override def asIterable: Iterable[T] = new AbstractIterable[T] {
     override def iterator: Iterator[T] = ArraySliceLike.this.iterator
     override def toString(): String = ArraySliceLike.this.toString

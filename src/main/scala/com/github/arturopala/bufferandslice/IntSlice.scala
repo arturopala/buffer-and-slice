@@ -19,11 +19,15 @@ package com.github.arturopala.bufferandslice
 import scala.reflect.ClassTag
 
 /** Lazy, specialized slice of the array of integers. */
-final class IntSlice private (protected val fromIndex: Int, protected val toIndex: Int, protected val array: Array[Int])
-    extends ArraySliceLike[Int] {
+final class IntSlice private (
+  protected val fromIndex: Int,
+  protected val toIndex: Int,
+  protected val array: Array[Int],
+  protected val detached: Boolean
+) extends ArraySliceLike[Int] {
 
-  override protected def create(fromIndex: Int, toIndex: Int, array: Array[Int]): this.type =
-    new IntSlice(fromIndex, toIndex, array).asInstanceOf[this.type]
+  override protected def wrap(fromIndex: Int, toIndex: Int, array: Array[Int], detached: Boolean): this.type =
+    new IntSlice(fromIndex, toIndex, array, detached).asInstanceOf[this.type]
 
   /** Returns buffer with a copy of this Slice.
     * @group Read */
@@ -33,15 +37,19 @@ final class IntSlice private (protected val fromIndex: Int, protected val toInde
 
 object IntSlice {
 
-  def apply(is: Int*): IntSlice = IntSlice.of(Array(is: _*))
+  /** Creates new detached IntSlice out of given value sequence. */
+  def apply(is: Int*): IntSlice = {
+    val array = Array(is: _*)
+    new IntSlice(0, array.length, array, detached = true)
+  }
 
-  def of(array: Array[Int]): IntSlice = new IntSlice(0, array.length, array)
+  def of(array: Array[Int]): IntSlice = new IntSlice(0, array.length, array, detached = false)
 
   def of(array: Array[Int], from: Int, to: Int): IntSlice = {
     assert(from >= 0, "When creating a IntSlice, parameter `from` must be greater or equal to 0.")
     assert(to <= array.length, "When creating a IntSlice, parameter `to` must be lower or equal to the array length.")
     assert(from <= to, "When creating a IntSlice, parameter `from` must be lower or equal to `to`.")
-    new IntSlice(from, to, array)
+    new IntSlice(from, to, array, detached = false)
   }
 
   def empty: IntSlice = IntSlice()

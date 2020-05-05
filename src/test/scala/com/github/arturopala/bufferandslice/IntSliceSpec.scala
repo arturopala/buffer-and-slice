@@ -242,11 +242,16 @@ class IntSliceSpec extends AnyWordSpecCompat {
       array(1) = 3
       slice(1) shouldBe 3
       val detached = slice.detach
+      assertEquals(detached eq slice, false)
       slice(1) shouldBe 3
       detached(1) shouldBe 3
       array(1) = 7
       slice(1) shouldBe 7
       detached(1) shouldBe 3
+      val detached2 = detached.detach
+      assertEquals(detached eq detached2, true)
+      val detached3 = detached2.detach
+      assertEquals(detached eq detached3, true)
     }
 
     "have hashCode" in {

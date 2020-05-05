@@ -24,11 +24,12 @@ import scala.reflect.ClassTag
 final class ArraySlice[T] private (
   protected val fromIndex: Int,
   protected val toIndex: Int,
-  protected val array: Array[T]
+  protected val array: Array[T],
+  protected val detached: Boolean
 ) extends ArraySliceLike[T] {
 
-  override protected def create(fromIndex: Int, toIndex: Int, array: Array[T]): this.type =
-    new ArraySlice[T](fromIndex, toIndex, array).asInstanceOf[this.type]
+  override protected def wrap(fromIndex: Int, toIndex: Int, array: Array[T], detached: Boolean): this.type =
+    new ArraySlice[T](fromIndex, toIndex, array, detached).asInstanceOf[this.type]
 
   /** Returns buffer with a copy of this Slice.
     * @group Read */
@@ -38,9 +39,13 @@ final class ArraySlice[T] private (
 
 object ArraySlice {
 
-  def apply[T: ClassTag](is: T*): ArraySlice[T] = ArraySlice.of(Array(is: _*))
+  /** Creates new detached ArraySlice out of given value sequence. */
+  def apply[T: ClassTag](is: T*): ArraySlice[T] = {
+    val array = Array(is: _*)
+    new ArraySlice(0, array.length, array, true)
+  }
 
-  def of[T](array: Array[T]): ArraySlice[T] = new ArraySlice(0, array.length, array)
+  def of[T](array: Array[T]): ArraySlice[T] = new ArraySlice(0, array.length, array, false)
 
   def of[T](array: Array[T], from: Int, to: Int): ArraySlice[T] = {
     assert(from >= 0, "When creating an ArraySlice, parameter `from` must be greater or equal to 0.")
@@ -49,7 +54,7 @@ object ArraySlice {
       "When creating an ArraySlice, parameter `to` must be lower or equal to the array length."
     )
     assert(from <= to, "When creating an ArraySlice, parameter `from` must be lower or equal to `to`.")
-    new ArraySlice(from, to, array)
+    new ArraySlice(from, to, array, false)
   }
 
   def empty[T: ClassTag]: ArraySlice[T] = ArraySlice()

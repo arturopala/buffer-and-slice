@@ -22,11 +22,12 @@ import scala.reflect.ClassTag
 final class ByteSlice private (
   protected val fromIndex: Int,
   protected val toIndex: Int,
-  protected val array: Array[Byte]
+  protected val array: Array[Byte],
+  protected val detached: Boolean
 ) extends ArraySliceLike[Byte] {
 
-  override protected def create(fromIndex: Int, toIndex: Int, array: Array[Byte]): this.type =
-    new ByteSlice(fromIndex, toIndex, array).asInstanceOf[this.type]
+  override protected def wrap(fromIndex: Int, toIndex: Int, array: Array[Byte], detached: Boolean): this.type =
+    new ByteSlice(fromIndex, toIndex, array, detached).asInstanceOf[this.type]
 
   /** Returns buffer with a copy of this Slice.
     * @group Read */
@@ -36,15 +37,19 @@ final class ByteSlice private (
 
 object ByteSlice {
 
-  def apply(is: Byte*): ByteSlice = ByteSlice.of(Array(is: _*))
+  /** Creates new detached ByteSlice out of given value sequence. */
+  def apply(is: Byte*): ByteSlice = {
+    val array = Array(is: _*)
+    new ByteSlice(0, array.length, array, detached = true)
+  }
 
-  def of(array: Array[Byte]): ByteSlice = new ByteSlice(0, array.length, array)
+  def of(array: Array[Byte]): ByteSlice = new ByteSlice(0, array.length, array, detached = false)
 
   def of(array: Array[Byte], from: Int, to: Int): ByteSlice = {
     assert(from >= 0, "When creating a ByteSlice, parameter `from` must be greater or equal to 0.")
     assert(to <= array.length, "When creating a ByteSlice, parameter `to` must be lower or equal to the array length.")
     assert(from <= to, "When creating a ByteSlice, parameter `from` must be lower or equal to `to`.")
-    new ByteSlice(from, to, array)
+    new ByteSlice(from, to, array, detached = false)
   }
 
   def empty: ByteSlice = ByteSlice()

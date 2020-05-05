@@ -23,15 +23,18 @@ import scala.reflect.ClassTag
   *
   * @note As the slice usually wraps over a mutable structure,
   *       like an array or a java buffer, and it DOES NOT
-  *       make a copy, any changes to the underlying source will
-  *       directly affect the slice output. Keep it in mind.
+  *       make an instant copy, any changes to the underlying source will
+  *       directly affect the slice output unless detached.
+  *       Detach is a one-time copy operation, and `detached` property is
+  *       preserved across all operations returning a Slice.
   *
   * @groupprio Properties 0
   * @groupprio Access 1
   * @groupprio Transform 2
   * @groupprio Aggregate 3
-  * @groupprio Read 4
-  * @groupprio Internal 5
+  * @groupprio Iterate 4
+  * @groupprio Export 5
+  * @groupprio Internal 6
   */
 trait Slice[T] extends (Int => T) {
 
@@ -110,47 +113,48 @@ trait Slice[T] extends (Int => T) {
   def dropRight(n: Int): this.type
 
   /** Returns iterator over Slice values.
-    * @group Read */
+    * @group Iterate */
   def iterator: Iterator[T]
 
   /** Returns iterator over Slice values fulfilling the predicate.
-    * @group Read */
+    * @group Iterate */
   def iterator(pred: T => Boolean): Iterator[T]
 
   /** Returns iterator over Slice values in the reverse order.
-    * @group Read */
+    * @group Iterate */
   def reverseIterator: Iterator[T]
 
   /** Returns iterator over Slice values fulfilling the predicate, in the reverse order.
-    * @group Read */
+    * @group Iterate */
   def reverseIterator(pred: T => Boolean): Iterator[T]
 
   /** Returns new list of Slice values.
-    * @group Read */
+    * @group Export */
   def toList: List[T]
 
   /** Returns new sequence of Slice values.
-    * @group Read */
+    * @group Export */
   def toSeq: Seq[T]
 
   /** Returns new iterable of Slice values.
-    * @group Read */
+    * @group Export */
   def asIterable: Iterable[T]
 
   /** Returns an array of a trimmed copy of an underlying data.
-    * @group Read */
+    * @group Export */
   def toArray[T1 >: T: ClassTag]: Array[T1]
 
-  /** Detaches a slice creating a trimmed copy of an underlying data.
+  /** Detaches a slice creating a trimmed copy of an underlying data, if needed.
+    * Subsequent detach operations will return the same instance without making new copies.
     * @group Access */
-  def detach(implicit tag: ClassTag[T]): this.type
+  def detach: this.type
 
   /** Dumps content to the array, starting from an index.
-    * @group Read */
+    * @group Export */
   def copyToArray[T1 >: T](targetIndex: Int, targetArray: Array[T1]): Array[T1]
 
   /** Returns a buffer with a copy of this Slice.
-    * @group Read */
+    * @group Export */
   def toBuffer(implicit tag: ClassTag[T]): Buffer[T]
 
 }
@@ -158,8 +162,8 @@ trait Slice[T] extends (Int => T) {
 /** Slice companion object. Host factory methods. */
 object Slice {
 
-  /** Creates new Slice of given values. */
-  def apply[T: ClassTag](is: T*): Slice[T] = ArraySlice.of(Array(is: _*))
+  /** Creates new detached Slice out of given value sequence. */
+  def apply[T: ClassTag](is: T*): Slice[T] = ArraySlice(is: _*)
 
   /** Creates new Slice of given array values.
     *

@@ -21,10 +21,10 @@ import java.util.NoSuchElementException
 import scala.collection.AbstractIterable
 import scala.reflect.ClassTag
 
-/** Lazy mapped, possibly immutable slice of an underlying array.
+/** Lazily mapped, possibly immutable slice of an underlying array.
   * @tparam T type of the array's items
   */
-abstract class MappedArraySlice[T] private (fromIndex: Int, toIndex: Int) extends Slice[T] {
+abstract class MappedArraySlice[T] private (fromIndex: Int, toIndex: Int, detached: Boolean) extends Slice[T] {
 
   /** Type of the underlying array items. */
   type A
@@ -51,13 +51,13 @@ abstract class MappedArraySlice[T] private (fromIndex: Int, toIndex: Int) extend
       throw new IndexOutOfBoundsException(s"Expected an `update` index in the interval [0,$length), but was $index.")
     val modified: Array[T1] = toArray[T1]
     modified.update(index, value)
-    MappedArraySlice.lazyMapped[T1, T1](0, length, modified, identity)
+    MappedArraySlice.lazyMapped[T1, T1](0, length, modified, identity, true)
   }
 
   /** Lazily composes mapping function and returns new Slice.
     * Does not modify nor copy underlying array. */
   final override def map[K](f: T => K): Slice[K] =
-    MappedArraySlice.lazyMapped[K, A](fromIndex, toIndex, array, mapF.andThen(f))
+    MappedArraySlice.lazyMapped[K, A](fromIndex, toIndex, array, mapF.andThen(f), detached)
 
   /** Counts values fulfilling the predicate. */
   final override def count(pred: T => Boolean): Int = {
@@ -100,7 +100,7 @@ abstract class MappedArraySlice[T] private (fromIndex: Int, toIndex: Int) extend
     if (f == 0 && t == length) this
     else
       MappedArraySlice
-        .lazyMapped[T, A](fromIndex + f, fromIndex + t, array, mapF)
+        .lazyMapped[T, A](fromIndex + f, fromIndex + t, array, mapF, detached)
         .asInstanceOf[this.type]
   }
 
@@ -205,8 +205,7 @@ abstract class MappedArraySlice[T] private (fromIndex: Int, toIndex: Int) extend
       } else ()
   }
 
-  /** Returns minimal copy of an underlying array, trimmed to the actual range.
-    * @group Read */
+  /** Returns minimal copy of an underlying array, trimmed to the actual range. */
   final override def toArray[T1 >: T: ClassTag]: Array[T1] = {
     val newArray = new Array[T1](length)
     copyToArray(0, newArray)
@@ -214,16 +213,17 @@ abstract class MappedArraySlice[T] private (fromIndex: Int, toIndex: Int) extend
   }
 
   /** Detaches a slice creating a trimmed copy of an underlying data. */
-  final override def detach(implicit tag: ClassTag[T]): this.type = {
-    val newArray = ArrayOps.copyOf(array, length)
-    java.lang.System.arraycopy(array, fromIndex, newArray, 0, length)
-    MappedArraySlice
-      .lazyMapped[T, A](0, length, newArray, mapF)
-      .asInstanceOf[this.type]
-  }
+  final override def detach: this.type =
+    if (detached) this
+    else {
+      val newArray = ArrayOps.copyOf(array, length)
+      java.lang.System.arraycopy(array, fromIndex, newArray, 0, length)
+      MappedArraySlice
+        .lazyMapped[T, A](0, length, newArray, mapF, detached = true)
+        .asInstanceOf[this.type]
+    }
 
-  /** Dumps content to the array, starting from an index.
-    * @group Read*/
+  /** Dumps content to the array, starting from an index. */
   final override def copyToArray[T1 >: T](targetIndex: Int, targetArray: Array[T1]): Array[T1] = {
     var i = 0
     while (i < length) {
@@ -233,21 +233,17 @@ abstract class MappedArraySlice[T] private (fromIndex: Int, toIndex: Int) extend
     targetArray
   }
 
-  /** Returns buffer with a copy of this Slice.
-    * @group Read */
+  /** Returns buffer with a copy of this Slice. */
   final override def toBuffer(implicit tag: ClassTag[T]): Buffer[T] =
     new ArrayBuffer(toArray)
 
-  /** Returns new list of Slice values.
-    * @group Read */
+  /** Returns new list of Slice values. */
   @`inline` final override def toList: List[T] = iterator.toList
 
-  /** Returns new sequence of Slice values.
-    * @group Read */
+  /** Returns new sequence of Slice values. */
   @`inline` final override def toSeq: Seq[T] = iterator.toIndexedSeq
 
-  /** Returns new iterable of Slice values.
-    * @group Read */
+  /** Returns new iterable of Slice values. */
   final override def asIterable: Iterable[T] = new AbstractIterable[T] {
     override def iterator: Iterator[T] = MappedArraySlice.this.iterator
     override def toString(): String = MappedArraySlice.this.toString
@@ -287,23 +283,31 @@ abstract class MappedArraySlice[T] private (fromIndex: Int, toIndex: Int) extend
 
 object MappedArraySlice {
 
-  /** Creates new MappedArraySlice of given values. */
-  def apply[T: ClassTag](is: T*): MappedArraySlice[T] = MappedArraySlice.of(Array(is: _*))
+  /** Creates new detached MappedArraySlice out of given value sequence. */
+  def apply[T: ClassTag](is: T*): MappedArraySlice[T] = {
+    val _array = Array(is: _*)
+    new MappedArraySlice[T](0, _array.length, detached = true) {
+      type A = T
+      val array: Array[A] = _array
+      val mapF: A => T = identity
+    }
+  }
 
   private[bufferandslice] def lazyMapped[T, K](
     fromIndex: Int,
     toIndex: Int,
     _array: Array[K],
-    _mapF: K => T
+    _mapF: K => T,
+    detached: Boolean
   ): MappedArraySlice[T] =
-    new MappedArraySlice[T](fromIndex, toIndex) {
+    new MappedArraySlice[T](fromIndex, toIndex, detached) {
       type A = K
       val array: Array[A] = _array
       val mapF: A => T = _mapF
     }
 
   /** Creates new MappedArraySlice of given array values. */
-  def of[T](_array: Array[T]): MappedArraySlice[T] = new MappedArraySlice[T](0, _array.length) {
+  def of[T](_array: Array[T]): MappedArraySlice[T] = new MappedArraySlice[T](0, _array.length, detached = false) {
     type A = T
     val array: Array[A] = _array
     val mapF: A => T = identity
@@ -320,7 +324,7 @@ object MappedArraySlice {
       from <= to,
       "When creating a MappedArraySlice, parameter `from` must be lower or equal to the parameter `to`."
     )
-    new MappedArraySlice[T](from, to) {
+    new MappedArraySlice[T](from, to, detached = false) {
       type A = T
       val array: Array[A] = _array
       val mapF: A => T = identity
