@@ -100,6 +100,8 @@ Buffer(1,2,3).apply(1)
 
 Buffer("a","b","c").head
 
+Buffer("a","b","c").tail
+
 Buffer(1,2,3,4,5,6,7,8,9).toArray
 ```
 
@@ -171,6 +173,10 @@ Buffer(1,2,3,4,5,6,7,8,9).moveRangeLeft(6,8,4)
 Buffer(1,2,3,4).swap(0,3)
 
 Buffer(1,2,3,4,5,6,7,8,9).swapRange(0,5,3)
+
+Buffer(1,2,3,4,5,6,7,8,9).iterator
+
+Buffer(1,2,3,4,5,6,7,8,9).reverseIterator
 ```
 
 - Using `Buffer` as a stack:
