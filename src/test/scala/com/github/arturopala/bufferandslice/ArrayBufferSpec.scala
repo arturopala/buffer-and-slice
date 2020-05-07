@@ -92,6 +92,13 @@ class ArrayBufferSpec extends AnyWordSpecCompat {
       buffer.removeRange(0, 2).toArray shouldBe Array.empty[String]
     }
 
+    "remove values matching the predicate" in {
+      val buffer = Buffer(1, 2, 3, 4, 5, 6, 7, 8, 9)
+      buffer.removeWhen(_ % 2 != 0).toArray shouldBe Array(2, 4, 6, 8)
+      buffer.removeWhen(_ < 5).toArray shouldBe Array(6, 8)
+      buffer.removeWhen(_ > 7).toArray shouldBe Array(6)
+    }
+
     "shift values right" in {
       val buffer = new ArrayBuffer(Array("a", "b", "c"))
       buffer.shiftRight(1, 5)
@@ -467,8 +474,8 @@ class ArrayBufferSpec extends AnyWordSpecCompat {
       buffer.tail.toArray shouldBe Array("a", "b", "c")
       buffer.tail.toArray shouldBe Array("a", "b")
       buffer.tail.toArray shouldBe Array("a")
-      //buffer.tail.toArray shouldBe Array() // Dotty says "No ClassTag available for Nothing"
-      //buffer.tail.toArray shouldBe Array()
+      buffer.tail.isEmpty shouldBe true
+      buffer.tail.isEmpty shouldBe true
     }
 
     "have an iterator" in {
@@ -483,6 +490,13 @@ class ArrayBufferSpec extends AnyWordSpecCompat {
       buffer.reverseIterator.toList shouldBe List("h", "g", "f", "e", "d", "c", "b", "a")
       buffer.tail.reverseIterator.toList shouldBe List("g", "f", "e", "d", "c", "b", "a")
       buffer.tail.reverseIterator.toList shouldBe List("f", "e", "d", "c", "b", "a")
+    }
+
+    "have a copy" in {
+      val buffer = new ArrayBuffer(Array("a", "b", "c"))
+      buffer.copy.append("d").toArray shouldBe Array("a", "b", "c", "d")
+      buffer.copy.append("e").toArray shouldBe Array("a", "b", "c", "e")
+      buffer.toArray shouldBe Array("a", "b", "c")
     }
   }
 

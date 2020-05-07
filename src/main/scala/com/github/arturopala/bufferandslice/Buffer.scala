@@ -56,6 +56,10 @@ trait Buffer[T] extends (Int => T) {
     * @group Abstract */
   protected def ensureIndex(index: Int): Unit
 
+  /** Creates a copy of this buffer.
+    * @group Abstract */
+  def copy: this.type
+
   /** Returns an Array with a copy of an accessible buffer range.
     * @group Abstract */
   def toArray: Array[T]
@@ -365,6 +369,20 @@ trait Buffer[T] extends (Int => T) {
   @`inline` final def removeRange(fromIndex: Int, toIndex: Int): this.type =
     shiftLeft(toIndex, toIndex - fromIndex)
 
+  /** Removes values matching the predicate.
+    * @group Remove */
+  @`inline` final def removeWhen(pred: T => Boolean): this.type = {
+    var i = 0
+    while (i < length) {
+      if (pred(uncheckedApply(i))) {
+        remove(i)
+      } else {
+        i = i + 1
+      }
+    }
+    this
+  }
+
   /** Moves values in [index, length) right to [index+distance, length + distance).
     * Effectively creates a new range [index, index+distance).
     * - Ignores negative distance.
@@ -380,7 +398,7 @@ trait Buffer[T] extends (Int => T) {
     * @group Shift */
   def shiftLeft(index: Int, distance: Int): this.type
 
-  /** Moves values in [fromIndex,toIndex) to the right at a distance,
+  /** Moves values in [fromIndex, toIndex) to the right at a distance,
     * to become [fromIndex + distance, toIndex + distance),
     * and moves left any existing values in [toIndex, toIndex + distance)
     * to become [fromIndex, fromIndex + distance).
@@ -391,7 +409,7 @@ trait Buffer[T] extends (Int => T) {
     * */
   def moveRangeRight(fromIndex: Int, toIndex: Int, distance: Int): this.type
 
-  /** Moves values in [fromIndex,toIndex) to the left at a distance,
+  /** Moves values in [fromIndex, toIndex) to the left at a distance,
     * to become [fromIndex - distance, toIndex - distance),
     * and moves right any existing values in [fromIndex - distance, fromIndex)
     * to become [toIndex, toIndex + distance).

@@ -62,9 +62,10 @@ Heavier operations, making a copy of an array:
 
 - detaching a slice first-time, if not detached already
 - updating a slice
+- making a copy of a buffer
 - exporting slice or buffer (`toArray`, `toList`, `toBuffer`)
 
-E.g. the following code makes no copy of an array:
+E.g. the following code makes no copy of an array `a`:
 
 ```scala mdoc:silent
 import com.github.arturopala.bufferandslice._
@@ -78,6 +79,14 @@ val slice2 = buffer.slice(17,71)
 slice2.map(_+10).iterator.mkString("[",",","]")
 buffer.appendSlice(slice2)
 ```
+
+Index tracking
+--
+
+Buffer manipulations, like `shift..`,`move..`, or `swap..` changes the buffer layout in the complex way.
+
+An `IndexTracker` object provides set of functions to keep your external index buffers or lists in sync with those changes.
+
 
 Examples
 ---
@@ -103,6 +112,12 @@ Buffer("a","b","c").head
 Buffer("a","b","c").tail
 
 Buffer(1,2,3,4,5,6,7,8,9).toArray
+
+val b1 = Buffer(1,2)
+
+b1.copy.append(3)
+
+b1.copy.append(4)
 ```
 
 - Specialized `IntBuffer`:

@@ -169,6 +169,7 @@ trait ArrayBufferLike[T] extends Buffer[T] {
     * to become [fromIndex - distance, toIndex - distance),
     * and moves right any existing values in [fromIndex - distance, fromIndex)
     * to become [toIndex - distance, toIndex).
+    *  Shifts right first if distance > fromIndex.
     * Ignores negative distance and values outside of [0,length).
     * Moves topIndex if affected.
     * @group Move

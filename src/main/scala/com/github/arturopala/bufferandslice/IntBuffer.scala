@@ -26,7 +26,7 @@ final class IntBuffer(initialSize: Int = 8) extends ArrayBufferLike[Int] {
   @`inline` override def underlyingUnsafe: Array[Int] = _array
 
   /** Returns value at the given index or 0 if out of scope. */
-  @`inline` def apply(index: Int): Int =
+  override def apply(index: Int): Int =
     if (index < 0 || index >= _array.length) 0
     else _array(index)
 
@@ -50,11 +50,14 @@ final class IntBuffer(initialSize: Int = 8) extends ArrayBufferLike[Int] {
     this
   }
 
+  override def copy: this.type =
+    new IntBuffer(length).appendArray(toArray).asInstanceOf[this.type]
+
   /** Returns an Array with a copy of an accessible buffer range. */
-  def toArray: Array[Int] = java.util.Arrays.copyOf(_array, length)
+  override def toArray: Array[Int] = java.util.Arrays.copyOf(_array, length)
 
   /** Wraps accessible internal state as a Slice without making any copy. */
-  def asSlice: IntSlice = IntSlice.of(_array, 0, length)
+  override def asSlice: IntSlice = IntSlice.of(_array, 0, length)
 
 }
 

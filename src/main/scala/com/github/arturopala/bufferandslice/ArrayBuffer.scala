@@ -30,7 +30,7 @@ final class ArrayBuffer[T](initialArray: Array[T]) extends ArrayBufferLike[T] {
 
   /** Returns value at the given index.
     * @throws IndexOutOfBoundsException if index out of range [0, length). */
-  def apply(index: Int): T =
+  override def apply(index: Int): T =
     if (index < 0 || index >= length)
       throw new IndexOutOfBoundsException
     else
@@ -42,9 +42,12 @@ final class ArrayBuffer[T](initialArray: Array[T]) extends ArrayBufferLike[T] {
       _array = ArrayOps.copyOf(_array, Math.max(_array.length + upswing, index + 1))
     }
 
+  override def copy: this.type =
+    new ArrayBuffer(toArray).asInstanceOf[this.type]
+
   /** Returns an Array with a copy of an accessible buffer range. */
-  def toArray: Array[T] = ArrayOps.copyOf(_array, length)
+  override def toArray: Array[T] = ArrayOps.copyOf(_array, length)
 
   /** Wraps accessible internal state as a Slice without making any copy. */
-  def asSlice: Slice[T] = ArraySlice.of(_array, 0, length)
+  override def asSlice: Slice[T] = ArraySlice.of(_array, 0, length)
 }
