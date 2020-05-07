@@ -457,6 +457,33 @@ class ArrayBufferSpec extends AnyWordSpecCompat {
       buffer.swapRange(3, 4, 0).toArray shouldBe Array("d", "e", "a", "b", "h", "c", "d", "e")
       buffer.swapRange(4, 1, 3).toArray shouldBe Array("d", "h", "c", "d", "e", "a", "b", "e")
     }
+
+    "have a tail" in {
+      val buffer = new ArrayBuffer(Array("a", "b", "c", "d", "e", "f", "g", "h"))
+      buffer.tail.toArray shouldBe Array("a", "b", "c", "d", "e", "f", "g")
+      buffer.tail.toArray shouldBe Array("a", "b", "c", "d", "e", "f")
+      buffer.tail.toArray shouldBe Array("a", "b", "c", "d", "e")
+      buffer.tail.toArray shouldBe Array("a", "b", "c", "d")
+      buffer.tail.toArray shouldBe Array("a", "b", "c")
+      buffer.tail.toArray shouldBe Array("a", "b")
+      buffer.tail.toArray shouldBe Array("a")
+      buffer.tail.toArray shouldBe Array()
+      buffer.tail.toArray shouldBe Array()
+    }
+
+    "have an iterator" in {
+      val buffer = new ArrayBuffer(Array("a", "b", "c", "d", "e", "f", "g", "h"))
+      buffer.iterator.toList shouldBe List("a", "b", "c", "d", "e", "f", "g", "h")
+      buffer.tail.iterator.toList shouldBe List("a", "b", "c", "d", "e", "f", "g")
+      buffer.tail.iterator.toList shouldBe List("a", "b", "c", "d", "e", "f")
+    }
+
+    "have a reverse iterator" in {
+      val buffer = new ArrayBuffer(Array("a", "b", "c", "d", "e", "f", "g", "h"))
+      buffer.reverseIterator.toList shouldBe List("h", "g", "f", "e", "d", "c", "b", "a")
+      buffer.tail.reverseIterator.toList shouldBe List("g", "f", "e", "d", "c", "b", "a")
+      buffer.tail.reverseIterator.toList shouldBe List("f", "e", "d", "c", "b", "a")
+    }
   }
 
 }

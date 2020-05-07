@@ -33,7 +33,7 @@ import scala.reflect.ClassTag
   * @groupprio Move 9
   * @groupprio Swap 10
   * @groupprio Limit 11
-  * @groupprio Slice 12
+  * @groupprio Read 13
   */
 trait Buffer[T] extends (Int => T) {
 
@@ -56,13 +56,13 @@ trait Buffer[T] extends (Int => T) {
     * @group Abstract */
   protected def ensureIndex(index: Int): Unit
 
-  /** Returns an Array representing accessible buffer range.
+  /** Returns an Array with a copy of an accessible buffer range.
     * @group Abstract */
   def toArray: Array[T]
 
-  /** Returns a Slice representing accessible buffer range.
+  /** Wraps accessible internal state as a Slice without making any copy.
     * @group Abstract */
-  def toSlice: Slice[T]
+  def asSlice: Slice[T]
 
   /** Updates value at the provided index using the function.
     * Index must fall within range [0,length).
@@ -159,6 +159,10 @@ trait Buffer[T] extends (Int => T) {
   /** Returns value at the topIndex.
     * @group Properties */
   @`inline` final def head: T = apply(topIndex)
+
+  /** Returns this buffer after decrementing topIndex .
+    * @group Read */
+  @`inline` final def tail: this.type = rewind(1)
 
   /** Length of the accessible part of the buffer.
     * @group Properties */
@@ -450,23 +454,50 @@ trait Buffer[T] extends (Int => T) {
 
   /** Takes range and returns a Slice.
     * @group Slice */
-  final def slice(from: Int, to: Int): Slice[T] = toSlice.slice(from, to)
+  final def slice(from: Int, to: Int): Slice[T] = asSlice.slice(from, to)
 
   /** Takes first N items and returns a Slice.
     * @group Slice */
-  final def take(n: Int): Slice[T] = toSlice.take(n)
+  final def take(n: Int): Slice[T] = asSlice.take(n)
 
   /** Takes last N items and returns a Slice.
     * @group Slice */
-  final def takeRight(n: Int): Slice[T] = toSlice.takeRight(n)
+  final def takeRight(n: Int): Slice[T] = asSlice.takeRight(n)
 
   /** Drops first N items and returns a Slice.
     * @group Slice */
-  final def drop(n: Int): Slice[T] = toSlice.drop(n)
+  final def drop(n: Int): Slice[T] = asSlice.drop(n)
 
   /** Drops last N items and returns a Slice.
     * @group Slice */
-  final def dropRight(n: Int): Slice[T] = toSlice.dropRight(n)
+  final def dropRight(n: Int): Slice[T] = asSlice.dropRight(n)
+
+  /** Returns an iterator over actual buffer values,
+    * starting from the zero index up.
+    * @note does not copy buffer values,
+    * @group Read */
+  final def iterator: Iterator[T] = new Iterator[T] {
+    var i: Int = 0
+    def hasNext: Boolean = i <= topIndex
+    def next(): T = {
+      val value = uncheckedApply(i)
+      i = i + 1
+      value
+    }
+  }
+
+  /** Returns a reverse iterator over actual buffer values,
+    * starting from the topIndex down.
+    * @group Read */
+  final def reverseIterator: Iterator[T] = new Iterator[T] {
+    var i: Int = topIndex
+    def hasNext: Boolean = i >= 0
+    def next(): T = {
+      val value = uncheckedApply(i)
+      i = i - 1
+      value
+    }
+  }
 
 }
 

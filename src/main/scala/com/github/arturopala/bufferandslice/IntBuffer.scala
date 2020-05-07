@@ -50,11 +50,11 @@ final class IntBuffer(initialSize: Int = 8) extends ArrayBufferLike[Int] {
     this
   }
 
-  /** Returns copy of the underlying array trimmed to length. */
+  /** Returns an Array with a copy of an accessible buffer range. */
   def toArray: Array[Int] = java.util.Arrays.copyOf(_array, length)
 
-  /** Wraps underlying array as a Slice. */
-  def toSlice: IntSlice = IntSlice.of(_array, 0, length)
+  /** Wraps accessible internal state as a Slice without making any copy. */
+  def asSlice: IntSlice = IntSlice.of(_array, 0, length)
 
 }
 

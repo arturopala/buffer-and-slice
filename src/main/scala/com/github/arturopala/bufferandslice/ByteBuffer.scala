@@ -38,11 +38,11 @@ final class ByteBuffer(initialSize: Int = 8) extends ArrayBufferLike[Byte] {
       _array = newArray
     }
 
-  /** Returns copy of the underlying array trimmed to length. */
+  /** Returns an Array with a copy of an accessible buffer range. */
   def toArray: Array[Byte] = java.util.Arrays.copyOf(_array, length)
 
-  /** Wraps underlying array as a Slice. */
-  def toSlice: ByteSlice = ByteSlice.of(_array, 0, length)
+  /** Wraps accessible internal state as a Slice without making any copy. */
+  def asSlice: ByteSlice = ByteSlice.of(_array, 0, length)
 
 }
 

@@ -42,9 +42,9 @@ final class ArrayBuffer[T](initialArray: Array[T]) extends ArrayBufferLike[T] {
       _array = ArrayOps.copyOf(_array, Math.max(_array.length + upswing, index + 1))
     }
 
-  /** Returns a copy of the underlying array trimmed to length. */
+  /** Returns an Array with a copy of an accessible buffer range. */
   def toArray: Array[T] = ArrayOps.copyOf(_array, length)
 
-  /** Wraps underlying array as a Slice. */
-  def toSlice: Slice[T] = ArraySlice.of(_array, 0, length)
+  /** Wraps accessible internal state as a Slice without making any copy. */
+  def asSlice: Slice[T] = ArraySlice.of(_array, 0, length)
 }

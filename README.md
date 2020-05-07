@@ -5,7 +5,7 @@ Buffer\[T] and Slice\[T]
 
 This is a micro-library for Scala providing lightweight Buffer and Slice abstractions.
 
-    "com.github.arturopala" %% "buffer-and-slice" % "1.7.1"
+    "com.github.arturopala" %% "buffer-and-slice" % "1.8.0-SNAPSHOT"
 
 Cross-compiles to Scala versions `2.13.2`, `2.12.11`, `2.11.12`, `0.24.0-RC1`, `0.23.0`, 
 and ScalaJS version `1.0.1`, and ScalaNative version `0.4.0-M2`.
@@ -52,7 +52,7 @@ and use native `java.lang.System.arraycopy` and `java.util.Arrays.copyOf` where 
 Lightweight operations:
 
 - creating new `Buffer` or `Slice` from an array
-- slicing (`toSlice`, `slice`, `take`, `drop`, `takeRight`, `dropRight`)
+- slicing (`asSlice`, `slice`, `take`, `drop`, `takeRight`, `dropRight`)
 - mapping the slice
 - using iterators or `toIterable`
 - making `Slice.copyToArray`
@@ -118,7 +118,7 @@ IntBuffer(0,1,2,3)
 IntBuffer(Array(0,1,2,3))
 // res11: IntBuffer = [0,1,2,3]
 
-IntBuffer(0,1,2,3).toSlice
+IntBuffer(0,1,2,3).asSlice
 // res12: IntSlice = Slice(0,1,2,3)
 ```
 
@@ -245,7 +245,7 @@ Buffer(1,2,3).reset
 - Making a `Slice` of a `Buffer`:
 
 ```scala
-Buffer(1,2,3,4,5,6,7,8,9).toSlice
+Buffer(1,2,3,4,5,6,7,8,9).asSlice
 // res49: Slice[Int] = Slice(1,2,3,4,5,6,7,8,9)
 
 Buffer(1,2,3,4,5,6,7,8,9).slice(2,6)

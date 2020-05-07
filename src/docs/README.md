@@ -52,7 +52,7 @@ and use native `java.lang.System.arraycopy` and `java.util.Arrays.copyOf` where 
 Lightweight operations:
 
 - creating new `Buffer` or `Slice` from an array
-- slicing (`toSlice`, `slice`, `take`, `drop`, `takeRight`, `dropRight`)
+- slicing (`asSlice`, `slice`, `take`, `drop`, `takeRight`, `dropRight`)
 - mapping the slice
 - using iterators or `toIterable`
 - making `Slice.copyToArray`
@@ -110,7 +110,7 @@ IntBuffer(0,1,2,3)
 
 IntBuffer(Array(0,1,2,3))
 
-IntBuffer(0,1,2,3).toSlice
+IntBuffer(0,1,2,3).asSlice
 ```
 
 - Modifying the content:
@@ -200,7 +200,7 @@ Buffer(1,2,3).reset
 - Making a `Slice` of a `Buffer`:
 
 ```scala mdoc
-Buffer(1,2,3,4,5,6,7,8,9).toSlice
+Buffer(1,2,3,4,5,6,7,8,9).asSlice
 
 Buffer(1,2,3,4,5,6,7,8,9).slice(2,6)
 
