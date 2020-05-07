@@ -25,7 +25,7 @@ object IndexTracker {
 
   /** Modify values in the index buffer tracking [[Buffer.shiftRight]] operation effect. */
   final def trackShiftRight(index: Int, distance: Int, indexes: IntBuffer): IntBuffer = {
-    if (distance > 0 && index >= 0) {
+    if (indexes.nonEmpty && distance > 0 && index >= 0) {
       indexes.modifyAllWhen(_ + distance, _ >= index)
     }
     indexes
@@ -33,7 +33,7 @@ object IndexTracker {
 
   /** Modify the index sequence tracking [[Buffer.shiftRight]] operation effect. */
   final def trackShiftRight[S <: Seq[Int]](index: Int, distance: Int, indexes: S): S =
-    if (distance > 0 && index >= 0)
+    if (indexes.nonEmpty && distance > 0 && index >= 0)
       indexes
         .map(i => if (i >= index) i + distance else i)
         .asInstanceOf[S]
@@ -41,7 +41,7 @@ object IndexTracker {
 
   /** Modify values in the index buffer tracking [[Buffer.shiftLeft]] operation effect. */
   final def trackShiftLeft(index: Int, distance: Int, indexes: IntBuffer): IntBuffer = {
-    if (distance > 0 && index >= 0) {
+    if (indexes.nonEmpty && distance > 0 && index >= 0) {
       indexes.removeWhen(i => i >= index - distance && i < index)
       indexes.modifyAllWhen(_ - distance, _ >= index)
       indexes.removeWhen(_ < 0)
@@ -51,7 +51,7 @@ object IndexTracker {
 
   /** Modify the index sequence tracking [[Buffer.shiftLeft]] operation effect. */
   final def trackShiftLeft[S <: Seq[Int]](index: Int, distance: Int, indexes: S): S =
-    if (distance > 0 && index >= 0)
+    if (indexes.nonEmpty && distance > 0 && index >= 0)
       indexes
         .filterNot(i => i >= index - distance && i < index)
         .map(i => if (i >= index) i - distance else i)
@@ -61,7 +61,7 @@ object IndexTracker {
 
   /** Modify values in the index buffer tracking [[Buffer.moveRangeRight]] operation effect. */
   final def trackMoveRangeRight(fromIndex: Int, toIndex: Int, distance: Int, indexes: IntBuffer): IntBuffer = {
-    if (distance > 0 && fromIndex >= 0 && toIndex > fromIndex) {
+    if (indexes.nonEmpty && distance > 0 && fromIndex >= 0 && toIndex > fromIndex) {
       val offset = fromIndex - toIndex
       indexes.modifyAll { i =>
         if (i >= fromIndex && i < toIndex) i + distance
@@ -74,7 +74,7 @@ object IndexTracker {
 
   /** Modify values in the index buffer tracking [[Buffer.moveRangeRight]] operation effect. */
   final def trackMoveRangeRight[S <: Seq[Int]](fromIndex: Int, toIndex: Int, distance: Int, indexes: S): S =
-    if (distance > 0 && fromIndex >= 0 && toIndex > fromIndex) {
+    if (indexes.nonEmpty && distance > 0 && fromIndex >= 0 && toIndex > fromIndex) {
       val offset = fromIndex - toIndex
       indexes
         .map { i =>
@@ -87,7 +87,7 @@ object IndexTracker {
 
   /** Modify values in the index buffer tracking [[Buffer.moveRangeLeft]] operation effect. */
   final def trackMoveRangeLeft(fromIndex: Int, toIndex: Int, distance: Int, indexes: IntBuffer): IntBuffer = {
-    if (distance > 0 && fromIndex >= 0 && toIndex > fromIndex) {
+    if (indexes.nonEmpty && distance > 0 && fromIndex >= 0 && toIndex > fromIndex) {
       val offset = toIndex - fromIndex
       val shift = Math.max(0, distance - fromIndex)
       if (shift > 0) {
@@ -104,7 +104,7 @@ object IndexTracker {
 
   /** Modify values in the index buffer tracking [[Buffer.moveRangeLeft]] operation effect. */
   final def trackMoveRangeLeft[S <: Seq[Int]](fromIndex: Int, toIndex: Int, distance: Int, indexes: S): S =
-    if (distance > 0 && fromIndex >= 0 && toIndex > fromIndex) {
+    if (indexes.nonEmpty && distance > 0 && fromIndex >= 0 && toIndex > fromIndex) {
       val offset = toIndex - fromIndex
       val shift = Math.max(0, distance - fromIndex)
       val indexes2 = if (shift > 0) indexes.map(_ + shift) else indexes
@@ -120,7 +120,7 @@ object IndexTracker {
   /** Modify values in the index buffer tracking [[Buffer.swapRange]] operation effect.
     * @note removed values are marked with -1 */
   final def trackSwapRange(first: Int, second: Int, swapLength: Int, indexes: IntBuffer): IntBuffer = {
-    if (swapLength > 0 && first >= 0 && second >= 0 && first != second && first + swapLength >= 0 && second + swapLength >= 0) {
+    if (indexes.nonEmpty && swapLength > 0 && first >= 0 && second >= 0 && first != second && first + swapLength >= 0 && second + swapLength >= 0) {
       val offset = first - second
       val hasLeftOverlap = Math.abs(offset) < swapLength && first < second
       val hasRightOverlap = !hasLeftOverlap && Math.abs(offset) < swapLength && first > second
@@ -140,7 +140,7 @@ object IndexTracker {
   /** Modify values in the index buffer tracking [[Buffer.swapRange]] operation effect.
     * @note removed values are marked with -1 */
   final def trackSwapRange[S <: Seq[Int]](first: Int, second: Int, swapLength: Int, indexes: S): S =
-    if (swapLength > 0 && first >= 0 && second >= 0 && first != second && first + swapLength >= 0 && second + swapLength >= 0) {
+    if (indexes.nonEmpty && swapLength > 0 && first >= 0 && second >= 0 && first != second && first + swapLength >= 0 && second + swapLength >= 0) {
       val offset = first - second
       val hasLeftOverlap = Math.abs(offset) < swapLength && first < second
       val hasRightOverlap = !hasLeftOverlap && Math.abs(offset) < swapLength && first > second
