@@ -27,18 +27,24 @@ import scala.reflect.ClassTag
   *
   * @groupprio Abstract 0
   * @groupprio Properties 1
-  * @groupprio Access 2
-  * @groupprio Update 3
-  * @groupprio Append 4
-  * @groupprio Stack Ops 5
+  * @groupprio List 2
+  * @groupname List List-like
+  * @groupdesc List List like operations, head is the top element
+  * @groupprio Stack 3
+  * @groupname Stack Stack-like
+  * @groupdesc Stack Stack like operations, peek takes the top element
+  * @groupprio Slice 4
+  * @groupprio Append 5
   * @groupprio Insert 6
-  * @groupprio Replace 7
-  * @groupprio Remove 8
-  * @groupprio Shift 9
-  * @groupprio Move 10
-  * @groupprio Swap 11
-  * @groupprio Limit 12
-  * @groupprio Read 13
+  * @groupprio Modify 7
+  * @groupprio Replace 8
+  * @groupprio Remove 9
+  * @groupprio Shift 10
+  * @groupprio Move 11
+  * @groupprio Swap 12
+  * @groupprio Limit 13
+  * @groupdesc Limit Manipulations of the topIndex
+  * @groupprio Read 14
   */
 trait Buffer[T] extends (Int => T) {
 
@@ -49,12 +55,12 @@ trait Buffer[T] extends (Int => T) {
   protected def uncheckedUpdate(index: Int, value: T): Unit
 
   /** Returns value at the provided index.
-    * @group Access */
+    * @group Abstract */
   def apply(index: Int): T
 
   /** Updates value at the provided index.
     * @throws IndexOutOfBoundsException if index lower than zero.
-    * @group Update */
+    * @group Abstract */
   def update(index: Int, value: T): this.type
 
   /** Ensures buffer capacity to address provided index.
@@ -90,35 +96,35 @@ trait Buffer[T] extends (Int => T) {
   @`inline` final def top: Int = topIndex
 
   /** Returns value at the topIndex.
-    * @group Access */
+    * @group List */
   @`inline` final def head: T = apply(topIndex)
 
   /** Returns Some value at the topIndex
     * or None if empty buffer.
-    * @group Access */
+    * @group List */
   @`inline` final def headOption: Option[T] =
     if (topIndex < 0) None else Some(uncheckedApply(topIndex))
 
   /** Returns value at the zero index.
-    * @group Access */
+    * @group List */
   @`inline` final def last: T = apply(0)
 
   /** Returns Some value at the zero index,
     * or None if empty buffer.
-    * @group Access */
+    * @group List */
   @`inline` final def lastOption: Option[T] =
     if (topIndex < 0) None else Some(uncheckedApply(0))
 
   /** Returns this buffer after decrementing topIndex .
-    * @group Access */
+    * @group List */
   @`inline` final def tail: this.type = rewind(1)
 
   /** Returns this buffer without a first element.
-    * @group Access */
+    * @group List */
   @`inline` final def init: this.type = shiftLeft(1, 1)
 
   /** Returns Some value at the index, or None if index outside of range.
-    * @group Access */
+    * @group List */
   @`inline` final def get(index: Int): Option[T] =
     if (index >= 0 && index <= topIndex) Some(uncheckedApply(index))
     else None
@@ -128,7 +134,7 @@ trait Buffer[T] extends (Int => T) {
     * @param index value's index
     * @param map map function
     * @throws IndexOutOfBoundsException if index lower than zero.
-    * @group Update */
+    * @group Modify */
   final def modify(index: Int, map: T => T): this.type = {
     if (index >= 0 && index < length) {
       uncheckedUpdate(index, map(uncheckedApply(index)))
@@ -140,13 +146,13 @@ trait Buffer[T] extends (Int => T) {
   /** Updates all values in the range [0,length) using the function.
     * @param f map function
     * @throws IndexOutOfBoundsException if index lower than zero.
-    * @group Update */
+    * @group Modify */
   @`inline` final def map(f: T => T): this.type = modifyAll(f)
 
   /** Updates all values in the range [0,length) using the function.
     * @param map map function
     * @throws IndexOutOfBoundsException if index lower than zero.
-    * @group Update */
+    * @group Modify */
   final def modifyAll(map: T => T): this.type = {
     var i = 0
     while (i < length) {
@@ -160,7 +166,7 @@ trait Buffer[T] extends (Int => T) {
     * @param map map function
     * @param pred filter function
     * @throws IndexOutOfBoundsException if index lower than zero.
-    * @group Update */
+    * @group Modify */
   final def modifyAllWhen(map: T => T, pred: T => Boolean): this.type = {
     var i = 0
     while (i < length) {
@@ -177,7 +183,7 @@ trait Buffer[T] extends (Int => T) {
     * @param toIndex index of the last value exclusive
     * @param map      map function
     * @throws IndexOutOfBoundsException if index lower than zero.
-    * @group Update */
+    * @group Modify */
   final def modifyRange(fromIndex: Int, toIndex: Int, map: T => T): this.type = {
     if (toIndex > 0 && fromIndex < length) {
       var i = Math.max(0, fromIndex)
@@ -199,7 +205,7 @@ trait Buffer[T] extends (Int => T) {
     * @param map map function
     * @param pred filter function
     * @throws IndexOutOfBoundsException if index lower than zero.
-    * @group Update */
+    * @group Modify */
   final def modifyRangeWhen(fromIndex: Int, toIndex: Int, map: T => T, pred: T => Boolean): this.type = {
     if (toIndex > 0 && fromIndex < length) {
       var i = Math.max(0, fromIndex)
@@ -474,7 +480,7 @@ trait Buffer[T] extends (Int => T) {
   def swapRange(first: Int, second: Int, swapLength: Int): this.type
 
   /** Replace value at the topIndex.
-    * @group Stack Ops */
+    * @group Stack */
   final def store(value: T): this.type = {
     if (topIndex < 0) topIndex = 0
     uncheckedUpdate(topIndex, value)
@@ -483,26 +489,26 @@ trait Buffer[T] extends (Int => T) {
 
   /** Appends value to the topIndex.
     * Same as [[append]]
-    * @group Stack Ops */
+    * @group Stack */
   @`inline` final def push(value: T): this.type = {
     update(length, value)
     this
   }
 
   /** Returns value at the topIndex.
-    * @group Stack Ops */
+    * @group Stack */
   @`inline` final def peek: T = apply(topIndex)
 
   /** Returns value at the topIndex - offset.
-    * @group Stack Ops */
+    * @group Stack */
   @`inline` final def peek(offset: Int): T = apply(topIndex - offset)
 
   /** Returns value at the topIndex - offset.
-    * @group Stack Ops */
+    * @group Stack */
   @`inline` final def peekOption(offset: Int): Option[T] = get(topIndex - offset)
 
   /** Returns value at the topIndex, and moves topIndex back.
-    * @group Stack Ops */
+    * @group Stack */
   final def pop: T = {
     val value = peek
     topIndex = topIndex - 1
