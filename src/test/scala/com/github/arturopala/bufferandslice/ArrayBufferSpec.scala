@@ -498,6 +498,81 @@ class ArrayBufferSpec extends AnyWordSpecCompat {
       buffer.copy.append("e").toArray shouldBe Array("a", "b", "c", "e")
       buffer.toArray shouldBe Array("a", "b", "c")
     }
+
+    "have a headOption" in {
+      Buffer.empty[String].headOption shouldBe None
+      Buffer.empty[Int].headOption shouldBe None
+      Buffer(1).headOption shouldBe Some(1)
+      Buffer("a", "b").headOption shouldBe Some("b")
+      Buffer("a", "c").headOption shouldBe Some("c")
+      Buffer(1, 2).headOption shouldBe Some(2)
+      Buffer(1, 13).headOption shouldBe Some(13)
+    }
+
+    "have a last" in {
+      Buffer(1).last shouldBe 1
+      Buffer("a", "b").last shouldBe "a"
+      Buffer("a", "c").last shouldBe "a"
+      Buffer(1, 2).last shouldBe 1
+      Buffer(13, 1).last shouldBe 13
+    }
+
+    "have a lastOption" in {
+      Buffer.empty[String].lastOption shouldBe None
+      Buffer.empty[Int].lastOption shouldBe None
+      Buffer(1).lastOption shouldBe Some(1)
+      Buffer("a", "b").lastOption shouldBe Some("a")
+      Buffer("a", "c").lastOption shouldBe Some("a")
+      Buffer(1, 2).lastOption shouldBe Some(1)
+      Buffer(13, 1).lastOption shouldBe Some(13)
+    }
+
+    "have an init" in {
+      Buffer.empty[String].init.toArray shouldBe Array.empty[String]
+      Buffer.empty[Int].init.toArray shouldBe Array.empty[Int]
+      Buffer(1).init.toArray shouldBe Array.empty[Int]
+      Buffer("a", "b").init.toArray shouldBe Array("b")
+      Buffer("a", "b", "c").init.toArray shouldBe Array("b", "c")
+      Buffer("a", "b", "c", "d").init.toArray shouldBe Array("b", "c", "d")
+      Buffer("a", "c").init.toArray shouldBe Array("c")
+      Buffer(1, 2).init.toArray shouldBe Array(2)
+      Buffer(13, 1).init.toArray shouldBe Array(1)
+      Buffer(13, 1, 17, 23).init.toArray shouldBe Array(1, 17, 23)
+      Buffer(13, 17, 1, 23).init.toArray shouldBe Array(17, 1, 23)
+    }
+
+    "have a get" in {
+      Buffer.empty[String].get(0) shouldBe None
+      Buffer.empty[String].get(-1) shouldBe None
+      Buffer.empty[String].get(1) shouldBe None
+      Buffer("a").get(-1) shouldBe None
+      Buffer("a").get(0) shouldBe Some("a")
+      Buffer("a").get(1) shouldBe None
+      Buffer("a").get(2) shouldBe None
+      Buffer("a", "b").get(0) shouldBe Some("a")
+      Buffer("a", "b").get(1) shouldBe Some("b")
+      Buffer("a", "b").get(2) shouldBe None
+    }
+
+    "have a peek with offset" in {
+      Buffer("a").peek shouldBe "a"
+      Buffer("a").peek(0) shouldBe "a"
+      Buffer("a", "b").peek shouldBe "b"
+      Buffer("a", "b").peek(0) shouldBe "b"
+      Buffer("a", "b").peek(1) shouldBe "a"
+    }
+
+    "have a peekOption" in {
+      Buffer.empty[String].peekOption(-1) shouldBe None
+      Buffer.empty[String].peekOption(0) shouldBe None
+      Buffer.empty[String].peekOption(1) shouldBe None
+      Buffer("a").peekOption(0) shouldBe Some("a")
+      Buffer("a").peekOption(1) shouldBe None
+      Buffer("a", "b").peekOption(-1) shouldBe None
+      Buffer("a", "b").peekOption(0) shouldBe Some("b")
+      Buffer("a", "b").peekOption(1) shouldBe Some("a")
+      Buffer("a", "b").peekOption(2) shouldBe None
+    }
   }
 
 }

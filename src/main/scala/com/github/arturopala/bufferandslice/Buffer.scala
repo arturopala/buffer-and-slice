@@ -21,18 +21,23 @@ import scala.reflect.ClassTag
 /** Mutable indexed buffer abstraction.
   * All modifications happens in-place.
   *
+  * In addition, the Buffer API offers both Stack- and List-like interfaces.
+  * For the purpose of the List-like processing,
+  * the head is a top element in the buffer.
+  *
   * @groupprio Abstract 0
   * @groupprio Properties 1
-  * @groupprio Update 2
-  * @groupprio Append 3
-  * @groupprio Stack Ops 4
-  * @groupprio Insert 5
-  * @groupprio Replace 6
-  * @groupprio Remove 7
-  * @groupprio Shift 8
-  * @groupprio Move 9
-  * @groupprio Swap 10
-  * @groupprio Limit 11
+  * @groupprio Access 2
+  * @groupprio Update 3
+  * @groupprio Append 4
+  * @groupprio Stack Ops 5
+  * @groupprio Insert 6
+  * @groupprio Replace 7
+  * @groupprio Remove 8
+  * @groupprio Shift 9
+  * @groupprio Move 10
+  * @groupprio Swap 11
+  * @groupprio Limit 12
   * @groupprio Read 13
   */
 trait Buffer[T] extends (Int => T) {
@@ -44,12 +49,12 @@ trait Buffer[T] extends (Int => T) {
   protected def uncheckedUpdate(index: Int, value: T): Unit
 
   /** Returns value at the provided index.
-    * @group Abstract */
+    * @group Access */
   def apply(index: Int): T
 
   /** Updates value at the provided index.
     * @throws IndexOutOfBoundsException if index lower than zero.
-    * @group Abstract */
+    * @group Update */
   def update(index: Int, value: T): this.type
 
   /** Ensures buffer capacity to address provided index.
@@ -67,6 +72,56 @@ trait Buffer[T] extends (Int => T) {
   /** Wraps accessible internal state as a Slice without making any copy.
     * @group Abstract */
   def asSlice: Slice[T]
+
+  /** Length of the accessible part of the buffer.
+    * @group Properties */
+  @`inline` final def length: Int = topIndex + 1
+
+  /** Is the accessible part of the buffer empty?
+    * @group Properties */
+  @`inline` final def isEmpty: Boolean = length == 0
+
+  /** Is the accessible part of the buffer non empty?
+    * @group Properties */
+  @`inline` final def nonEmpty: Boolean = length > 0
+
+  /** Returns topIndex value.
+    * @group Limit */
+  @`inline` final def top: Int = topIndex
+
+  /** Returns value at the topIndex.
+    * @group Access */
+  @`inline` final def head: T = apply(topIndex)
+
+  /** Returns Some value at the topIndex
+    * or None if empty buffer.
+    * @group Access */
+  @`inline` final def headOption: Option[T] =
+    if (topIndex < 0) None else Some(uncheckedApply(topIndex))
+
+  /** Returns value at the zero index.
+    * @group Access */
+  @`inline` final def last: T = apply(0)
+
+  /** Returns Some value at the zero index,
+    * or None if empty buffer.
+    * @group Access */
+  @`inline` final def lastOption: Option[T] =
+    if (topIndex < 0) None else Some(uncheckedApply(0))
+
+  /** Returns this buffer after decrementing topIndex .
+    * @group Access */
+  @`inline` final def tail: this.type = rewind(1)
+
+  /** Returns this buffer without a first element.
+    * @group Access */
+  @`inline` final def init: this.type = shiftLeft(1, 1)
+
+  /** Returns Some value at the index, or None if index outside of range.
+    * @group Access */
+  @`inline` final def get(index: Int): Option[T] =
+    if (index >= 0 && index <= topIndex) Some(uncheckedApply(index))
+    else None
 
   /** Updates value at the provided index using the function.
     * Index must fall within range [0,length).
@@ -159,30 +214,6 @@ trait Buffer[T] extends (Int => T) {
     }
     this
   }
-
-  /** Returns value at the topIndex.
-    * @group Properties */
-  @`inline` final def head: T = apply(topIndex)
-
-  /** Returns this buffer after decrementing topIndex .
-    * @group Read */
-  @`inline` final def tail: this.type = rewind(1)
-
-  /** Length of the accessible part of the buffer.
-    * @group Properties */
-  @`inline` final def length: Int = topIndex + 1
-
-  /** Is the accessible part of the buffer empty?
-    * @group Properties */
-  @`inline` final def isEmpty: Boolean = length == 0
-
-  /** Is the accessible part of the buffer non empty?
-    * @group Properties */
-  @`inline` final def nonEmpty: Boolean = length > 0
-
-  /** Returns topIndex value.
-    * @group Limit */
-  @`inline` final def top: Int = topIndex
 
   /** Sets topIndex value.
     * @group Limit */
@@ -460,7 +491,15 @@ trait Buffer[T] extends (Int => T) {
 
   /** Returns value at the topIndex.
     * @group Stack Ops */
-  final def peek: T = apply(topIndex)
+  @`inline` final def peek: T = apply(topIndex)
+
+  /** Returns value at the topIndex - offset.
+    * @group Stack Ops */
+  @`inline` final def peek(offset: Int): T = apply(topIndex - offset)
+
+  /** Returns value at the topIndex - offset.
+    * @group Stack Ops */
+  @`inline` final def peekOption(offset: Int): Option[T] = get(topIndex - offset)
 
   /** Returns value at the topIndex, and moves topIndex back.
     * @group Stack Ops */
@@ -472,23 +511,23 @@ trait Buffer[T] extends (Int => T) {
 
   /** Takes range and returns a Slice.
     * @group Slice */
-  final def slice(from: Int, to: Int): Slice[T] = asSlice.slice(from, to)
+  @`inline` final def slice(from: Int, to: Int): Slice[T] = asSlice.slice(from, to)
 
   /** Takes first N items and returns a Slice.
     * @group Slice */
-  final def take(n: Int): Slice[T] = asSlice.take(n)
+  @`inline` final def take(n: Int): Slice[T] = asSlice.take(n)
 
   /** Takes last N items and returns a Slice.
     * @group Slice */
-  final def takeRight(n: Int): Slice[T] = asSlice.takeRight(n)
+  @`inline` final def takeRight(n: Int): Slice[T] = asSlice.takeRight(n)
 
   /** Drops first N items and returns a Slice.
     * @group Slice */
-  final def drop(n: Int): Slice[T] = asSlice.drop(n)
+  @`inline` final def drop(n: Int): Slice[T] = asSlice.drop(n)
 
   /** Drops last N items and returns a Slice.
     * @group Slice */
-  final def dropRight(n: Int): Slice[T] = asSlice.dropRight(n)
+  @`inline` final def dropRight(n: Int): Slice[T] = asSlice.dropRight(n)
 
   /** Returns an iterator over actual buffer values,
     * starting from the zero index up.

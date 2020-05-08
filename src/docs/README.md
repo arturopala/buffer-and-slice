@@ -39,7 +39,12 @@ Depends only on a standard built-in Scala library.
 API
 ---
 
+`Buffer` offers comprehensive API, together with `Stack`- and `List`- like interfaces.
+
+For the purpose of using as a mutable List, the top element is a `head`.
+
 For more details, see:
+
 - [Scaladoc of Buffer](https://arturopala.github.io/buffer-and-slice/latest/api/com/github/arturopala/bufferandslice/Buffer.html).
 - [Scaladoc of Slice](https://arturopala.github.io/buffer-and-slice/latest/api/com/github/arturopala/bufferandslice/Slice.html).
 
@@ -107,9 +112,17 @@ Buffer(Array("a","b","c"))
 
 Buffer(1,2,3).apply(1)
 
+Buffer(1,2,3).get(2)
+
 Buffer("a","b","c").head
 
+Buffer("a","b","c").last
+
 Buffer("a","b","c").tail
+
+Buffer("a","b","c").init
+
+Buffer(1,2,3,4,5,6,7,8,9).asSlice
 
 Buffer(1,2,3,4,5,6,7,8,9).toArray
 
@@ -198,6 +211,12 @@ Buffer(1,2,3,4,5,6,7,8,9).reverseIterator
 
 ```scala mdoc
 Buffer(1,2,3).peek
+
+Buffer(1,2,3).peek(1)
+
+Buffer(1,2,3).peekOption(2)
+
+Buffer(1,2,3).peekOption(3)
 
 Buffer(1,2,3).pop
 
