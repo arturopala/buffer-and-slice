@@ -1,1 +1,2 @@
 -J-XX:+CMSClassUnloadingEnabled
+-J-Xmx1024M

@@ -197,9 +197,7 @@ class IndexTrackerSpec extends AnyWordSpecCompat {
       val initialValues = values.copy
       val initialIndexes = indexes.copy
       values.swapRange(6, 3, 4)
-      println(values.toArray.mkString(","))
       IndexTracker.trackSwapRange(6, 3, 4, indexes)
-      println(indexes.toArray.mkString(","))
       initialIndexes.iterator.zip(indexes.iterator).foreach {
         case (i1, i2) =>
           if (i2 != -1) initialValues(i1) shouldBe values(i2)
@@ -212,9 +210,7 @@ class IndexTrackerSpec extends AnyWordSpecCompat {
       val initialValues = values.copy
       val initialIndexes = indexes.copy
       values.swapRange(2, 5, 4)
-      println(values.toArray.mkString(","))
       IndexTracker.trackSwapRange(2, 5, 4, indexes)
-      println(indexes.toArray.mkString(","))
       initialIndexes.iterator.zip(indexes.iterator).foreach {
         case (i1, i2) =>
           if (i2 != -1) initialValues(i1) shouldBe values(i2)
