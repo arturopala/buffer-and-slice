@@ -258,13 +258,21 @@ class IntSliceSpec extends AnyWordSpecCompat {
       ArraySlice(1, 2, 3).hashCode() shouldBe IntSlice(1, 2, 3).hashCode()
       ArraySlice(1, 2, 3).hashCode() shouldBe Slice(1, 2, 3).hashCode()
       IntSlice(1, 2, 3).hashCode() shouldBe Slice(1, 2, 3).hashCode()
-      MappedArraySlice(1, 2, 3).hashCode() shouldBe Slice(1, 2, 3).hashCode()
+      LazyMapArraySlice(1, 2, 3).hashCode() shouldBe Slice(1, 2, 3).hashCode()
     }
 
     "have equals" in {
       ArraySlice(1, 2, 3) shouldBe ArraySlice(1, 2, 3)
       IntSlice(1, 2, 3) shouldBe IntSlice(1, 2, 3)
-      MappedArraySlice(1, 2, 3) shouldBe MappedArraySlice(1, 2, 3)
+      LazyMapArraySlice(1, 2, 3) shouldBe LazyMapArraySlice(1, 2, 3)
+    }
+
+    "have get" in {
+      IntSlice(1, 2, 3).get(-1) shouldBe None
+      IntSlice(1, 2, 3).get(0) shouldBe Some(1)
+      IntSlice(1, 2, 3).get(1) shouldBe Some(2)
+      IntSlice(1, 2, 3).get(2) shouldBe Some(3)
+      IntSlice(1, 2, 3).get(4) shouldBe None
     }
 
   }

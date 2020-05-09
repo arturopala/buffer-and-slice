@@ -21,10 +21,11 @@ import java.util.NoSuchElementException
 import scala.collection.AbstractIterable
 import scala.reflect.ClassTag
 
-/** Lazily mapped, possibly immutable slice of an underlying array.
+/** Lazily mapped slice of an underlying array.
+  * @note Truly immutable only if an underlying array kept private, or if detached.
   * @tparam T type of the array's items
   */
-abstract class MappedArraySlice[T] private (fromIndex: Int, toIndex: Int, detached: Boolean) extends Slice[T] {
+abstract class LazyMapArraySlice[T] private (fromIndex: Int, toIndex: Int, detached: Boolean) extends Slice[T] {
 
   /** Type of the underlying array items. */
   type A
@@ -51,13 +52,13 @@ abstract class MappedArraySlice[T] private (fromIndex: Int, toIndex: Int, detach
       throw new IndexOutOfBoundsException(s"Expected an `update` index in the interval [0,$length), but was $index.")
     val modified: Array[T1] = toArray[T1]
     modified.update(index, value)
-    MappedArraySlice.lazyMapped[T1, T1](0, length, modified, identity, true)
+    LazyMapArraySlice.lazyMapped[T1, T1](0, length, modified, identity, true)
   }
 
   /** Lazily composes mapping function and returns new Slice.
     * Does not modify nor copy underlying array. */
   final override def map[K](f: T => K): Slice[K] =
-    MappedArraySlice.lazyMapped[K, A](fromIndex, toIndex, array, mapF.andThen(f), detached)
+    LazyMapArraySlice.lazyMapped[K, A](fromIndex, toIndex, array, mapF.andThen(f), detached)
 
   /** Counts values fulfilling the predicate. */
   final override def count(pred: T => Boolean): Int = {
@@ -93,13 +94,19 @@ abstract class MappedArraySlice[T] private (fromIndex: Int, toIndex: Int, detach
     if (length > 0) Some(mapF(array(toIndex - 1)))
     else None
 
+  /** Returns Some of the value at the index,
+    * or None if index outside of range. */
+  final override def get(index: Int): Option[T] =
+    if (index < 0 || index >= length) None
+    else Some(mapF(array.apply(index)))
+
   /** Lazily narrows Slice to provided range. */
   final override def slice(from: Int, to: Int): this.type = {
     val t = fit(to, length)
     val f = fit(from, t)
     if (f == 0 && t == length) this
     else
-      MappedArraySlice
+      LazyMapArraySlice
         .lazyMapped[T, A](fromIndex + f, fromIndex + t, array, mapF, detached)
         .asInstanceOf[this.type]
   }
@@ -218,7 +225,7 @@ abstract class MappedArraySlice[T] private (fromIndex: Int, toIndex: Int, detach
     else {
       val newArray = ArrayOps.copyOf(array, length)
       java.lang.System.arraycopy(array, fromIndex, newArray, 0, length)
-      MappedArraySlice
+      LazyMapArraySlice
         .lazyMapped[T, A](0, length, newArray, mapF, detached = true)
         .asInstanceOf[this.type]
     }
@@ -245,8 +252,8 @@ abstract class MappedArraySlice[T] private (fromIndex: Int, toIndex: Int, detach
 
   /** Returns new iterable of Slice values. */
   final override def asIterable: Iterable[T] = new AbstractIterable[T] {
-    override def iterator: Iterator[T] = MappedArraySlice.this.iterator
-    override def toString(): String = MappedArraySlice.this.toString
+    override def iterator: Iterator[T] = LazyMapArraySlice.this.iterator
+    override def toString(): String = LazyMapArraySlice.this.toString
   }
 
   final override def toString: String =
@@ -281,12 +288,12 @@ abstract class MappedArraySlice[T] private (fromIndex: Int, toIndex: Int, detach
   }
 }
 
-object MappedArraySlice {
+object LazyMapArraySlice {
 
-  /** Creates new detached MappedArraySlice out of given value sequence. */
-  def apply[T: ClassTag](is: T*): MappedArraySlice[T] = {
+  /** Creates new detached LazyMapArraySlice out of given value sequence. */
+  def apply[T: ClassTag](is: T*): LazyMapArraySlice[T] = {
     val _array = Array(is: _*)
-    new MappedArraySlice[T](0, _array.length, detached = true) {
+    new LazyMapArraySlice[T](0, _array.length, detached = true) {
       type A = T
       val array: Array[A] = _array
       val mapF: A => T = identity
@@ -299,39 +306,39 @@ object MappedArraySlice {
     _array: Array[K],
     _mapF: K => T,
     detached: Boolean
-  ): MappedArraySlice[T] =
-    new MappedArraySlice[T](fromIndex, toIndex, detached) {
+  ): LazyMapArraySlice[T] =
+    new LazyMapArraySlice[T](fromIndex, toIndex, detached) {
       type A = K
       val array: Array[A] = _array
       val mapF: A => T = _mapF
     }
 
-  /** Creates new MappedArraySlice of given array values. */
-  def of[T](_array: Array[T]): MappedArraySlice[T] = new MappedArraySlice[T](0, _array.length, detached = false) {
+  /** Creates new LazyMapArraySlice of given array values. */
+  def of[T](_array: Array[T]): LazyMapArraySlice[T] = new LazyMapArraySlice[T](0, _array.length, detached = false) {
     type A = T
     val array: Array[A] = _array
     val mapF: A => T = identity
   }
 
-  /** Creates new MappedArraySlice of given subset of array values. */
-  def of[T](_array: Array[T], from: Int, to: Int): MappedArraySlice[T] = {
-    assert(from >= 0, "When creating a MappedArraySlice, parameter `from` must be greater or equal to zero.")
+  /** Creates new LazyMapArraySlice of given subset of array values. */
+  def of[T](_array: Array[T], from: Int, to: Int): LazyMapArraySlice[T] = {
+    assert(from >= 0, "When creating a LazyMapArraySlice, parameter `from` must be greater or equal to zero.")
     assert(
       to <= _array.length,
-      "When creating a MappedArraySlice, parameter `to` must be lower or equal to the array length."
+      "When creating a LazyMapArraySlice, parameter `to` must be lower or equal to the array length."
     )
     assert(
       from <= to,
-      "When creating a MappedArraySlice, parameter `from` must be lower or equal to the parameter `to`."
+      "When creating a LazyMapArraySlice, parameter `from` must be lower or equal to the parameter `to`."
     )
-    new MappedArraySlice[T](from, to, detached = false) {
+    new LazyMapArraySlice[T](from, to, detached = false) {
       type A = T
       val array: Array[A] = _array
       val mapF: A => T = identity
     }
   }
 
-  /** Creates an empty MappedArraySlice of given type. */
-  def empty[T: ClassTag]: MappedArraySlice[T] = MappedArraySlice.of(Array.empty[T])
+  /** Creates an empty LazyMapArraySlice of given type. */
+  def empty[T: ClassTag]: LazyMapArraySlice[T] = LazyMapArraySlice.of(Array.empty[T])
 
 }

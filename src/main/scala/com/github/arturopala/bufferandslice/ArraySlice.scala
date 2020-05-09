@@ -19,8 +19,9 @@ package com.github.arturopala.bufferandslice
 import scala.reflect.ClassTag
 
 /** Lazy, immutable slice of an underlying array.
-  *
-  * @tparam T type of the array's items */
+  * @note Truly immutable only if an underlying array kept private or if detached.
+  * @tparam T type of the array's items
+  */
 final class ArraySlice[T] private (
   protected val fromIndex: Int,
   protected val toIndex: Int,

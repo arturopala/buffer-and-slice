@@ -21,6 +21,10 @@ import java.util.NoSuchElementException
 import scala.collection.AbstractIterable
 import scala.reflect.ClassTag
 
+/** Common functions of an array-backed Slice.
+  * @note Truly immutable only if an underlying array kept private, or if detached.
+  * @tparam T type of the array's items
+  */
 trait ArraySliceLike[T] extends Slice[T] {
 
   /** @group Internal */
@@ -58,10 +62,10 @@ trait ArraySliceLike[T] extends Slice[T] {
     Slice.of(modified)
   }
 
-  /** Lazily composes mapping function and returns new [[MappedArraySlice]].
+  /** Lazily composes mapping function and returns new [[LazyMapArraySlice]].
     * Does not modify nor copy underlying array. */
   @`inline` final override def map[K](f: T => K): Slice[K] =
-    MappedArraySlice.lazyMapped[K, T](fromIndex, toIndex, array, f, detached)
+    LazyMapArraySlice.lazyMapped[K, T](fromIndex, toIndex, array, f, detached)
 
   /** Counts values fulfilling the predicate. */
   final override def count(pred: T => Boolean): Int = {
@@ -96,6 +100,12 @@ trait ArraySliceLike[T] extends Slice[T] {
   final override def lastOption: Option[T] =
     if (length > 0) Some(array(toIndex - 1))
     else None
+
+  /** Returns Some of the value at the index,
+    * or None if index outside of range. */
+  final override def get(index: Int): Option[T] =
+    if (index < 0 || index >= length) None
+    else Some(array.apply(index))
 
   /** Lazily narrows Slice to provided range. */
   final override def slice(from: Int, to: Int): this.type = {

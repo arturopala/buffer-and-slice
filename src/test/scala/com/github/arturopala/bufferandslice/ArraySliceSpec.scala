@@ -265,6 +265,14 @@ class ArraySliceSpec extends AnyWordSpecCompat {
       slice(1) shouldBe 7
       detached(1) shouldBe 3
     }
+
+    "have get" in {
+      ArraySlice(1, 2, 3).get(-1) shouldBe None
+      ArraySlice(1, 2, 3).get(0) shouldBe Some(1)
+      ArraySlice(1, 2, 3).get(1) shouldBe Some(2)
+      ArraySlice(1, 2, 3).get(2) shouldBe Some(3)
+      ArraySlice(1, 2, 3).get(4) shouldBe None
+    }
   }
 
 }

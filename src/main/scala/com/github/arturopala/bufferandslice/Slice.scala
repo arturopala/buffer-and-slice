@@ -18,7 +18,7 @@ package com.github.arturopala.bufferandslice
 
 import scala.reflect.ClassTag
 
-/** Lazy, possibly immutable slice of a sequence of values.
+/** Lazy and immutable slice of a sequence of values.
   * @tparam T type of the items of the sequence.
   *
   * @note As the slice usually wraps over a mutable structure,
@@ -91,6 +91,10 @@ trait Slice[T] extends (Int => T) {
   /** Returns the Slice without last value.
     * @group Access */
   def init: this.type
+
+  /** Returns Some of the value at the index,
+    * or None if index outside of range. */
+  def get(index: Int): Option[T]
 
   /** Lazily narrows Slice to provided range.
     * @group Transform */
