@@ -575,7 +575,7 @@ class ArrayBufferSpec extends AnyWordSpecCompat {
     }
 
     "have an empty" in {
-      Buffer.empty.length shouldBe 0
+      Buffer.empty[String].length shouldBe 0
     }
   }
 
