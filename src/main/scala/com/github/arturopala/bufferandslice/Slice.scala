@@ -30,11 +30,12 @@ import scala.reflect.ClassTag
   *
   * @groupprio Properties 0
   * @groupprio Access 1
-  * @groupprio Transform 2
-  * @groupprio Aggregate 3
-  * @groupprio Iterate 4
-  * @groupprio Export 5
-  * @groupprio Internal 6
+  * @groupprio Find 2
+  * @groupprio Transform 3
+  * @groupprio Aggregate 4
+  * @groupprio Iterate 5
+  * @groupprio Export 6
+  * @groupprio Internal 7
   */
 trait Slice[T] extends (Int => T) {
 
@@ -95,6 +96,12 @@ trait Slice[T] extends (Int => T) {
   /** Returns Some of the value at the index,
     * or None if index outside of range. */
   def get(index: Int): Option[T]
+
+  /** Returns Some of the first value fulfilling the predicate, or None. */
+  def find(pred: T => Boolean): Option[T]
+
+  /** Returns true if any value fulfills the predicate, or false. */
+  def exists(pred: T => Boolean): Boolean
 
   /** Lazily narrows Slice to provided range.
     * @group Transform */

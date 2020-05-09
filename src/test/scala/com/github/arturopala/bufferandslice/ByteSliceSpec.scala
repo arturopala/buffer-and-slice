@@ -239,6 +239,26 @@ class ByteSliceSpec extends AnyWordSpecCompat {
       slice(1) shouldBe 7
       detached(1) shouldBe 3
     }
+
+    "have a find" in {
+      ByteSlice.empty.find(_ > 0) shouldBe None
+      ByteSlice(0).find(_ > 0) shouldBe None
+      ByteSlice(1).find(_ > 0) shouldBe Some(1)
+      ByteSlice(1, 2, 3).find(_ > 0) shouldBe Some(1)
+      ByteSlice(1, 2, 3).find(_ > 0) shouldBe Some(1)
+      ByteSlice(1, 2, 3).find(_ > 1) shouldBe Some(2)
+      ByteSlice(1, 2, 3).find(_ > 3) shouldBe None
+    }
+
+    "have an exists" in {
+      ByteSlice.empty.exists(_ > 0) shouldBe false
+      ByteSlice(0).exists(_ > 0) shouldBe false
+      ByteSlice(1).exists(_ > 0) shouldBe true
+      ByteSlice(1, 2, 3).exists(_ > 0) shouldBe true
+      ByteSlice(1, 2, 3).exists(_ > 0) shouldBe true
+      ByteSlice(1, 2, 3).exists(_ > 1) shouldBe true
+      ByteSlice(1, 2, 3).exists(_ > 3) shouldBe false
+    }
   }
 
 }

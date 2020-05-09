@@ -573,6 +573,10 @@ class ArrayBufferSpec extends AnyWordSpecCompat {
       Buffer("a", "b").peekOption(1) shouldBe Some("a")
       Buffer("a", "b").peekOption(2) shouldBe None
     }
+
+    "have an empty" in {
+      Buffer.empty.length shouldBe 0
+    }
   }
 
 }

@@ -60,5 +60,5 @@ object ByteBuffer {
   def apply(array: Array[Byte]): ByteBuffer = new ByteBuffer(array.length).appendArray(array)
 
   /** An empty buffer. */
-  def empty = new ByteBuffer(0)
+  def empty = new ByteBuffer(8)
 }

@@ -266,12 +266,32 @@ class ArraySliceSpec extends AnyWordSpecCompat {
       detached(1) shouldBe 3
     }
 
-    "have get" in {
+    "have a get" in {
       ArraySlice(1, 2, 3).get(-1) shouldBe None
       ArraySlice(1, 2, 3).get(0) shouldBe Some(1)
       ArraySlice(1, 2, 3).get(1) shouldBe Some(2)
       ArraySlice(1, 2, 3).get(2) shouldBe Some(3)
       ArraySlice(1, 2, 3).get(4) shouldBe None
+    }
+
+    "have a find" in {
+      ArraySlice.empty[Int].find(_ > 0) shouldBe None
+      ArraySlice(0).find(_ > 0) shouldBe None
+      ArraySlice(1).find(_ > 0) shouldBe Some(1)
+      ArraySlice(1, 2, 3).find(_ > 0) shouldBe Some(1)
+      ArraySlice(1, 2, 3).find(_ > 0) shouldBe Some(1)
+      ArraySlice(1, 2, 3).find(_ > 1) shouldBe Some(2)
+      ArraySlice(1, 2, 3).find(_ > 3) shouldBe None
+    }
+
+    "have an exists" in {
+      ArraySlice.empty[Int].exists(_ > 0) shouldBe false
+      ArraySlice(0).exists(_ > 0) shouldBe false
+      ArraySlice(1).exists(_ > 0) shouldBe true
+      ArraySlice(1, 2, 3).exists(_ > 0) shouldBe true
+      ArraySlice(1, 2, 3).exists(_ > 0) shouldBe true
+      ArraySlice(1, 2, 3).exists(_ > 1) shouldBe true
+      ArraySlice(1, 2, 3).exists(_ > 3) shouldBe false
     }
   }
 

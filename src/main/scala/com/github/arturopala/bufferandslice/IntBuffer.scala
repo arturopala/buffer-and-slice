@@ -71,5 +71,5 @@ object IntBuffer {
   def apply(array: Array[Int]): IntBuffer = new IntBuffer(array.length).appendArray(array)
 
   /** An empty buffer. */
-  def empty = new IntBuffer(0)
+  def empty = new IntBuffer(8)
 }

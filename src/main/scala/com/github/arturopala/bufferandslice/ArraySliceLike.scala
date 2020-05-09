@@ -107,6 +107,33 @@ trait ArraySliceLike[T] extends Slice[T] {
     if (index < 0 || index >= length) None
     else Some(array.apply(index))
 
+  /** Returns Some of the first value fulfilling the predicate, or None. */
+  final override def find(pred: T => Boolean): Option[T] = {
+    var result: Option[T] = None
+    var i = 0
+    while (i < length) {
+      val v = array(i)
+      if (pred(v)) {
+        result = Some(v)
+        i = length + 1
+      } else {
+        i = i + 1
+      }
+    }
+    result
+  }
+
+  /** Returns true if any value fulfills the predicate, or false. */
+  final override def exists(pred: T => Boolean): Boolean = {
+    var i = 0
+    while (i >= 0 && i < length) {
+      val v = array(i)
+      if (pred(v)) i = -1
+      else i = i + 1
+    }
+    i < 0
+  }
+
   /** Lazily narrows Slice to provided range. */
   final override def slice(from: Int, to: Int): this.type = {
     val t = fit(to, length)

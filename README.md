@@ -5,7 +5,7 @@ Buffer\[T] and Slice\[T]
 
 This is a micro-library for Scala providing lightweight Buffer and Slice abstractions.
 
-    "com.github.arturopala" %% "buffer-and-slice" % "1.11.0"
+    "com.github.arturopala" %% "buffer-and-slice" % "1.12.0-SNAPSHOT"
 
 Cross-compiles to Scala versions `2.13.2`, `2.12.11`, `2.11.12`, `0.24.0-RC1`, `0.23.0`, 
 and ScalaJS version `1.0.1`, and ScalaNative version `0.4.0-M2`.
@@ -348,56 +348,68 @@ slice.apply(0)
 slice.apply(5)
 // res68: String = "f"
 
+slice.get(0)
+// res69: Option[String] = Some("a")
+
+slice.get(50)
+// res70: Option[String] = None
+
 slice.update(4,"a")
-// res69: Slice[String] = Slice(a,b,c,d,a,f,g,h,i,j)
+// res71: Slice[String] = Slice(a,b,c,d,a,f,g,h,i,j)
 
 slice.update(5,"b")
-// res70: Slice[String] = Slice(a,b,c,d,ee,b,g,h,i,j)
+// res72: Slice[String] = Slice(a,b,c,d,ee,b,g,h,i,j)
 
 slice.slice(1,5)
-// res71: Slice[String] = Slice(b,c,d,ee)
+// res73: Slice[String] = Slice(b,c,d,ee)
 
 slice.take(5)
-// res72: Slice[String] = Slice(a,b,c,d,ee)
+// res74: Slice[String] = Slice(a,b,c,d,ee)
 
 slice.drop(5)
-// res73: Slice[String] = Slice(f,g,h,i,j)
+// res75: Slice[String] = Slice(f,g,h,i,j)
 
 slice.takeRight(5)
-// res74: Slice[String] = Slice(f,g,h,i,j)
+// res76: Slice[String] = Slice(f,g,h,i,j)
 
 slice.dropRight(5)
-// res75: Slice[String] = Slice(a,b,c,d,ee)
+// res77: Slice[String] = Slice(a,b,c,d,ee)
 
 slice.slice(2,6)
-// res76: Slice[String] = Slice(c,d,ee,f)
+// res78: Slice[String] = Slice(c,d,ee,f)
 
 slice.head
-// res77: String = "a"
+// res79: String = "a"
 
 slice.headOption
-// res78: Option[String] = Some("a")
+// res80: Option[String] = Some("a")
 
 slice.init
-// res79: Slice[String] = Slice(a,b,c,d,ee,f,g,h,i)
+// res81: Slice[String] = Slice(a,b,c,d,ee,f,g,h,i)
 
 slice.last
-// res80: String = "j"
+// res82: String = "j"
+
+slice.find("slice".contains)
+// res83: Option[String] = Some("c")
+
+slice.exists("slice".contains)
+// res84: Boolean = true
 
 slice.count(_.length > 1)
-// res81: Int = 1
+// res85: Int = 1
 
 slice.count(_.length == 1)
-// res82: Int = 9
+// res86: Int = 9
 
 slice.map(s => s+s)
-// res83: Slice[String] = Slice(aa,bb,cc,dd,eeee,ff,gg,hh,ii,jj)
+// res87: Slice[String] = Slice(aa,bb,cc,dd,eeee,ff,gg,hh,ii,jj)
 
 slice.map(s => s"($s)")
-// res84: Slice[String] = Slice((a),(b),(c),(d),(ee),(f),(g),(h),(i),(j))
+// res88: Slice[String] = Slice((a),(b),(c),(d),(ee),(f),(g),(h),(i),(j))
 
 slice.asIterable
-// res85: Iterable[String] = Iterable(
+// res89: Iterable[String] = Iterable(
 //   "a",
 //   "b",
 //   "c",
@@ -411,40 +423,6 @@ slice.asIterable
 // )
 
 slice.iterator.toList
-// res86: List[String] = List(
-//   "a",
-//   "b",
-//   "c",
-//   "d",
-//   "ee",
-//   "f",
-//   "g",
-//   "h",
-//   "i",
-//   "j"
-// )
-
-slice.iterator("abeij".contains(_)).toList
-// res87: List[String] = List("a", "b", "i", "j")
-
-slice.reverseIterator.toList
-// res88: List[String] = List(
-//   "j",
-//   "i",
-//   "h",
-//   "g",
-//   "f",
-//   "ee",
-//   "d",
-//   "c",
-//   "b",
-//   "a"
-// )
-
-slice.reverseIterator("adgh".contains(_)).toList
-// res89: List[String] = List("h", "g", "d", "a")
-
-slice.toList
 // res90: List[String] = List(
 //   "a",
 //   "b",
@@ -458,8 +436,42 @@ slice.toList
 //   "j"
 // )
 
+slice.iterator("abeij".contains(_)).toList
+// res91: List[String] = List("a", "b", "i", "j")
+
+slice.reverseIterator.toList
+// res92: List[String] = List(
+//   "j",
+//   "i",
+//   "h",
+//   "g",
+//   "f",
+//   "ee",
+//   "d",
+//   "c",
+//   "b",
+//   "a"
+// )
+
+slice.reverseIterator("adgh".contains(_)).toList
+// res93: List[String] = List("h", "g", "d", "a")
+
+slice.toList
+// res94: List[String] = List(
+//   "a",
+//   "b",
+//   "c",
+//   "d",
+//   "ee",
+//   "f",
+//   "g",
+//   "h",
+//   "i",
+//   "j"
+// )
+
 slice.toSeq
-// res91: Seq[String] = Vector(
+// res95: Seq[String] = Vector(
 //   "a",
 //   "b",
 //   "c",
@@ -473,7 +485,7 @@ slice.toSeq
 // )
 
 slice.toArray
-// res92: Array[String] = Array(
+// res96: Array[String] = Array(
 //   "a",
 //   "b",
 //   "c",
@@ -487,7 +499,7 @@ slice.toArray
 // )
 
 slice.copyToArray(3, new Array[String](15))
-// res93: Array[String] = Array(
+// res97: Array[String] = Array(
 //   null,
 //   null,
 //   null,
@@ -506,7 +518,7 @@ slice.copyToArray(3, new Array[String](15))
 // )
 
 slice.toBuffer
-// res94: Buffer[String] = [a,b,c,d,ee,f,g,h,i,j]
+// res98: Buffer[String] = [a,b,c,d,ee,f,g,h,i,j]
 
 val slice3 = slice.detach
 // slice3: Slice[String] = Slice(a,b,c,d,ee,f,g,h,i,j)

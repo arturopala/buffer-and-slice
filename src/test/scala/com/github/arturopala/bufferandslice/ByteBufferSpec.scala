@@ -103,6 +103,10 @@ class ByteBufferSpec extends AnyWordSpecCompat {
       buffer.replaceFromSlice(4, ByteSlice(0, 0, 0, 0, 0, 0, 0, 0)).toArray shouldBe Array(1, 2, 3, 4, 0, 0, 0, 0, 0, 0,
         0, 0, 3, 4, 5)
     }
+
+    "have an empty" in {
+      ByteBuffer.empty.length shouldBe 0
+    }
   }
 
 }

@@ -275,6 +275,26 @@ class IntSliceSpec extends AnyWordSpecCompat {
       IntSlice(1, 2, 3).get(4) shouldBe None
     }
 
+    "have a find" in {
+      IntSlice.empty.find(_ > 0) shouldBe None
+      IntSlice(0).find(_ > 0) shouldBe None
+      IntSlice(1).find(_ > 0) shouldBe Some(1)
+      IntSlice(1, 2, 3).find(_ > 0) shouldBe Some(1)
+      IntSlice(1, 2, 3).find(_ > 0) shouldBe Some(1)
+      IntSlice(1, 2, 3).find(_ > 1) shouldBe Some(2)
+      IntSlice(1, 2, 3).find(_ > 3) shouldBe None
+    }
+
+    "have an exists" in {
+      IntSlice.empty.exists(_ > 0) shouldBe false
+      IntSlice(0).exists(_ > 0) shouldBe false
+      IntSlice(1).exists(_ > 0) shouldBe true
+      IntSlice(1, 2, 3).exists(_ > 0) shouldBe true
+      IntSlice(1, 2, 3).exists(_ > 0) shouldBe true
+      IntSlice(1, 2, 3).exists(_ > 1) shouldBe true
+      IntSlice(1, 2, 3).exists(_ > 3) shouldBe false
+    }
+
   }
 
 }

@@ -278,6 +278,47 @@ class LazyMapArraySliceSpec extends AnyWordSpecCompat {
       LazyMapArraySlice(1, 2, 3).get(1) shouldBe Some(2)
       LazyMapArraySlice(1, 2, 3).get(2) shouldBe Some(3)
       LazyMapArraySlice(1, 2, 3).get(4) shouldBe None
+      LazyMapArraySlice(1, 2, 3).map(String.valueOf).get(-1) shouldBe None
+      LazyMapArraySlice(1, 2, 3).map(String.valueOf).get(0) shouldBe Some("1")
+      LazyMapArraySlice(1, 2, 3).map(String.valueOf).get(1) shouldBe Some("2")
+      LazyMapArraySlice(1, 2, 3).map(String.valueOf).get(2) shouldBe Some("3")
+      LazyMapArraySlice(1, 2, 3).map(String.valueOf).get(4) shouldBe None
+    }
+
+    "have a find" in {
+      LazyMapArraySlice.empty[Int].find(_ > 0) shouldBe None
+      LazyMapArraySlice(0).find(_ > 0) shouldBe None
+      LazyMapArraySlice(1).find(_ > 0) shouldBe Some(1)
+      LazyMapArraySlice(1, 2, 3).find(_ > 0) shouldBe Some(1)
+      LazyMapArraySlice(1, 2, 3).find(_ > 0) shouldBe Some(1)
+      LazyMapArraySlice(1, 2, 3).find(_ > 1) shouldBe Some(2)
+      LazyMapArraySlice(1, 2, 3).find(_ > 3) shouldBe None
+
+      LazyMapArraySlice.empty[Int].map(String.valueOf).find("123".contains) shouldBe None
+      LazyMapArraySlice(0).map(String.valueOf).find("123".contains) shouldBe None
+      LazyMapArraySlice(1).map(String.valueOf).find("123".contains) shouldBe Some("1")
+      LazyMapArraySlice(1, 2, 3).map(String.valueOf).find("123".contains) shouldBe Some("1")
+      LazyMapArraySlice(1, 2, 3).map(String.valueOf).find("234".contains) shouldBe Some("2")
+      LazyMapArraySlice(1, 2, 3).map(String.valueOf).find("345".contains) shouldBe Some("3")
+      LazyMapArraySlice(1, 2, 3).map(String.valueOf).find("456".contains) shouldBe None
+    }
+
+    "have an exists" in {
+      LazyMapArraySlice.empty[Int].exists(_ > 0) shouldBe false
+      LazyMapArraySlice(0).exists(_ > 0) shouldBe false
+      LazyMapArraySlice(1).exists(_ > 0) shouldBe true
+      LazyMapArraySlice(1, 2, 3).exists(_ > 0) shouldBe true
+      LazyMapArraySlice(1, 2, 3).exists(_ > 0) shouldBe true
+      LazyMapArraySlice(1, 2, 3).exists(_ > 1) shouldBe true
+      LazyMapArraySlice(1, 2, 3).exists(_ > 3) shouldBe false
+
+      LazyMapArraySlice.empty[Int].map(String.valueOf).exists("123".contains) shouldBe false
+      LazyMapArraySlice(0).map(String.valueOf).exists("123".contains) shouldBe false
+      LazyMapArraySlice(1).map(String.valueOf).exists("123".contains) shouldBe true
+      LazyMapArraySlice(1, 2, 3).map(String.valueOf).exists("123".contains) shouldBe true
+      LazyMapArraySlice(1, 2, 3).map(String.valueOf).exists("234".contains) shouldBe true
+      LazyMapArraySlice(1, 2, 3).map(String.valueOf).exists("345".contains) shouldBe true
+      LazyMapArraySlice(1, 2, 3).map(String.valueOf).exists("456".contains) shouldBe false
     }
   }
 

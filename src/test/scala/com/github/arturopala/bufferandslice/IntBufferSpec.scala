@@ -180,6 +180,10 @@ class IntBufferSpec extends AnyWordSpecCompat {
       buffer.decrement(1).toArray shouldBe Array(1, 1, 3, 3, 5, 6)
       buffer.decrement(5).toArray shouldBe Array(1, 1, 3, 3, 5, 5)
     }
+
+    "have an empty" in {
+      IntBuffer.empty.length shouldBe 0
+    }
   }
 
 }

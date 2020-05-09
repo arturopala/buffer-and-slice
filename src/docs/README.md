@@ -269,6 +269,10 @@ slice.apply(0)
 
 slice.apply(5)
 
+slice.get(0)
+
+slice.get(50)
+
 slice.update(4,"a")
 
 slice.update(5,"b")
@@ -292,6 +296,10 @@ slice.headOption
 slice.init
 
 slice.last
+
+slice.find("slice".contains)
+
+slice.exists("slice".contains)
 
 slice.count(_.length > 1)
 

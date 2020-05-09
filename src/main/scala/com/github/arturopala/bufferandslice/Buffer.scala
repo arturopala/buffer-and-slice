@@ -581,10 +581,16 @@ object Buffer {
     else
       new ArrayBuffer[T](array)
 
-  @`inline` def apply[T: ClassTag](array: Array[T], length: Int): Buffer[T] = apply(array).set(length)
+  @`inline` def apply[T: ClassTag](array: Array[T], length: Int): Buffer[T] =
+    apply(array).set(length)
 
-  def ofSize[T: ClassTag](size: Int): ArrayBuffer[T] = new ArrayBuffer[T](new Array[T](size))
+  def ofSize[T: ClassTag](size: Int): Buffer[T] =
+    new ArrayBuffer[T](new Array[T](size))
 
-  def empty[T: ClassTag] = new ArrayBuffer[T](Array.empty[T])
+  def empty[T: ClassTag]: Buffer[T] = {
+    val buffer = new ArrayBuffer[T](new Array[T](8))
+    buffer.reset
+    buffer
+  }
 
 }
