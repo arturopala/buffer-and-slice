@@ -117,7 +117,8 @@ trait ArrayBufferLike[T] extends Buffer[T] {
       if (length - index > 0) {
         java.lang.System.arraycopy(underlyingUnsafe, index, underlyingUnsafe, index + distance, length - index)
       }
-      if (top >= index) {
+      if (top == -1) set(distance - 1)
+      else if (top >= index) {
         set(top + distance)
       }
     }

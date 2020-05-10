@@ -101,14 +101,11 @@ class ArrayBufferSpec extends AnyWordSpecCompat {
 
     "shift values right" in {
       val buffer = new ArrayBuffer(Array("a", "b", "c"))
-      buffer.shiftRight(1, 5)
-      buffer.toArray shouldBe Array("a", "b", "c", null, null, null, "b", "c")
+      buffer.shiftRight(1, 5).toArray shouldBe Array("a", "b", "c", null, null, null, "b", "c")
       buffer.length shouldBe 8
-      buffer.shiftRight(7, 1)
-      buffer.toArray shouldBe Array("a", "b", "c", null, null, null, "b", "c", "c")
+      buffer.shiftRight(7, 1).toArray shouldBe Array("a", "b", "c", null, null, null, "b", "c", "c")
       buffer.length shouldBe 9
-      buffer.shiftRight(5, 2)
-      buffer.toArray shouldBe Array("a", "b", "c", null, null, null, "b", null, "b", "c", "c")
+      buffer.shiftRight(5, 2).toArray shouldBe Array("a", "b", "c", null, null, null, "b", null, "b", "c", "c")
       buffer.length shouldBe 11
       buffer.shiftRight(5, -2) // ignore negative distance
       buffer.toArray shouldBe Array("a", "b", "c", null, null, null, "b", null, "b", "c", "c")
@@ -119,7 +116,7 @@ class ArrayBufferSpec extends AnyWordSpecCompat {
 
       val buffer2 = new ArrayBuffer(Array.empty[String])
       buffer2.shiftRight(0, 10)
-      buffer2.length shouldBe 0
+      buffer2.length shouldBe 10
     }
 
     "shift values left" in {
