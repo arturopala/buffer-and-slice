@@ -184,6 +184,57 @@ class IntBufferSpec extends AnyWordSpecCompat {
     "have an empty" in {
       IntBuffer.empty.length shouldBe 0
     }
+
+    "have asSlice" in {
+      IntBuffer.empty.asSlice.isEmpty shouldBe true
+      IntBuffer.empty.asSlice shouldBe IntSlice.empty
+      IntBuffer(1).asSlice shouldBe IntSlice(1)
+      IntBuffer(1, 3).asSlice shouldBe IntSlice(1, 3)
+      IntBuffer(1, 3, 5).asSlice shouldBe IntSlice(1, 3, 5)
+      IntBuffer(1, 1, 1).asSlice shouldBe IntSlice(1, 1, 1)
+      IntBuffer(1, 1, 1).rewind(1).asSlice shouldBe IntSlice(1, 1)
+      IntBuffer(1, 3, 5).tail.asSlice shouldBe IntSlice(1, 3)
+    }
+
+    "have slice" in {
+      val b0 = IntBuffer.empty
+      b0.slice(0, 0).isEmpty shouldBe true
+      b0.slice(0, 1).isEmpty shouldBe true
+      b0.slice(0, 2).isEmpty shouldBe true
+      b0.slice(0, 0) shouldBe IntSlice.empty
+      b0.slice(0, 1) shouldBe IntSlice.empty
+      b0.slice(0, 2) shouldBe IntSlice.empty
+      val b1 = IntBuffer(1)
+      b1.slice(0, 1) shouldBe IntSlice(1)
+      b1.slice(0, 2) shouldBe IntSlice(1)
+      val b2 = IntBuffer(1, 3)
+      b2.slice(0, 3) shouldBe IntSlice(1, 3)
+      b2.slice(0, 2) shouldBe IntSlice(1, 3)
+      b2.slice(1, 2) shouldBe IntSlice(3)
+      b2.slice(1, 3) shouldBe IntSlice(3)
+      b2.slice(0, 1) shouldBe IntSlice(1)
+      b2.slice(0, 0) shouldBe IntSlice.empty
+      val b3_1 = IntBuffer(1, 3, 5)
+      b3_1.slice(0, 4) shouldBe IntSlice(1, 3, 5)
+      b3_1.slice(0, 3) shouldBe IntSlice(1, 3, 5)
+      b3_1.slice(1, 3) shouldBe IntSlice(3, 5)
+      b3_1.slice(2, 3) shouldBe IntSlice(5)
+      b3_1.slice(3, 3) shouldBe IntSlice.empty
+      b3_1.slice(0, 2) shouldBe IntSlice(1, 3)
+      b3_1.slice(1, 2) shouldBe IntSlice(3)
+      b3_1.slice(0, 1) shouldBe IntSlice(1)
+      b3_1.slice(0, 0) shouldBe IntSlice.empty
+      b3_1.tail.slice(0, 0) shouldBe IntSlice.empty
+      b3_1.tail.slice(0, 1) shouldBe IntSlice(1)
+      IntBuffer(1, 3, 5).tail.slice(0, 2) shouldBe IntSlice(1, 3)
+      val b3_2 = IntBuffer(1, 1, 1)
+      b3_2.slice(0, 4) shouldBe IntSlice(1, 1, 1)
+      b3_2.slice(0, 3) shouldBe IntSlice(1, 1, 1)
+      b3_2.slice(0, 2) shouldBe IntSlice(1, 1)
+      b3_2.slice(0, 1) shouldBe IntSlice(1)
+      b3_2.rewind(1).slice(0, 3) shouldBe IntSlice(1, 1)
+      b3_2.rewind(1).slice(0, 2) shouldBe IntSlice(1)
+    }
   }
 
 }

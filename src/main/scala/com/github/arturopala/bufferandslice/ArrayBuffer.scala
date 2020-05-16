@@ -49,5 +49,13 @@ final class ArrayBuffer[T](initialArray: Array[T]) extends ArrayBufferLike[T] {
   override def toArray: Array[T] = ArrayOps.copyOf(_array, length)
 
   /** Wraps accessible internal state as a Slice without making any copy. */
-  override def asSlice: Slice[T] = ArraySlice.of(_array, 0, length)
+  override def asSlice: Slice[T] =
+    new ArraySlice(0, length, _array, detached = false)
+
+  /** Takes range and returns an ArraySlice. */
+  override def slice(from: Int, to: Int): Slice[T] = {
+    val t = Math.min(length, to)
+    val f = Math.min(from, t)
+    new ArraySlice(f, t, _array, detached = false)
+  }
 }

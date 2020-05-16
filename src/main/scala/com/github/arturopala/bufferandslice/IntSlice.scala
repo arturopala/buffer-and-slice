@@ -21,7 +21,7 @@ import scala.reflect.ClassTag
 /** Lazy, specialized slice of the array of integers.
   * @note Truly immutable only if an underlying array kept private, or if detached.
   */
-final class IntSlice private (
+final class IntSlice private[bufferandslice] (
   protected val fromIndex: Int,
   protected val toIndex: Int,
   protected val array: Array[Int],

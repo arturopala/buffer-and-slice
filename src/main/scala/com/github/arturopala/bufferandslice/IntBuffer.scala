@@ -57,7 +57,15 @@ final class IntBuffer(initialSize: Int = 8) extends ArrayBufferLike[Int] {
   override def toArray: Array[Int] = java.util.Arrays.copyOf(_array, length)
 
   /** Wraps accessible internal state as a Slice without making any copy. */
-  override def asSlice: IntSlice = IntSlice.of(_array, 0, length)
+  override def asSlice: IntSlice =
+    new IntSlice(0, length, _array, detached = false)
+
+  /** Takes range and returns an IntSlice. */
+  override def slice(from: Int, to: Int): IntSlice = {
+    val t = Math.min(length, to)
+    val f = Math.min(from, t)
+    new IntSlice(f, t, _array, detached = false)
+  }
 
 }
 

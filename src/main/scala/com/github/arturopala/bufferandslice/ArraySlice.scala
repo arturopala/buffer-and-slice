@@ -22,7 +22,7 @@ import scala.reflect.ClassTag
   * @note Truly immutable only if an underlying array kept private or if detached.
   * @tparam T type of the array's items
   */
-final class ArraySlice[T] private (
+final class ArraySlice[T] private[bufferandslice] (
   protected val fromIndex: Int,
   protected val toIndex: Int,
   protected val array: Array[T],

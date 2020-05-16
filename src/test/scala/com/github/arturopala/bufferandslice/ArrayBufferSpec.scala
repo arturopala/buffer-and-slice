@@ -574,6 +574,58 @@ class ArrayBufferSpec extends AnyWordSpecCompat {
     "have an empty" in {
       Buffer.empty[String].length shouldBe 0
     }
+
+    "have asSlice" in {
+      Buffer.empty[String].asSlice.isEmpty shouldBe true
+      Buffer.empty[String].asSlice shouldBe Slice.empty[String]
+      Buffer("a").asSlice shouldBe Slice("a")
+      Buffer("a", "b").asSlice shouldBe Slice("a", "b")
+      Buffer("a", "b", "c").asSlice shouldBe Slice("a", "b", "c")
+      Buffer("a", "a", "a").asSlice shouldBe Slice("a", "a", "a")
+      Buffer("a", "a", "a").rewind(1).asSlice shouldBe Slice("a", "a")
+      Buffer("a", "b", "c").tail.asSlice shouldBe Slice("a", "b")
+    }
+
+    "have slice" in {
+      val b0 = Buffer.empty[String]
+      b0.slice(0, 0).isEmpty shouldBe true
+      b0.slice(0, 1).isEmpty shouldBe true
+      b0.slice(0, 2).isEmpty shouldBe true
+      b0.slice(0, 0) shouldBe Slice.empty[String]
+      b0.slice(0, 1) shouldBe Slice.empty[String]
+      b0.slice(0, 2) shouldBe Slice.empty[String]
+      val b1 = Buffer("a")
+      b1.slice(0, 1) shouldBe Slice("a")
+      b1.slice(0, 2) shouldBe Slice("a")
+      val b2 = Buffer("a", "b")
+      b2.slice(0, 3) shouldBe Slice("a", "b")
+      b2.slice(0, 2) shouldBe Slice("a", "b")
+      b2.slice(1, 2) shouldBe Slice("b")
+      b2.slice(1, 3) shouldBe Slice("b")
+      b2.slice(0, 1) shouldBe Slice("a")
+      b2.slice(0, 0) shouldBe Slice.empty[String]
+      val b3_1 = Buffer("a", "b", "c")
+      b3_1.slice(0, 4) shouldBe Slice("a", "b", "c")
+      b3_1.slice(0, 3) shouldBe Slice("a", "b", "c")
+      b3_1.slice(1, 3) shouldBe Slice("b", "c")
+      b3_1.slice(2, 3) shouldBe Slice("c")
+      b3_1.slice(3, 3) shouldBe Slice.empty[String]
+      b3_1.slice(0, 2) shouldBe Slice("a", "b")
+      b3_1.slice(1, 2) shouldBe Slice("b")
+      b3_1.slice(0, 1) shouldBe Slice("a")
+      b3_1.slice(0, 0) shouldBe Slice.empty[String]
+      b3_1.tail.slice(0, 0) shouldBe Slice.empty[String]
+      b3_1.tail.slice(0, 1) shouldBe Slice("a")
+      Buffer("a", "b", "c").tail.slice(0, 2) shouldBe Slice("a", "b")
+      val b3_2 = Buffer("a", "a", "a")
+      b3_2.slice(0, 4) shouldBe Slice("a", "a", "a")
+      b3_2.slice(0, 3) shouldBe Slice("a", "a", "a")
+      b3_2.slice(0, 2) shouldBe Slice("a", "a")
+      b3_2.slice(0, 1) shouldBe Slice("a")
+      b3_2.rewind(1).slice(0, 3) shouldBe Slice("a", "a")
+      b3_2.rewind(1).slice(0, 2) shouldBe Slice("a")
+    }
+
   }
 
 }

@@ -107,6 +107,57 @@ class ByteBufferSpec extends AnyWordSpecCompat {
     "have an empty" in {
       ByteBuffer.empty.length shouldBe 0
     }
+
+    "have asSlice" in {
+      ByteBuffer.empty.asSlice.isEmpty shouldBe true
+      ByteBuffer.empty.asSlice shouldBe ByteSlice.empty
+      ByteBuffer(1).asSlice shouldBe ByteSlice(1)
+      ByteBuffer(1, 3).asSlice shouldBe ByteSlice(1, 3)
+      ByteBuffer(1, 3, 5).asSlice shouldBe ByteSlice(1, 3, 5)
+      ByteBuffer(1, 1, 1).asSlice shouldBe ByteSlice(1, 1, 1)
+      ByteBuffer(1, 1, 1).rewind(1).asSlice shouldBe ByteSlice(1, 1)
+      ByteBuffer(1, 3, 5).tail.asSlice shouldBe ByteSlice(1, 3)
+    }
+
+    "have slice" in {
+      val b0 = ByteBuffer.empty
+      b0.slice(0, 0).isEmpty shouldBe true
+      b0.slice(0, 1).isEmpty shouldBe true
+      b0.slice(0, 2).isEmpty shouldBe true
+      b0.slice(0, 0) shouldBe ByteSlice.empty
+      b0.slice(0, 1) shouldBe ByteSlice.empty
+      b0.slice(0, 2) shouldBe ByteSlice.empty
+      val b1 = ByteBuffer(1)
+      b1.slice(0, 1) shouldBe ByteSlice(1)
+      b1.slice(0, 2) shouldBe ByteSlice(1)
+      val b2 = ByteBuffer(1, 3)
+      b2.slice(0, 3) shouldBe ByteSlice(1, 3)
+      b2.slice(0, 2) shouldBe ByteSlice(1, 3)
+      b2.slice(1, 2) shouldBe ByteSlice(3)
+      b2.slice(1, 3) shouldBe ByteSlice(3)
+      b2.slice(0, 1) shouldBe ByteSlice(1)
+      b2.slice(0, 0) shouldBe ByteSlice.empty
+      val b3_1 = ByteBuffer(1, 3, 5)
+      b3_1.slice(0, 4) shouldBe ByteSlice(1, 3, 5)
+      b3_1.slice(0, 3) shouldBe ByteSlice(1, 3, 5)
+      b3_1.slice(1, 3) shouldBe ByteSlice(3, 5)
+      b3_1.slice(2, 3) shouldBe ByteSlice(5)
+      b3_1.slice(3, 3) shouldBe ByteSlice.empty
+      b3_1.slice(0, 2) shouldBe ByteSlice(1, 3)
+      b3_1.slice(1, 2) shouldBe ByteSlice(3)
+      b3_1.slice(0, 1) shouldBe ByteSlice(1)
+      b3_1.slice(0, 0) shouldBe ByteSlice.empty
+      b3_1.tail.slice(0, 0) shouldBe ByteSlice.empty
+      b3_1.tail.slice(0, 1) shouldBe ByteSlice(1)
+      ByteBuffer(1, 3, 5).tail.slice(0, 2) shouldBe ByteSlice(1, 3)
+      val b3_2 = ByteBuffer(1, 1, 1)
+      b3_2.slice(0, 4) shouldBe ByteSlice(1, 1, 1)
+      b3_2.slice(0, 3) shouldBe ByteSlice(1, 1, 1)
+      b3_2.slice(0, 2) shouldBe ByteSlice(1, 1)
+      b3_2.slice(0, 1) shouldBe ByteSlice(1)
+      b3_2.rewind(1).slice(0, 3) shouldBe ByteSlice(1, 1)
+      b3_2.rewind(1).slice(0, 2) shouldBe ByteSlice(1)
+    }
   }
 
 }

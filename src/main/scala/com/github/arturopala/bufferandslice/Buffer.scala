@@ -72,12 +72,16 @@ trait Buffer[T] extends (Int => T) {
   def copy: this.type
 
   /** Returns an Array with a copy of an accessible buffer range.
-    * @group Abstract */
+    * @group Read */
   def toArray: Array[T]
 
   /** Wraps accessible internal state as a Slice without making any copy.
-    * @group Abstract */
+    * @group Slice */
   def asSlice: Slice[T]
+
+  /** Takes range and returns a Slice.
+    * @group Slice */
+  def slice(from: Int, to: Int): Slice[T]
 
   /** Length of the accessible part of the buffer.
     * @group Properties */
@@ -514,26 +518,6 @@ trait Buffer[T] extends (Int => T) {
     topIndex = topIndex - 1
     value
   }
-
-  /** Takes range and returns a Slice.
-    * @group Slice */
-  @`inline` final def slice(from: Int, to: Int): Slice[T] = asSlice.slice(from, to)
-
-  /** Takes first N items and returns a Slice.
-    * @group Slice */
-  @`inline` final def take(n: Int): Slice[T] = asSlice.take(n)
-
-  /** Takes last N items and returns a Slice.
-    * @group Slice */
-  @`inline` final def takeRight(n: Int): Slice[T] = asSlice.takeRight(n)
-
-  /** Drops first N items and returns a Slice.
-    * @group Slice */
-  @`inline` final def drop(n: Int): Slice[T] = asSlice.drop(n)
-
-  /** Drops last N items and returns a Slice.
-    * @group Slice */
-  @`inline` final def dropRight(n: Int): Slice[T] = asSlice.dropRight(n)
 
   /** Returns an iterator over actual buffer values,
     * starting from the zero index up.

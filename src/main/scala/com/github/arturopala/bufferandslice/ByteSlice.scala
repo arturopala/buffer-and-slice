@@ -21,7 +21,7 @@ import scala.reflect.ClassTag
 /** Lazy, specialized slice of the array of bytes.
   * @note Truly immutable only if an underlying array kept private, or if detached.
   */
-final class ByteSlice private (
+final class ByteSlice private[bufferandslice] (
   protected val fromIndex: Int,
   protected val toIndex: Int,
   protected val array: Array[Byte],

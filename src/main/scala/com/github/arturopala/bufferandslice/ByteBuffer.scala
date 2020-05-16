@@ -45,8 +45,15 @@ final class ByteBuffer(initialSize: Int = 8) extends ArrayBufferLike[Byte] {
   override def toArray: Array[Byte] = java.util.Arrays.copyOf(_array, length)
 
   /** Wraps accessible internal state as a Slice without making any copy. */
-  override def asSlice: ByteSlice = ByteSlice.of(_array, 0, length)
+  override def asSlice: ByteSlice =
+    new ByteSlice(0, length, _array, detached = false)
 
+  /** Takes range and returns an IntSlice. */
+  override def slice(from: Int, to: Int): ByteSlice = {
+    val t = Math.min(length, to)
+    val f = Math.min(from, t)
+    new ByteSlice(f, t, _array, detached = false)
+  }
 }
 
 /** ByteBuffer factory. */

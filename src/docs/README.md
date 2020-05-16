@@ -244,13 +244,9 @@ Buffer(1,2,3,4,5,6,7,8,9).asSlice
 
 Buffer(1,2,3,4,5,6,7,8,9).slice(2,6)
 
-Buffer(1,2,3,4,5,6,7,8,9).take(3)
+Buffer("a","c","e").asSlice
 
-Buffer(1,2,3,4,5,6,7,8,9).drop(3)
-
-Buffer(1,2,3,4,5,6,7,8,9).takeRight(3)
-
-Buffer(1,2,3,4,5,6,7,8,9).dropRight(3)
+Buffer("a","c","e","d","b").slice(2,6)
 ```
 
 Slice
