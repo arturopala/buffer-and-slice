@@ -162,7 +162,9 @@ Buffer("b").appendFromIterator(Iterator.fill(10)("a"))
 
 Buffer(0,0,0).insertValues(1,2,3,List(0,1,2,3,4,5))
 
-Buffer(0,0,0).insertFromIterator(2,3,Iterator.continually(1))
+Buffer(0,0,0).insertFromIterator(2,3, (1 to 7).iterator)
+
+Buffer(0,0,0).insertFromIteratorReverse(2,5, (1 to 7).iterator)
 
 Buffer("a","b","c").insertSlice(1, Slice("e","f"))
 
@@ -172,7 +174,9 @@ Buffer("a","b","c","d","e","f").replaceFromSlice(4,Slice("a","b","c"))
 
 Buffer(0,0,0).replaceValues(1,2,3,List(0,1,2,3,4,5))
 
-Buffer(0,0,0).replaceFromIterator(2,3,Iterator.continually(1))
+Buffer(0,0,0).replaceFromIterator(2,3, (1 to 7).iterator)
+
+Buffer(0,0,0,0,0,0,0).replaceFromIteratorReverse(5,3, (1 to 7).iterator)
 
 Buffer(0,0,0).replaceFromArray(1,2,3,Array(0,1,2,3,4,5))
 

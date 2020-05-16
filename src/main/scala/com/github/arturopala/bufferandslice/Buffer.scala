@@ -331,13 +331,13 @@ trait Buffer[T] extends (Int => T) {
           uncheckedUpdate(index + i, source(sourceIndex + i))
           i = i + 1
         }
+        topIndex = Math.max(topIndex, index + insertLength - 1)
       }
-      topIndex = Math.max(topIndex, index + insertLength - 1)
     }
     this
   }
 
-  /** Shift current content to the right starting from `index`at the `insertLength` distance,
+  /** Shift current content to the right starting from `index`at the `min(iterator.length, insertLength)` distance,
     * and copies iterated values into the gap.
     * - Sets topIndex to be at least at the end of the new chunk of values.
     * @group Insert */
@@ -350,8 +350,33 @@ trait Buffer[T] extends (Int => T) {
           uncheckedUpdate(index + i, iterator.next())
           i = i + 1
         }
+        topIndex = Math.max(topIndex, index + insertLength - 1)
+        if (i <= insertLength) {
+          shiftLeft(index + insertLength, insertLength - i)
+        }
       }
-      topIndex = Math.max(topIndex, index + insertLength - 1)
+    }
+    this
+  }
+
+  /** Shift current content to the right starting from `index`at the `min(iterator.length, insertLength)` distance,
+    * and copies iterated values into the gap in the reverse order.
+    * - Sets topIndex to be at least at the end of the new chunk of values.
+    * @group Insert */
+  final def insertFromIteratorReverse(index: Int, insertLength: Int, iterator: Iterator[T]): this.type = {
+    if (index >= 0) {
+      if (insertLength > 0) {
+        shiftRight(index, insertLength)
+        var i = index + insertLength - 1
+        while (i >= index && iterator.hasNext) {
+          uncheckedUpdate(i, iterator.next())
+          i = i - 1
+        }
+        topIndex = Math.max(topIndex, index + insertLength - 1)
+        if (i >= index) {
+          shiftLeft(i + 1, i - index + 1)
+        }
+      }
     }
     this
   }
@@ -371,7 +396,7 @@ trait Buffer[T] extends (Int => T) {
   final def replaceValues(index: Int, sourceIndex: Int, replaceLength: Int, source: Int => T): this.type = {
     if (index >= 0 && sourceIndex >= 0) {
       if (replaceLength > 0) {
-        ensureIndex(index + replaceLength)
+        ensureIndex(index + replaceLength - 1)
         var i = 0
         while (i < replaceLength) {
           uncheckedUpdate(index + i, source(sourceIndex + i))
@@ -383,19 +408,38 @@ trait Buffer[T] extends (Int => T) {
     this
   }
 
-  /** Replaces current values in the range [index, index + replaceLength) with values returned from the iterator.
+  /** Replaces current values in the range [index, index + min(iterator.length, replaceLength) )
+    * with values returned from the iterator.
     * @group Replace */
   final def replaceFromIterator(index: Int, replaceLength: Int, iterator: Iterator[T]): this.type = {
     if (index >= 0) {
       if (replaceLength > 0) {
-        ensureIndex(index + replaceLength)
+        ensureIndex(index + replaceLength - 1)
         var i = 0
         while (i < replaceLength && iterator.hasNext) {
           uncheckedUpdate(index + i, iterator.next())
           i = i + 1
         }
+        topIndex = Math.max(topIndex, index + Math.min(i, replaceLength) - 1)
       }
-      topIndex = Math.max(topIndex, index + replaceLength - 1)
+    }
+    this
+  }
+
+  /** Replaces current values in the range [index, index + min(iterator.length, replaceLength))
+    * with values returned from the iterator in the reverse order.
+    * @group Replace */
+  final def replaceFromIteratorReverse(index: Int, replaceLength: Int, iterator: Iterator[T]): this.type = {
+    if (index >= 0) {
+      if (replaceLength > 0) {
+        ensureIndex(index + replaceLength - 1)
+        var i = index + replaceLength - 1
+        while (i >= index && iterator.hasNext) {
+          uncheckedUpdate(i, iterator.next())
+          i = i - 1
+        }
+        topIndex = Math.max(topIndex, index + replaceLength - 1)
+      }
     }
     this
   }

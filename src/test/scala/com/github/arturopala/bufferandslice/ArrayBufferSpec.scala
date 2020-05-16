@@ -318,6 +318,90 @@ class ArrayBufferSpec extends AnyWordSpecCompat {
       buffer.insertFromIterator(10, -5, Array("d", "e").iterator)
       buffer.toArray shouldBe Array("e", "a", "d", "e", "b", "d", "e", "c", null, null, "d", "e")
       buffer.length shouldBe 12
+
+      Buffer
+        .empty[String]
+        .insertFromIterator(0, 3, Array("a", "b", "c").iterator)
+        .toArray shouldBe Array("a", "b", "c")
+      Buffer
+        .empty[String]
+        .insertFromIterator(0, 7, Array("a", "b", "c").iterator)
+        .toArray shouldBe Array("a", "b", "c")
+      Buffer
+        .empty[String]
+        .insertFromIterator(0, 4, Array("a", "b", "c").iterator)
+        .toArray shouldBe Array("a", "b", "c")
+      Buffer
+        .empty[String]
+        .insertFromIterator(0, 2, Array("a", "b", "c").iterator)
+        .toArray shouldBe Array("a", "b")
+      Buffer
+        .empty[String]
+        .insertFromIterator(2, 2, Array("a", "b", "c").iterator)
+        .toArray shouldBe Array(null, null, "a", "b")
+      Buffer
+        .empty[String]
+        .insertFromIterator(2, 5, Array("a", "b", "c").iterator)
+        .toArray shouldBe Array(null, null, "a", "b", "c")
+
+      Buffer("x")
+        .insertFromIterator(0, 1, Array("a", "b", "c").iterator)
+        .toArray shouldBe Array("a", "x")
+      Buffer("x")
+        .insertFromIterator(1, 1, Array("a", "b", "c").iterator)
+        .toArray shouldBe Array("x", "a")
+      Buffer("x", "y", "z")
+        .insertFromIterator(0, 3, Array("a", "b", "c").iterator)
+        .toArray shouldBe Array("a", "b", "c", "x", "y", "z")
+      Buffer("x", "y", "z")
+        .insertFromIterator(1, 2, Array("a", "b", "c").iterator)
+        .toArray shouldBe Array("x", "a", "b", "y", "z")
+      Buffer("x", "y", "z")
+        .insertFromIterator(5, 2, Array("a", "b", "c").iterator)
+        .toArray shouldBe Array("x", "y", "z", null, null, "a", "b")
+    }
+
+    "insert new values from iterator in the reverse order" in {
+      Buffer
+        .empty[String]
+        .insertFromIteratorReverse(0, 3, Array("a", "b", "c").iterator)
+        .toArray shouldBe Array("c", "b", "a")
+      Buffer
+        .empty[String]
+        .insertFromIteratorReverse(0, 7, Array("a", "b", "c").iterator)
+        .toArray shouldBe Array("c", "b", "a")
+      Buffer
+        .empty[String]
+        .insertFromIteratorReverse(0, 4, Array("a", "b", "c").iterator)
+        .toArray shouldBe Array("c", "b", "a")
+      Buffer
+        .empty[String]
+        .insertFromIteratorReverse(0, 2, Array("a", "b", "c").iterator)
+        .toArray shouldBe Array("b", "a")
+      Buffer
+        .empty[String]
+        .insertFromIteratorReverse(2, 2, Array("a", "b", "c").iterator)
+        .toArray shouldBe Array(null, null, "b", "a")
+      Buffer
+        .empty[String]
+        .insertFromIteratorReverse(2, 5, Array("a", "b", "c").iterator)
+        .toArray shouldBe Array(null, null, "c", "b", "a")
+
+      Buffer("x")
+        .insertFromIteratorReverse(0, 1, Array("a", "b", "c").iterator)
+        .toArray shouldBe Array("a", "x")
+      Buffer("x")
+        .insertFromIteratorReverse(1, 1, Array("a", "b", "c").iterator)
+        .toArray shouldBe Array("x", "a")
+      Buffer("x", "y", "z")
+        .insertFromIteratorReverse(0, 3, Array("a", "b", "c").iterator)
+        .toArray shouldBe Array("c", "b", "a", "x", "y", "z")
+      Buffer("x", "y", "z")
+        .insertFromIteratorReverse(1, 2, Array("a", "b", "c").iterator)
+        .toArray shouldBe Array("x", "b", "a", "y", "z")
+      Buffer("x", "y", "z")
+        .insertFromIteratorReverse(5, 2, Array("a", "b", "c").iterator)
+        .toArray shouldBe Array("x", "y", "z", null, null, "b", "a")
     }
 
     "replace with values from iterator" in {
@@ -343,6 +427,107 @@ class ArrayBufferSpec extends AnyWordSpecCompat {
       buffer.replaceFromIterator(10, -5, Array("d", "e").iterator)
       buffer.toArray shouldBe Array("e", "d", "e", "d", "e", "f", "e")
       buffer.length shouldBe 7
+
+      Buffer
+        .empty[String]
+        .replaceFromIterator(0, 4, Array("a", "b", "c").iterator)
+        .toArray shouldBe Array("a", "b", "c")
+      Buffer
+        .empty[String]
+        .replaceFromIterator(0, 7, Array("a", "b", "c").iterator)
+        .toArray shouldBe Array("a", "b", "c")
+      Buffer
+        .empty[String]
+        .replaceFromIterator(1, 2, Array("a", "b", "c").iterator)
+        .toArray shouldBe Array(null, "a", "b")
+      Buffer
+        .empty[String]
+        .replaceFromIterator(1, 4, Array("a", "b", "c").iterator)
+        .toArray shouldBe Array(null, "a", "b", "c")
+
+      Buffer("x", "y", "z")
+        .replaceFromIterator(0, 1, Array("a", "b", "c").iterator)
+        .toArray shouldBe Array("a", "y", "z")
+      Buffer("x", "y", "z")
+        .replaceFromIterator(1, 1, Array("a", "b", "c").iterator)
+        .toArray shouldBe Array("x", "a", "z")
+      Buffer("x", "y", "z")
+        .replaceFromIterator(2, 1, Array("a", "b", "c").iterator)
+        .toArray shouldBe Array("x", "y", "a")
+      Buffer("x", "y", "z")
+        .replaceFromIterator(3, 1, Array("a", "b", "c").iterator)
+        .toArray shouldBe Array("x", "y", "z", "a")
+      Buffer("x", "y", "z")
+        .replaceFromIterator(4, 1, Array("a", "b", "c").iterator)
+        .toArray shouldBe Array("x", "y", "z", null, "a")
+      Buffer("x", "y", "z")
+        .replaceFromIterator(1, 2, Array("a", "b", "c").iterator)
+        .toArray shouldBe Array("x", "a", "b")
+      Buffer("x", "y", "z")
+        .replaceFromIterator(1, 3, Array("a", "b", "c").iterator)
+        .toArray shouldBe Array("x", "a", "b", "c")
+      Buffer("x", "y", "z")
+        .replaceFromIterator(1, 4, Array("a", "b", "c").iterator)
+        .toArray shouldBe Array("x", "a", "b", "c")
+      Buffer("x", "y", "z")
+        .replaceFromIterator(0, 3, Array("a", "b", "c").iterator)
+        .toArray shouldBe Array("a", "b", "c")
+      Buffer("x", "y", "z")
+        .replaceFromIterator(5, 2, Array("a", "b", "c").iterator)
+        .toArray shouldBe Array("x", "y", "z", null, null, "a", "b")
+    }
+
+    "replace with values from iterator in the reverse order" in {
+      Buffer
+        .empty[String]
+        .replaceFromIteratorReverse(0, 4, Array("a", "b", "c").iterator)
+        .toArray shouldBe Array(null, "c", "b", "a")
+      Buffer
+        .empty[String]
+        .replaceFromIteratorReverse(0, 7, Array("a", "b", "c").iterator)
+        .toArray shouldBe Array(null, null, null, null, "c", "b", "a")
+      Buffer
+        .empty[String]
+        .replaceFromIteratorReverse(1, 2, Array("a", "b", "c").iterator)
+        .toArray shouldBe Array(null, "b", "a")
+      Buffer
+        .empty[String]
+        .replaceFromIteratorReverse(1, 4, Array("a", "b", "c").iterator)
+        .toArray shouldBe Array(null, null, "c", "b", "a")
+
+      Buffer("x", "y", "z")
+        .replaceFromIteratorReverse(0, 1, Array("a", "b", "c").iterator)
+        .toArray shouldBe Array("a", "y", "z")
+      Buffer("x", "y", "z")
+        .replaceFromIteratorReverse(1, 1, Array("a", "b", "c").iterator)
+        .toArray shouldBe Array("x", "a", "z")
+      Buffer("x", "y", "z")
+        .replaceFromIteratorReverse(2, 1, Array("a", "b", "c").iterator)
+        .toArray shouldBe Array("x", "y", "a")
+      Buffer("x", "y", "z")
+        .replaceFromIteratorReverse(3, 1, Array("a", "b", "c").iterator)
+        .toArray shouldBe Array("x", "y", "z", "a")
+      Buffer("x", "y", "z")
+        .replaceFromIteratorReverse(4, 1, Array("a", "b", "c").iterator)
+        .toArray shouldBe Array("x", "y", "z", null, "a")
+      Buffer("x", "y", "z")
+        .replaceFromIteratorReverse(1, 2, Array("a", "b", "c").iterator)
+        .toArray shouldBe Array("x", "b", "a")
+      Buffer("x", "y", "z")
+        .replaceFromIteratorReverse(1, 3, Array("a", "b", "c").iterator)
+        .toArray shouldBe Array("x", "c", "b", "a")
+      Buffer("x", "y", "z")
+        .replaceFromIteratorReverse(1, 4, Array("a", "b", "c").iterator)
+        .toArray shouldBe Array("x", "y", "c", "b", "a")
+      Buffer("x", "y", "z")
+        .replaceFromIteratorReverse(1, 7, Array("a", "b", "c").iterator)
+        .toArray shouldBe Array("x", "y", "z", null, null, "c", "b", "a")
+      Buffer("x", "y", "z")
+        .replaceFromIteratorReverse(0, 3, Array("a", "b", "c").iterator)
+        .toArray shouldBe Array("c", "b", "a")
+      Buffer("x", "y", "z")
+        .replaceFromIteratorReverse(5, 2, Array("a", "b", "c").iterator)
+        .toArray shouldBe Array("x", "y", "z", null, null, "b", "a")
     }
 
     "append an array" in {
