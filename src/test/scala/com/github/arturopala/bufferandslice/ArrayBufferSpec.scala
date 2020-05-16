@@ -177,6 +177,24 @@ class ArrayBufferSpec extends AnyWordSpecCompat {
         .toArray shouldBe Array("h", "f", "e", "d", "g", "b", "c", "a")
     }
 
+    "insert new value at index" in {
+      Buffer.empty[String].insert(-1, "a").toArray shouldBe Array.empty[String]
+      Buffer.empty[String].insert(0, "a").toArray shouldBe Array("a")
+      Buffer.empty[String].insert(1, "a").toArray shouldBe Array(null, "a")
+      Buffer.empty[String].insert(5, "c").toArray shouldBe Array(null, null, null, null, null, "c")
+      Buffer("a").insert(-1, "c").toArray shouldBe Array("a")
+      Buffer("a").insert(0, "c").toArray shouldBe Array("c", "a")
+      Buffer("a").insert(1, "c").toArray shouldBe Array("a", "c")
+      Buffer("a").insert(2, "c").toArray shouldBe Array("a", null, "c")
+      Buffer("a", "b", "c").insert(-1, "x").toArray shouldBe Array("a", "b", "c")
+      Buffer("a", "b", "c").insert(0, "x").toArray shouldBe Array("x", "a", "b", "c")
+      Buffer("a", "b", "c").insert(1, "x").toArray shouldBe Array("a", "x", "b", "c")
+      Buffer("a", "b", "c").insert(2, "x").toArray shouldBe Array("a", "b", "x", "c")
+      Buffer("a", "b", "c").insert(3, "x").toArray shouldBe Array("a", "b", "c", "x")
+      Buffer("a", "b", "c").insert(4, "x").toArray shouldBe Array("a", "b", "c", null, "x")
+      Buffer("a", "b", "c").insert(5, "x").toArray shouldBe Array("a", "b", "c", null, null, "x")
+    }
+
     "insert new array of values" in {
       val buffer = new ArrayBuffer(Array.empty[String])
       buffer.insertArray(0, 0, 3, Array("a", "b", "c"))

@@ -148,7 +148,13 @@ IntBuffer(0,1,2,3).asSlice
 ```scala mdoc
 Buffer(1,2,3).update(1,0)
 
-Buffer("a").append("a")
+Buffer(0,0,0).modify(1,_ + 1)
+
+Buffer("c").append("a")
+
+Buffer("x","y","z").insert(1,"a")
+
+Buffer("a","b","c").remove(1)
 
 IntBuffer(0,1,1).appendSlice(Slice(0,1,2,3))
 
@@ -180,11 +186,7 @@ Buffer(0,0,0,0,0,0,0).replaceFromIteratorReverse(5,3, (1 to 7).iterator)
 
 Buffer(0,0,0).replaceFromArray(1,2,3,Array(0,1,2,3,4,5))
 
-Buffer("a","b","c").remove(1)
-
 Buffer("a","b","c","d","e").removeRange(1,4)
-
-Buffer(0,0,0).modify(1,_ + 1)
 
 Buffer(1,2,3,5,6).modifyAll(_ + 1)
 

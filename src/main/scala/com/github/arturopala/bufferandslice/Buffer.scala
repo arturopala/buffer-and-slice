@@ -196,7 +196,7 @@ trait Buffer[T] extends (Int => T) {
         uncheckedUpdate(i, map(uncheckedApply(i)))
         i = i + 1
       }
-      topIndex = Math.max(topIndex, i - 1)
+      touch(i - 1)
 
     }
     this
@@ -219,7 +219,7 @@ trait Buffer[T] extends (Int => T) {
         if (pred(v)) uncheckedUpdate(i, map(v))
         i = i + 1
       }
-      topIndex = Math.max(topIndex, i - 1)
+      touch(i - 1)
 
     }
     this
@@ -230,6 +230,15 @@ trait Buffer[T] extends (Int => T) {
   final def set(index: Int): this.type = {
     ensureIndex(index)
     topIndex = Math.max(-1, index)
+    this
+  }
+
+  /** Sets topIndex value if lower than index,
+    * otherwise keeps existing.
+    * @group Limit */
+  final def touch(index: Int): this.type = {
+    ensureIndex(index)
+    topIndex = Math.max(-1, Math.max(index, topIndex))
     this
   }
 
@@ -306,6 +315,18 @@ trait Buffer[T] extends (Int => T) {
   @`inline` final def appendIterable(iterable: Iterable[T]): this.type =
     appendFromIterator(iterable.iterator)
 
+  /** Shifts content in [index, length) one step to the right and updates value at index.
+    * @group Insert
+    */
+  final def insert(index: Int, value: T): this.type = {
+    if (index >= 0) {
+      shiftRight(index, 1)
+      uncheckedUpdate(index, value)
+      touch(index)
+    }
+    this
+  }
+
   /** Shift current content to the right starting from `index` at the `insertLength` distance,
     * and copies array chunk into the gap.
     * - Sets topIndex to be at least at the end of the new chunk of values.
@@ -331,7 +352,7 @@ trait Buffer[T] extends (Int => T) {
           uncheckedUpdate(index + i, source(sourceIndex + i))
           i = i + 1
         }
-        topIndex = Math.max(topIndex, index + insertLength - 1)
+        touch(index + insertLength - 1)
       }
     }
     this
@@ -350,7 +371,7 @@ trait Buffer[T] extends (Int => T) {
           uncheckedUpdate(index + i, iterator.next())
           i = i + 1
         }
-        topIndex = Math.max(topIndex, index + insertLength - 1)
+        touch(index + insertLength - 1)
         if (i <= insertLength) {
           shiftLeft(index + insertLength, insertLength - i)
         }
@@ -372,7 +393,7 @@ trait Buffer[T] extends (Int => T) {
           uncheckedUpdate(i, iterator.next())
           i = i - 1
         }
-        topIndex = Math.max(topIndex, index + insertLength - 1)
+        touch(index + insertLength - 1)
         if (i >= index) {
           shiftLeft(i + 1, i - index + 1)
         }
@@ -403,7 +424,7 @@ trait Buffer[T] extends (Int => T) {
           i = i + 1
         }
       }
-      topIndex = Math.max(topIndex, index + replaceLength - 1)
+      touch(index + replaceLength - 1)
     }
     this
   }
@@ -420,7 +441,7 @@ trait Buffer[T] extends (Int => T) {
           uncheckedUpdate(index + i, iterator.next())
           i = i + 1
         }
-        topIndex = Math.max(topIndex, index + Math.min(i, replaceLength) - 1)
+        touch(index + Math.min(i, replaceLength) - 1)
       }
     }
     this
@@ -438,7 +459,7 @@ trait Buffer[T] extends (Int => T) {
           uncheckedUpdate(i, iterator.next())
           i = i - 1
         }
-        topIndex = Math.max(topIndex, index + replaceLength - 1)
+        touch(index + replaceLength - 1)
       }
     }
     this
@@ -447,7 +468,8 @@ trait Buffer[T] extends (Int => T) {
   /** Removes value at index and shifts content in [index+1, length) to the left.
     * @group Remove
     */
-  @`inline` final def remove(index: Int): this.type = shiftLeft(index + 1, 1)
+  @`inline` final def remove(index: Int): this.type =
+    shiftLeft(index + 1, 1)
 
   /** Removes values in the range [fromIndex, toIndex) and shifts content in [toIndex, length) to the left.
     * @group Remove */
