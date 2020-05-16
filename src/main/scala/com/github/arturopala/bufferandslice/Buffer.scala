@@ -307,7 +307,7 @@ trait Buffer[T] extends (Int => T) {
     var d = 1
     while (iterator.hasNext) {
       insertFromIterator(length, d, iterator)
-      d = Math.min(d * 2, 256)
+      d = Math.min(d * 2, 1024)
     }
     this
   }
@@ -377,7 +377,7 @@ trait Buffer[T] extends (Int => T) {
         insertFromIterator(i, d, iterator)
         i = i + (length - l)
         l = length
-        d = Math.min(d * 2, 256)
+        d = Math.min(d * 2, 1024)
       }
     }
     this

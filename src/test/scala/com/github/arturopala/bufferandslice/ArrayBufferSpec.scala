@@ -382,7 +382,7 @@ class ArrayBufferSpec extends AnyWordSpecCompat {
     "inserts new values from iterator without specifying length" in {
       Buffer
         .empty[String]
-        .insertFromIterator(0, Iterator.empty[String])
+        .insertFromIterator(0, Nil.iterator)
         .toArray shouldBe Array.empty[String]
       Buffer
         .empty[String]
@@ -448,7 +448,7 @@ class ArrayBufferSpec extends AnyWordSpecCompat {
     "insert new values from iterator in the reverse order without specifying length" in {
       Buffer
         .empty[String]
-        .insertFromIteratorReverse(0, Iterator.empty[String])
+        .insertFromIteratorReverse(0, Nil.iterator)
         .toArray shouldBe Array.empty[String]
       Buffer
         .empty[String]
