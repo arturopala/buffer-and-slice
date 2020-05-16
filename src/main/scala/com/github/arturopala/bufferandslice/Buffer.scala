@@ -304,16 +304,23 @@ trait Buffer[T] extends (Int => T) {
   /** Appends values from the given iterator at the end of the buffer and advances topIndex.
     * @group Append */
   final def appendFromIterator(iterator: Iterator[T]): this.type = {
+    var d = 1
     while (iterator.hasNext) {
-      append(iterator.next())
+      insertFromIterator(length, d, iterator)
+      d = Math.min(d * 2, 256)
     }
     this
   }
 
+  /** Appends number of values from the given iterator at the end of the buffer and advances topIndex.
+    * @group Append */
+  @`inline` final def appendFromIterator(numberOfValues: Int, iterator: Iterator[T]): this.type =
+    insertFromIterator(length, numberOfValues, iterator)
+
   /** Appends values from the given iterable at the end of the buffer and advances topIndex.
     * @group Append */
   @`inline` final def appendIterable(iterable: Iterable[T]): this.type =
-    appendFromIterator(iterable.iterator)
+    appendFromIterator(iterable.size, iterable.iterator)
 
   /** Shifts content in [index, length) one step to the right and updates value at index.
     * @group Insert
@@ -343,37 +350,69 @@ trait Buffer[T] extends (Int => T) {
     * iterates over the source indexes and copies values into the gap.
     * - Sets topIndex to be at least at the end of the new chunk of values.
     * @group Insert */
-  final def insertValues(index: Int, sourceIndex: Int, insertLength: Int, source: Int => T): this.type = {
+  final def insertValues(index: Int, sourceIndex: Int, numberOfValues: Int, source: Int => T): this.type = {
     if (index >= 0 && sourceIndex >= 0) {
-      if (insertLength > 0) {
-        shiftRight(index, insertLength)
+      if (numberOfValues > 0) {
+        shiftRight(index, numberOfValues)
         var i = 0
-        while (i < insertLength) {
+        while (i < numberOfValues) {
           uncheckedUpdate(index + i, source(sourceIndex + i))
           i = i + 1
         }
-        touch(index + insertLength - 1)
+        touch(index + numberOfValues - 1)
+      }
+    }
+    this
+  }
+
+  /** Inserts iterated values into the gap made by shiftjng buffer right, starting from the index.
+    * - Sets topIndex to be at least at the end of the new chunk of values.
+    * @group Insert */
+  final def insertFromIterator(index: Int, iterator: Iterator[T]): this.type = {
+    if (index >= 0) {
+      var i = index
+      var d = 1
+      var l = Math.max(length, index)
+      while (iterator.hasNext) {
+        insertFromIterator(i, d, iterator)
+        i = i + (length - l)
+        l = length
+        d = Math.min(d * 2, 256)
+      }
+    }
+    this
+  }
+
+  /** Inserts iterated values, in the reverse order, into the gap made by shiftjng buffer right, starting from the index.
+    * - Sets topIndex to be at least at the end of the new chunk of values.
+    * @group Insert */
+  final def insertFromIteratorReverse(index: Int, iterator: Iterator[T]): this.type = {
+    if (index >= 0) {
+      var d = 1
+      while (iterator.hasNext) {
+        insertFromIteratorReverse(index, d, iterator)
+        d = Math.min(d * 2, 64)
       }
     }
     this
   }
 
   /** Shift current content to the right starting from `index`at the `min(iterator.length, insertLength)` distance,
-    * and copies iterated values into the gap.
+    * and inserts iterated values into the gap.
     * - Sets topIndex to be at least at the end of the new chunk of values.
     * @group Insert */
-  final def insertFromIterator(index: Int, insertLength: Int, iterator: Iterator[T]): this.type = {
+  final def insertFromIterator(index: Int, numberOfValues: Int, iterator: Iterator[T]): this.type = {
     if (index >= 0) {
-      if (insertLength > 0) {
-        shiftRight(index, insertLength)
+      if (numberOfValues > 0) {
+        shiftRight(index, numberOfValues)
         var i = 0
-        while (i < insertLength && iterator.hasNext) {
+        while (i < numberOfValues && iterator.hasNext) {
           uncheckedUpdate(index + i, iterator.next())
           i = i + 1
         }
-        touch(index + insertLength - 1)
-        if (i <= insertLength) {
-          shiftLeft(index + insertLength, insertLength - i)
+        touch(index + numberOfValues - 1)
+        if (i <= numberOfValues) {
+          shiftLeft(index + numberOfValues, numberOfValues - i)
         }
       }
     }
@@ -381,19 +420,19 @@ trait Buffer[T] extends (Int => T) {
   }
 
   /** Shift current content to the right starting from `index`at the `min(iterator.length, insertLength)` distance,
-    * and copies iterated values into the gap in the reverse order.
+    * and inserts iterated values into the gap in the reverse order.
     * - Sets topIndex to be at least at the end of the new chunk of values.
     * @group Insert */
-  final def insertFromIteratorReverse(index: Int, insertLength: Int, iterator: Iterator[T]): this.type = {
+  final def insertFromIteratorReverse(index: Int, numberOfValues: Int, iterator: Iterator[T]): this.type = {
     if (index >= 0) {
-      if (insertLength > 0) {
-        shiftRight(index, insertLength)
-        var i = index + insertLength - 1
+      if (numberOfValues > 0) {
+        shiftRight(index, numberOfValues)
+        var i = index + numberOfValues - 1
         while (i >= index && iterator.hasNext) {
           uncheckedUpdate(i, iterator.next())
           i = i - 1
         }
-        touch(index + insertLength - 1)
+        touch(index + numberOfValues - 1)
         if (i >= index) {
           shiftLeft(i + 1, i - index + 1)
         }
@@ -414,17 +453,17 @@ trait Buffer[T] extends (Int => T) {
   /** Replaces current values in the range [index, index + replaceLength) with values returned by the function
     * when iterating argument in the range [sourceIndex, sourceIndex + replaceLength).
     * @group Replace */
-  final def replaceValues(index: Int, sourceIndex: Int, replaceLength: Int, source: Int => T): this.type = {
+  final def replaceValues(index: Int, sourceIndex: Int, numberOfValues: Int, source: Int => T): this.type = {
     if (index >= 0 && sourceIndex >= 0) {
-      if (replaceLength > 0) {
-        ensureIndex(index + replaceLength - 1)
+      if (numberOfValues > 0) {
+        ensureIndex(index + numberOfValues - 1)
         var i = 0
-        while (i < replaceLength) {
+        while (i < numberOfValues) {
           uncheckedUpdate(index + i, source(sourceIndex + i))
           i = i + 1
         }
       }
-      touch(index + replaceLength - 1)
+      touch(index + numberOfValues - 1)
     }
     this
   }
@@ -432,16 +471,16 @@ trait Buffer[T] extends (Int => T) {
   /** Replaces current values in the range [index, index + min(iterator.length, replaceLength) )
     * with values returned from the iterator.
     * @group Replace */
-  final def replaceFromIterator(index: Int, replaceLength: Int, iterator: Iterator[T]): this.type = {
+  final def replaceFromIterator(index: Int, numberOfValues: Int, iterator: Iterator[T]): this.type = {
     if (index >= 0) {
-      if (replaceLength > 0) {
-        ensureIndex(index + replaceLength - 1)
+      if (numberOfValues > 0) {
+        ensureIndex(index + numberOfValues - 1)
         var i = 0
-        while (i < replaceLength && iterator.hasNext) {
+        while (i < numberOfValues && iterator.hasNext) {
           uncheckedUpdate(index + i, iterator.next())
           i = i + 1
         }
-        touch(index + Math.min(i, replaceLength) - 1)
+        touch(index + Math.min(i, numberOfValues) - 1)
       }
     }
     this
@@ -450,16 +489,16 @@ trait Buffer[T] extends (Int => T) {
   /** Replaces current values in the range [index, index + min(iterator.length, replaceLength))
     * with values returned from the iterator in the reverse order.
     * @group Replace */
-  final def replaceFromIteratorReverse(index: Int, replaceLength: Int, iterator: Iterator[T]): this.type = {
+  final def replaceFromIteratorReverse(index: Int, numberOfValues: Int, iterator: Iterator[T]): this.type = {
     if (index >= 0) {
-      if (replaceLength > 0) {
-        ensureIndex(index + replaceLength - 1)
-        var i = index + replaceLength - 1
+      if (numberOfValues > 0) {
+        ensureIndex(index + numberOfValues - 1)
+        var i = index + numberOfValues - 1
         while (i >= index && iterator.hasNext) {
           uncheckedUpdate(i, iterator.next())
           i = i - 1
         }
-        touch(index + replaceLength - 1)
+        touch(index + numberOfValues - 1)
       }
     }
     this

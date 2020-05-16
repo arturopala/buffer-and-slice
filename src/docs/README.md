@@ -166,11 +166,17 @@ Buffer(0).appendIterable(1 to 10)
 
 Buffer("b").appendFromIterator(Iterator.fill(10)("a"))
 
+Buffer("b").appendFromIterator(3, Iterator.fill(10)("a"))
+
 Buffer(0,0,0).insertValues(1,2,3,List(0,1,2,3,4,5))
 
-Buffer(0,0,0).insertFromIterator(2,3, (1 to 7).iterator)
+Buffer(0,0,0).insertFromIterator(2, 3, (1 to 7).iterator)
 
-Buffer(0,0,0).insertFromIteratorReverse(2,5, (1 to 7).iterator)
+Buffer(0,0,0).insertFromIterator(2, (1 to 7).iterator)
+
+Buffer(0,0,0).insertFromIteratorReverse(1, 5, (1 to 7).iterator)
+
+Buffer(0,0,0).insertFromIteratorReverse(1, (1 to 7).iterator)
 
 Buffer("a","b","c").insertSlice(1, Slice("e","f"))
 

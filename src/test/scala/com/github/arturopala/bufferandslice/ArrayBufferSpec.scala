@@ -379,6 +379,29 @@ class ArrayBufferSpec extends AnyWordSpecCompat {
         .toArray shouldBe Array("x", "y", "z", null, null, "a", "b")
     }
 
+    "inserts new values from iterator without specifying length" in {
+      Buffer
+        .empty[String]
+        .insertFromIterator(0, Iterator.empty[String])
+        .toArray shouldBe Array.empty[String]
+      Buffer
+        .empty[String]
+        .insertFromIterator(0, Array("a").iterator)
+        .toArray shouldBe Array("a")
+      Buffer
+        .empty[String]
+        .insertFromIterator(0, Array("a", "b", "c").iterator)
+        .toArray shouldBe Array("a", "b", "c")
+      Buffer
+        .empty[String]
+        .insertFromIterator(3, Array("a", "b", "c").iterator)
+        .toArray shouldBe Array(null, null, null, "a", "b", "c")
+      Buffer
+        .empty[String]
+        .insertFromIterator(1, Iterator.continually("x").take(10))
+        .toArray shouldBe Array(null, "x", "x", "x", "x", "x", "x", "x", "x", "x", "x")
+    }
+
     "insert new values from iterator in the reverse order" in {
       Buffer
         .empty[String]
@@ -420,6 +443,33 @@ class ArrayBufferSpec extends AnyWordSpecCompat {
       Buffer("x", "y", "z")
         .insertFromIteratorReverse(5, 2, Array("a", "b", "c").iterator)
         .toArray shouldBe Array("x", "y", "z", null, null, "b", "a")
+    }
+
+    "insert new values from iterator in the reverse order without specifying length" in {
+      Buffer
+        .empty[String]
+        .insertFromIteratorReverse(0, Iterator.empty[String])
+        .toArray shouldBe Array.empty[String]
+      Buffer
+        .empty[String]
+        .insertFromIteratorReverse(0, Array("a").iterator)
+        .toArray shouldBe Array("a")
+      Buffer
+        .empty[String]
+        .insertFromIteratorReverse(0, Array("a", "b", "c").iterator)
+        .toArray shouldBe Array("c", "b", "a")
+      Buffer
+        .empty[String]
+        .insertFromIteratorReverse(3, Array("a", "b", "c").iterator)
+        .toArray shouldBe Array(null, null, null, "c", "b", "a")
+      Buffer
+        .empty[String]
+        .insertFromIteratorReverse(3, Array("a", "b", "c", "d", "e", "f", "g", "h").iterator)
+        .toArray shouldBe Array(null, null, null, "h", "g", "f", "e", "d", "c", "b", "a")
+      Buffer
+        .empty[String]
+        .insertFromIteratorReverse(1, Iterator.continually("x").take(10))
+        .toArray shouldBe Array(null, "x", "x", "x", "x", "x", "x", "x", "x", "x", "x")
     }
 
     "replace with values from iterator" in {
@@ -601,6 +651,57 @@ class ArrayBufferSpec extends AnyWordSpecCompat {
       buffer.toArray shouldBe Array("a", "b", "c", "a", "b", "c", "d", "e")
       buffer.appendFromIterator(List().iterator)
       buffer.length shouldBe 8
+
+      Buffer
+        .empty[String]
+        .appendFromIterator(Iterator.fill(60)("a"))
+        .toArray shouldBe Array.fill(60)("a")
+      Buffer
+        .empty[String]
+        .appendFromIterator(Iterator.fill(1024)("x"))
+        .toArray shouldBe Array.fill(1024)("x")
+    }
+
+    "append number of values from iterator" in {
+      Buffer
+        .empty[String]
+        .appendFromIterator(0, Iterator.continually("a"))
+        .toArray shouldBe Array.empty[String]
+      Buffer
+        .empty[String]
+        .appendFromIterator(1, Iterator.continually("a"))
+        .toArray shouldBe Array("a")
+      Buffer
+        .empty[String]
+        .appendFromIterator(5, Iterator.continually("a"))
+        .toArray shouldBe Array("a", "a", "a", "a", "a")
+      Buffer("a")
+        .appendFromIterator(3, Iterator.continually("b"))
+        .toArray shouldBe Array("a", "b", "b", "b")
+      Buffer("a")
+        .appendFromIterator(0, Iterator.continually("b"))
+        .toArray shouldBe Array("a")
+      Buffer("a", "b", "e")
+        .appendFromIterator(-1, List("a", "b", "c").iterator)
+        .toArray shouldBe Array("a", "b", "e")
+      Buffer("a", "b", "e")
+        .appendFromIterator(0, List("a", "b", "c").iterator)
+        .toArray shouldBe Array("a", "b", "e")
+      Buffer("a", "b", "e")
+        .appendFromIterator(1, List("a", "b", "c").iterator)
+        .toArray shouldBe Array("a", "b", "e", "a")
+      Buffer("a", "b", "e")
+        .appendFromIterator(2, List("a", "b", "c").iterator)
+        .toArray shouldBe Array("a", "b", "e", "a", "b")
+      Buffer("a", "b", "e")
+        .appendFromIterator(3, List("a", "b", "c").iterator)
+        .toArray shouldBe Array("a", "b", "e", "a", "b", "c")
+      Buffer("a", "b", "e")
+        .appendFromIterator(4, List("a", "b", "c").iterator)
+        .toArray shouldBe Array("a", "b", "e", "a", "b", "c")
+      Buffer("a", "b", "e")
+        .appendFromIterator(5, List("a", "b", "c").iterator)
+        .toArray shouldBe Array("a", "b", "e", "a", "b", "c")
     }
 
     "set and reset top index" in {
