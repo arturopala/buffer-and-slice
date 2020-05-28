@@ -194,6 +194,8 @@ Buffer(0,0,0).replaceFromArray(1,2,3,Array(0,1,2,3,4,5))
 
 Buffer("a","b","c","d","e").removeRange(1,4)
 
+Buffer(1,2,3,5,6).mapInPlace(_ * 2)
+
 Buffer(1,2,3,5,6).modifyAll(_ + 1)
 
 Buffer(1,2,3,5,6).modifyAllWhen(_ + 1, _ % 2 == 0)
@@ -213,10 +215,6 @@ Buffer(1,2,3,4,5,6,7,8,9).moveRangeLeft(6,8,4)
 Buffer(1,2,3,4).swap(0,3)
 
 Buffer(1,2,3,4,5,6,7,8,9).swapRange(0,5,3)
-
-Buffer(1,2,3,4,5,6,7,8,9).iterator
-
-Buffer(1,2,3,4,5,6,7,8,9).reverseIterator
 ```
 
 - Using `Buffer` as a stack:
@@ -260,6 +258,23 @@ Buffer("a","c","e").asSlice
 
 Buffer("a","c","e","d","b").slice(2,6)
 ```
+
+- Accessing buffer content
+
+```scala mdoc
+Buffer("a","c","e").toArray
+
+Buffer("a","c","e").asSlice.toList
+
+Buffer(1,2,3,4,5,6,7,8,9).iterator
+
+Buffer(1,2,3,4,5,6,7,8,9).reverseIterator
+
+val s = "abscdefghijklmnopqrstuvxyz"
+
+Buffer(1,2,3,4,5,6,7,8,9).map(s.apply).toList
+```
+
 
 Slice
 --

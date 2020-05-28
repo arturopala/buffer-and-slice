@@ -78,11 +78,21 @@ class IntBufferSpec extends AnyWordSpecCompat {
       buffer.modify(1, _ - 1).toArray shouldBe Array(10, 2, 1, 3, 4, 5, 6, 7, 8, 9)
     }
 
-    "map all values" in {
+    "map buffer lazily using function" in {
+      val s = "abcdefghijklmnopqrstuvwxyz"
       val buffer = IntBuffer(0, 1, 2, 3, 4, 5, 6, 7, 8, 9)
-      buffer.map(_ + 1).toArray shouldBe Array(1, 2, 3, 4, 5, 6, 7, 8, 9, 10)
-      buffer.map(_ * 2).toArray shouldBe Array(2, 4, 6, 8, 10, 12, 14, 16, 18, 20)
-      buffer.map(_ - 1).toArray shouldBe Array(1, 3, 5, 7, 9, 11, 13, 15, 17, 19)
+      buffer.map(s.apply).toList shouldBe List('a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j')
+      buffer.map(i => s(i * 2)).toList shouldBe List('a', 'c', 'e', 'g', 'i', 'k', 'm', 'o', 'q', 's')
+      buffer
+        .map(i => s"${s(i * 2)}${s(i)}")
+        .toList shouldBe List("aa", "cb", "ec", "gd", "ie", "kf", "mg", "oh", "qi", "sj")
+    }
+
+    "map all values in place" in {
+      val buffer = IntBuffer(0, 1, 2, 3, 4, 5, 6, 7, 8, 9)
+      buffer.mapInPlace(_ + 1).toArray shouldBe Array(1, 2, 3, 4, 5, 6, 7, 8, 9, 10)
+      buffer.mapInPlace(_ * 2).toArray shouldBe Array(2, 4, 6, 8, 10, 12, 14, 16, 18, 20)
+      buffer.mapInPlace(_ - 1).toArray shouldBe Array(1, 3, 5, 7, 9, 11, 13, 15, 17, 19)
     }
 
     "modify all values" in {

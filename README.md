@@ -235,99 +235,119 @@ Buffer(0,0,0).replaceFromArray(1,2,3,Array(0,1,2,3,4,5))
 Buffer("a","b","c","d","e").removeRange(1,4)
 // res43: Buffer[String] = [a,e]
 
+Buffer(1,2,3,5,6).mapInPlace(_ * 2)
+// res44: Buffer[Int] = [2,4,6,10,12]
+
 Buffer(1,2,3,5,6).modifyAll(_ + 1)
-// res44: Buffer[Int] = [2,3,4,6,7]
+// res45: Buffer[Int] = [2,3,4,6,7]
 
 Buffer(1,2,3,5,6).modifyAllWhen(_ + 1, _ % 2 == 0)
-// res45: Buffer[Int] = [1,3,3,5,7]
+// res46: Buffer[Int] = [1,3,3,5,7]
 
 Buffer(0,0,0,0,0).modifyRange(1, 3, _ + 1)
-// res46: Buffer[Int] = [0,1,1,0,0]
+// res47: Buffer[Int] = [0,1,1,0,0]
 
 Buffer(1,2,3,4,5).modifyRangeWhen(1, 3, _ + 1, _ % 2 != 0)
-// res47: Buffer[Int] = [1,2,4,4,5]
+// res48: Buffer[Int] = [1,2,4,4,5]
 
 IntBuffer(1,2,3,4,5,6,7,8,9).shiftLeft(5,3)
-// res48: IntBuffer = [1,2,6,7,8,9]
+// res49: IntBuffer = [1,2,6,7,8,9]
 
 Buffer(1,2,3,4,5,6,7,8,9).shiftRight(5,3)
-// res49: Buffer[Int] = [1,2,3,4,5,6,7,8,6,7,8,9]
+// res50: Buffer[Int] = [1,2,3,4,5,6,7,8,6,7,8,9]
 
 Buffer(1,2,3,4,5,6,7,8,9).moveRangeRight(1,4,3)
-// res50: Buffer[Int] = [1,5,6,7,2,3,4,8,9]
+// res51: Buffer[Int] = [1,5,6,7,2,3,4,8,9]
 
 Buffer(1,2,3,4,5,6,7,8,9).moveRangeLeft(6,8,4)
-// res51: Buffer[Int] = [1,2,7,8,3,4,5,6,9]
+// res52: Buffer[Int] = [1,2,7,8,3,4,5,6,9]
 
 Buffer(1,2,3,4).swap(0,3)
-// res52: Buffer[Int] = [4,2,3,1]
+// res53: Buffer[Int] = [4,2,3,1]
 
 Buffer(1,2,3,4,5,6,7,8,9).swapRange(0,5,3)
-// res53: Buffer[Int] = [6,7,8,4,5,1,2,3,9]
-
-Buffer(1,2,3,4,5,6,7,8,9).iterator
-// res54: Iterator[Int] = non-empty iterator
-
-Buffer(1,2,3,4,5,6,7,8,9).reverseIterator
-// res55: Iterator[Int] = non-empty iterator
+// res54: Buffer[Int] = [6,7,8,4,5,1,2,3,9]
 ```
 
 - Using `Buffer` as a stack:
 
 ```scala
 Buffer(1,2,3).peek
-// res56: Int = 3
+// res55: Int = 3
 
 Buffer(1,2,3).peek(1)
-// res57: Int = 2
+// res56: Int = 2
 
 Buffer(1,2,3).peekOption(2)
-// res58: Option[Int] = Some(1)
+// res57: Option[Int] = Some(1)
 
 Buffer(1,2,3).peekOption(3)
-// res59: Option[Int] = None
+// res58: Option[Int] = None
 
 Buffer(1,2,3).pop
-// res60: Int = 3
+// res59: Int = 3
 
 Buffer(1,2,3).push(1).push(1).push(0)
-// res61: Buffer[Int] = [1,2,3,1,1,0]
+// res60: Buffer[Int] = [1,2,3,1,1,0]
 ```
 
 - Manipulating `topIndex` limit:
 
 ```scala
 Buffer(1,2,3).top
-// res62: Int = 2
+// res61: Int = 2
 
 Buffer(1,2,3).set(1)
-// res63: Buffer[Int] = [1,2]
+// res62: Buffer[Int] = [1,2]
 
 Buffer(1,2,3).forward(3)
-// res64: Buffer[Int] = [1,2,3,0,0,0]
+// res63: Buffer[Int] = [1,2,3,0,0,0]
 
 Buffer(1,2,3).rewind(2)
-// res65: Buffer[Int] = [1]
+// res64: Buffer[Int] = [1]
 
 Buffer(1,2,3).reset
-// res66: Int = 2
+// res65: Int = 2
 ```
 
 - Making a `Slice` of a `Buffer`:
 
 ```scala
 Buffer(1,2,3,4,5,6,7,8,9).asSlice
-// res67: Slice[Int] = Slice(1,2,3,4,5,6,7,8,9)
+// res66: Slice[Int] = Slice(1,2,3,4,5,6,7,8,9)
 
 Buffer(1,2,3,4,5,6,7,8,9).slice(2,6)
-// res68: Slice[Int] = Slice(3,4,5,6)
+// res67: Slice[Int] = Slice(3,4,5,6)
 
 Buffer("a","c","e").asSlice
-// res69: Slice[String] = Slice(a,c,e)
+// res68: Slice[String] = Slice(a,c,e)
 
 Buffer("a","c","e","d","b").slice(2,6)
-// res70: Slice[String] = Slice(e,d,b)
+// res69: Slice[String] = Slice(e,d,b)
 ```
+
+- Accessing buffer content
+
+```scala
+Buffer("a","c","e").toArray
+// res70: Array[String] = Array("a", "c", "e")
+
+Buffer("a","c","e").asSlice.toList
+// res71: List[String] = List("a", "c", "e")
+
+Buffer(1,2,3,4,5,6,7,8,9).iterator
+// res72: Iterator[Int] = non-empty iterator
+
+Buffer(1,2,3,4,5,6,7,8,9).reverseIterator
+// res73: Iterator[Int] = non-empty iterator
+
+val s = "abscdefghijklmnopqrstuvxyz"
+// s: String = "abscdefghijklmnopqrstuvxyz"
+
+Buffer(1,2,3,4,5,6,7,8,9).map(s.apply).toList
+// res74: List[Char] = List('b', 's', 'c', 'd', 'e', 'f', 'g', 'h', 'i')
+```
+
 
 Slice
 --
@@ -355,73 +375,73 @@ val slice = Slice.of(array)
 // slice: Slice[String] = Slice(a,b,c,d,ee,f,g,h,i,j)
 
 slice.apply(0)
-// res71: String = "a"
+// res75: String = "a"
 
 slice.apply(5)
-// res72: String = "f"
+// res76: String = "f"
 
 slice.get(0)
-// res73: Option[String] = Some("a")
+// res77: Option[String] = Some("a")
 
 slice.get(50)
-// res74: Option[String] = None
+// res78: Option[String] = None
 
 slice.update(4,"a")
-// res75: Slice[String] = Slice(a,b,c,d,a,f,g,h,i,j)
+// res79: Slice[String] = Slice(a,b,c,d,a,f,g,h,i,j)
 
 slice.update(5,"b")
-// res76: Slice[String] = Slice(a,b,c,d,ee,b,g,h,i,j)
+// res80: Slice[String] = Slice(a,b,c,d,ee,b,g,h,i,j)
 
 slice.slice(1,5)
-// res77: Slice[String] = Slice(b,c,d,ee)
+// res81: Slice[String] = Slice(b,c,d,ee)
 
 slice.take(5)
-// res78: Slice[String] = Slice(a,b,c,d,ee)
+// res82: Slice[String] = Slice(a,b,c,d,ee)
 
 slice.drop(5)
-// res79: Slice[String] = Slice(f,g,h,i,j)
+// res83: Slice[String] = Slice(f,g,h,i,j)
 
 slice.takeRight(5)
-// res80: Slice[String] = Slice(f,g,h,i,j)
+// res84: Slice[String] = Slice(f,g,h,i,j)
 
 slice.dropRight(5)
-// res81: Slice[String] = Slice(a,b,c,d,ee)
+// res85: Slice[String] = Slice(a,b,c,d,ee)
 
 slice.slice(2,6)
-// res82: Slice[String] = Slice(c,d,ee,f)
+// res86: Slice[String] = Slice(c,d,ee,f)
 
 slice.head
-// res83: String = "a"
+// res87: String = "a"
 
 slice.headOption
-// res84: Option[String] = Some("a")
+// res88: Option[String] = Some("a")
 
 slice.init
-// res85: Slice[String] = Slice(a,b,c,d,ee,f,g,h,i)
+// res89: Slice[String] = Slice(a,b,c,d,ee,f,g,h,i)
 
 slice.last
-// res86: String = "j"
+// res90: String = "j"
 
 slice.find("slice".contains)
-// res87: Option[String] = Some("c")
+// res91: Option[String] = Some("c")
 
 slice.exists("slice".contains)
-// res88: Boolean = true
+// res92: Boolean = true
 
 slice.count(_.length > 1)
-// res89: Int = 1
+// res93: Int = 1
 
 slice.count(_.length == 1)
-// res90: Int = 9
+// res94: Int = 9
 
 slice.map(s => s+s)
-// res91: Slice[String] = Slice(aa,bb,cc,dd,eeee,ff,gg,hh,ii,jj)
+// res95: Slice[String] = Slice(aa,bb,cc,dd,eeee,ff,gg,hh,ii,jj)
 
 slice.map(s => s"($s)")
-// res92: Slice[String] = Slice((a),(b),(c),(d),(ee),(f),(g),(h),(i),(j))
+// res96: Slice[String] = Slice((a),(b),(c),(d),(ee),(f),(g),(h),(i),(j))
 
 slice.asIterable
-// res93: Iterable[String] = Iterable(
+// res97: Iterable[String] = Iterable(
 //   "a",
 //   "b",
 //   "c",
@@ -435,40 +455,6 @@ slice.asIterable
 // )
 
 slice.iterator.toList
-// res94: List[String] = List(
-//   "a",
-//   "b",
-//   "c",
-//   "d",
-//   "ee",
-//   "f",
-//   "g",
-//   "h",
-//   "i",
-//   "j"
-// )
-
-slice.iterator("abeij".contains(_)).toList
-// res95: List[String] = List("a", "b", "i", "j")
-
-slice.reverseIterator.toList
-// res96: List[String] = List(
-//   "j",
-//   "i",
-//   "h",
-//   "g",
-//   "f",
-//   "ee",
-//   "d",
-//   "c",
-//   "b",
-//   "a"
-// )
-
-slice.reverseIterator("adgh".contains(_)).toList
-// res97: List[String] = List("h", "g", "d", "a")
-
-slice.toList
 // res98: List[String] = List(
 //   "a",
 //   "b",
@@ -482,8 +468,42 @@ slice.toList
 //   "j"
 // )
 
+slice.iterator("abeij".contains(_)).toList
+// res99: List[String] = List("a", "b", "i", "j")
+
+slice.reverseIterator.toList
+// res100: List[String] = List(
+//   "j",
+//   "i",
+//   "h",
+//   "g",
+//   "f",
+//   "ee",
+//   "d",
+//   "c",
+//   "b",
+//   "a"
+// )
+
+slice.reverseIterator("adgh".contains(_)).toList
+// res101: List[String] = List("h", "g", "d", "a")
+
+slice.toList
+// res102: List[String] = List(
+//   "a",
+//   "b",
+//   "c",
+//   "d",
+//   "ee",
+//   "f",
+//   "g",
+//   "h",
+//   "i",
+//   "j"
+// )
+
 slice.toSeq
-// res99: Seq[String] = Vector(
+// res103: Seq[String] = Vector(
 //   "a",
 //   "b",
 //   "c",
@@ -497,7 +517,7 @@ slice.toSeq
 // )
 
 slice.toArray
-// res100: Array[String] = Array(
+// res104: Array[String] = Array(
 //   "a",
 //   "b",
 //   "c",
@@ -511,7 +531,7 @@ slice.toArray
 // )
 
 slice.copyToArray(3, new Array[String](15))
-// res101: Array[String] = Array(
+// res105: Array[String] = Array(
 //   null,
 //   null,
 //   null,
@@ -530,7 +550,7 @@ slice.copyToArray(3, new Array[String](15))
 // )
 
 slice.toBuffer
-// res102: Buffer[String] = [a,b,c,d,ee,f,g,h,i,j]
+// res106: Buffer[String] = [a,b,c,d,ee,f,g,h,i,j]
 
 val slice3 = slice.detach
 // slice3: Slice[String] = Slice(a,b,c,d,ee,f,g,h,i,j)

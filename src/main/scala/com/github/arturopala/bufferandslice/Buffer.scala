@@ -147,15 +147,20 @@ trait Buffer[T] extends (Int => T) {
     this
   }
 
-  /** Updates all values in the range [0,length) using the function.
+  /** Updates in-place all values in the range [0,length) using the function.
     * @param f map function
-    * @throws IndexOutOfBoundsException if index lower than zero.
     * @group Modify */
-  @`inline` final def map(f: T => T): this.type = modifyAll(f)
+  @`inline` final def mapInPlace(f: T => T): this.type = modifyAll(f)
+
+  /** Iterable representing lazily mapped values of this buffer at the time of access.
+    * @param f map function
+    * @group Modify */
+  @`inline` final def map[K](f: T => K): Iterable[K] = new Iterable[K] {
+    final override def iterator: Iterator[K] = Buffer.this.iterator.map(f)
+  }
 
   /** Updates all values in the range [0,length) using the function.
     * @param map map function
-    * @throws IndexOutOfBoundsException if index lower than zero.
     * @group Modify */
   final def modifyAll(map: T => T): this.type = {
     var i = 0
@@ -169,7 +174,6 @@ trait Buffer[T] extends (Int => T) {
   /** Updates all accepted values in the range [0,length) using the function.
     * @param map map function
     * @param pred filter function
-    * @throws IndexOutOfBoundsException if index lower than zero.
     * @group Modify */
   final def modifyAllWhen(map: T => T, pred: T => Boolean): this.type = {
     var i = 0
