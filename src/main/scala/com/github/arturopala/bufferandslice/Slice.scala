@@ -52,6 +52,10 @@ trait Slice[T] extends (Int => T) {
     * @group Properties */
   def length: Int
 
+  /** Returns top index value (length-1).
+    * @group Properties */
+  @`inline` final def top: Int = length - 1
+
   /** Returns true if Slice has values, otherwise false.
     * @group Properties */
   def isEmpty: Boolean

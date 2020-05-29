@@ -295,6 +295,13 @@ class IntSliceSpec extends AnyWordSpecCompat {
       IntSlice(1, 2, 3).exists(_ > 3) shouldBe false
     }
 
+    "have a top" in {
+      IntSlice(1, 2, 3).top shouldBe 2
+      IntSlice(1, 2).top shouldBe 1
+      IntSlice(1).top shouldBe 0
+      IntSlice.empty.top shouldBe -1
+    }
+
   }
 
 }
