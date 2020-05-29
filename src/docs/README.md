@@ -288,6 +288,10 @@ val array = Array("a","b","c","d","ee","f","g","h","i","j")
 
 val slice = Slice.of(array)
 
+slice.length
+
+slice.top
+
 slice.apply(0)
 
 slice.apply(5)
