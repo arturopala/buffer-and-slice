@@ -177,8 +177,8 @@ trait ArraySliceLike[T] extends Slice[T] {
     }
   }
 
-  /** Returns iterator over slice's values fulfilling the predicate. */
-  final override def iterator(pred: T => Boolean): Iterator[T] = new Iterator[T] {
+  /** Returns iterator over Slice indexes of values fulfilling the predicate. */
+  final override def indexIterator(pred: T => Boolean): Iterator[Int] = new Iterator[Int] {
 
     var i: Int = fromIndex
 
@@ -186,11 +186,11 @@ trait ArraySliceLike[T] extends Slice[T] {
 
     def hasNext: Boolean = i < toIndex
 
-    def next(): T = {
-      val value = array(i)
+    def next(): Int = {
+      val item = i - fromIndex
       i = i + 1
       seekNext
-      value
+      item
     }
 
     def seekNext: Unit =
@@ -202,6 +202,10 @@ trait ArraySliceLike[T] extends Slice[T] {
         }
       } else ()
   }
+
+  /** Returns iterator over slice's values fulfilling the predicate. */
+  final override def iterator(pred: T => Boolean): Iterator[T] =
+    indexIterator(pred).map(i => array(i + fromIndex))
 
   /** Returns iterator over slice's values in the reverse order. */
   final override def reverseIterator: Iterator[T] = new Iterator[T] {
@@ -217,8 +221,8 @@ trait ArraySliceLike[T] extends Slice[T] {
     }
   }
 
-  /** Returns iterator over slice's values, fulfilling the predicate, in the reverse order. */
-  final override def reverseIterator(pred: T => Boolean): Iterator[T] = new Iterator[T] {
+  /** Returns iterator over Slice indexes of values fulfilling the predicate, in the reverse order. */
+  final override def reverseIndexIterator(pred: T => Boolean): Iterator[Int] = new Iterator[Int] {
 
     var i: Int = toIndex - 1
 
@@ -226,11 +230,11 @@ trait ArraySliceLike[T] extends Slice[T] {
 
     def hasNext: Boolean = i >= fromIndex
 
-    def next(): T = {
-      val value = array(i)
+    def next(): Int = {
+      val item = i - fromIndex
       i = i - 1
       seekNext
-      value
+      item
     }
 
     def seekNext: Unit =
@@ -242,6 +246,10 @@ trait ArraySliceLike[T] extends Slice[T] {
         }
       } else ()
   }
+
+  /** Returns iterator over slice's values, fulfilling the predicate, in the reverse order. */
+  final override def reverseIterator(pred: T => Boolean): Iterator[T] =
+    reverseIndexIterator(pred).map(i => array(i + fromIndex))
 
   /** Returns a minimal copy of an underlying array, trimmed to the actual range. */
   final override def toArray[T1 >: T: ClassTag]: Array[T1] = {

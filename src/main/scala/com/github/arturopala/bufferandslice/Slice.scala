@@ -135,6 +135,10 @@ trait Slice[T] extends (Int => T) {
     * @group Iterate */
   def iterator(pred: T => Boolean): Iterator[T]
 
+  /** Returns iterator over Slice indexes of values fulfilling the predicate.
+    * @group Iterate */
+  def indexIterator(pred: T => Boolean): Iterator[Int]
+
   /** Returns iterator over Slice values in the reverse order.
     * @group Iterate */
   def reverseIterator: Iterator[T]
@@ -142,6 +146,10 @@ trait Slice[T] extends (Int => T) {
   /** Returns iterator over Slice values fulfilling the predicate, in the reverse order.
     * @group Iterate */
   def reverseIterator(pred: T => Boolean): Iterator[T]
+
+  /** Returns iterator over Slice indexes of values fulfilling the predicate, in the reverse order.
+    * @group Iterate */
+  def reverseIndexIterator(pred: T => Boolean): Iterator[Int]
 
   /** Returns new list of Slice values.
     * @group Export */

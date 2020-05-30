@@ -51,6 +51,14 @@ class ArraySliceSpec extends AnyWordSpecCompat {
       ArraySlice.of(Array("a", "b", "c", "d", "e"), 2, 3).iterator(f).toList shouldBe List()
     }
 
+    "iterate with filter over slice of values" in {
+      val f = Set("b", "d", "e").contains _
+      ArraySlice.of(Array("a", "b", "c", "d", "e")).indexIterator(f).toList shouldBe List(1, 3, 4)
+      ArraySlice.of(Array("a", "b", "c", "d", "e"), 1, 5).indexIterator(f).toList shouldBe List(0, 2, 3)
+      ArraySlice.of(Array("a", "b", "c", "d", "e"), 1, 4).indexIterator(f).toList shouldBe List(0, 2)
+      ArraySlice.of(Array("a", "b", "c", "d", "e"), 2, 3).indexIterator(f).toList shouldBe List()
+    }
+
     "reverse-iterate over slice of values" in {
       Slice
         .of(Array("a", "b", "c", "d", "e"))

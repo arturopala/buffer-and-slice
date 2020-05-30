@@ -340,9 +340,13 @@ slice.asIterable
 
 slice.iterator.toList
 
+slice.indexIterator("abeij".contains(_)).toList
+
 slice.iterator("abeij".contains(_)).toList
 
 slice.reverseIterator.toList
+
+slice.reverseIndexIterator("adgh".contains(_)).toList
 
 slice.reverseIterator("adgh".contains(_)).toList
 

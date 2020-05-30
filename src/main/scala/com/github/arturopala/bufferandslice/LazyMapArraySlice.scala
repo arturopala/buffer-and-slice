@@ -174,7 +174,11 @@ abstract class LazyMapArraySlice[T] private (fromIndex: Int, toIndex: Int, detac
   }
 
   /** Returns iterator over Slice values fulfilling the predicate. */
-  final override def iterator(pred: T => Boolean): Iterator[T] = new Iterator[T] {
+  final override def iterator(pred: T => Boolean): Iterator[T] =
+    indexIterator(pred).map(i => mapF(array(i + fromIndex)))
+
+  /** Returns iterator over Slice indexes of values fulfilling the predicate. */
+  final override def indexIterator(pred: T => Boolean): Iterator[Int] = new Iterator[Int] {
 
     var i: Int = fromIndex
 
@@ -182,11 +186,11 @@ abstract class LazyMapArraySlice[T] private (fromIndex: Int, toIndex: Int, detac
 
     def hasNext: Boolean = i < toIndex
 
-    def next(): T = {
-      val value = mapF(array(i))
+    def next(): Int = {
+      val item = i - fromIndex
       i = i + 1
       seekNext
-      value
+      item
     }
 
     def seekNext: Unit =
@@ -214,7 +218,11 @@ abstract class LazyMapArraySlice[T] private (fromIndex: Int, toIndex: Int, detac
   }
 
   /** Returns iterator over Slice values fulfilling the predicate, in the reverse order. */
-  final override def reverseIterator(pred: T => Boolean): Iterator[T] = new Iterator[T] {
+  final override def reverseIterator(pred: T => Boolean): Iterator[T] =
+    reverseIndexIterator(pred).map(i => mapF(array(i + fromIndex)))
+
+  /** Returns iterator over Slice indexes of values fulfilling the predicate, in the reverse order. */
+  final override def reverseIndexIterator(pred: T => Boolean): Iterator[Int] = new Iterator[Int] {
 
     var i: Int = toIndex - 1
 
@@ -222,11 +230,11 @@ abstract class LazyMapArraySlice[T] private (fromIndex: Int, toIndex: Int, detac
 
     def hasNext: Boolean = i >= fromIndex
 
-    def next(): T = {
-      val value = mapF(array(i))
+    def next(): Int = {
+      val item = i - fromIndex
       i = i - 1
       seekNext
-      value
+      item
     }
 
     def seekNext: Unit =

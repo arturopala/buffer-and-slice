@@ -474,11 +474,14 @@ slice.iterator.toList
 //   "j"
 // )
 
+slice.indexIterator("abeij".contains(_)).toList
+// res101: List[Int] = List(0, 1, 8, 9)
+
 slice.iterator("abeij".contains(_)).toList
-// res101: List[String] = List("a", "b", "i", "j")
+// res102: List[String] = List("a", "b", "i", "j")
 
 slice.reverseIterator.toList
-// res102: List[String] = List(
+// res103: List[String] = List(
 //   "j",
 //   "i",
 //   "h",
@@ -491,11 +494,14 @@ slice.reverseIterator.toList
 //   "a"
 // )
 
+slice.reverseIndexIterator("adgh".contains(_)).toList
+// res104: List[Int] = List(7, 6, 3, 0)
+
 slice.reverseIterator("adgh".contains(_)).toList
-// res103: List[String] = List("h", "g", "d", "a")
+// res105: List[String] = List("h", "g", "d", "a")
 
 slice.toList
-// res104: List[String] = List(
+// res106: List[String] = List(
 //   "a",
 //   "b",
 //   "c",
@@ -509,7 +515,7 @@ slice.toList
 // )
 
 slice.toSeq
-// res105: Seq[String] = Vector(
+// res107: Seq[String] = Vector(
 //   "a",
 //   "b",
 //   "c",
@@ -523,7 +529,7 @@ slice.toSeq
 // )
 
 slice.toArray
-// res106: Array[String] = Array(
+// res108: Array[String] = Array(
 //   "a",
 //   "b",
 //   "c",
@@ -537,7 +543,7 @@ slice.toArray
 // )
 
 slice.copyToArray(3, new Array[String](15))
-// res107: Array[String] = Array(
+// res109: Array[String] = Array(
 //   null,
 //   null,
 //   null,
@@ -556,7 +562,7 @@ slice.copyToArray(3, new Array[String](15))
 // )
 
 slice.toBuffer
-// res108: Buffer[String] = [a,b,c,d,ee,f,g,h,i,j]
+// res110: Buffer[String] = [a,b,c,d,ee,f,g,h,i,j]
 
 val slice3 = slice.detach
 // slice3: Slice[String] = Slice(a,b,c,d,ee,f,g,h,i,j)
