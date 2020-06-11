@@ -800,6 +800,13 @@ class ArrayBufferSpec extends AnyWordSpecCompat {
       buffer.toArray shouldBe Array("a", "b", "c")
     }
 
+    "have an emptyCopy" in {
+      val buffer = new ArrayBuffer(Array("a", "b", "c"))
+      buffer.emptyCopy.append("d").toArray shouldBe Array("d")
+      buffer.emptyCopy.append("e").toArray shouldBe Array("e")
+      buffer.toArray shouldBe Array("a", "b", "c")
+    }
+
     "have a headOption" in {
       Buffer.empty[String].headOption shouldBe None
       Buffer.empty[Int].headOption shouldBe None

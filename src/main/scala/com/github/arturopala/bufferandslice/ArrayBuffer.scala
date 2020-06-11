@@ -45,6 +45,9 @@ final class ArrayBuffer[T](initialArray: Array[T]) extends ArrayBufferLike[T] {
   override def copy: this.type =
     new ArrayBuffer(toArray).asInstanceOf[this.type]
 
+  override def emptyCopy: this.type =
+    new ArrayBuffer(ArrayOps.copyOf(_array, 0)).asInstanceOf[this.type]
+
   /** Returns an Array with a copy of an accessible buffer range. */
   override def toArray: Array[T] = ArrayOps.copyOf(_array, length)
 

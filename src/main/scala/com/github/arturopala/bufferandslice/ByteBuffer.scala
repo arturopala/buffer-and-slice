@@ -41,6 +41,9 @@ final class ByteBuffer(initialSize: Int = 8) extends ArrayBufferLike[Byte] {
   override def copy: this.type =
     new ByteBuffer(length).appendArray(toArray).asInstanceOf[this.type]
 
+  override def emptyCopy: this.type =
+    new ByteBuffer(0).asInstanceOf[this.type]
+
   /** Returns an Array with a copy of an accessible buffer range. */
   override def toArray: Array[Byte] = java.util.Arrays.copyOf(_array, length)
 

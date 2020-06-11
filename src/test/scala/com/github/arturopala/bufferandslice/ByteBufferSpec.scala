@@ -158,6 +158,13 @@ class ByteBufferSpec extends AnyWordSpecCompat {
       b3_2.rewind(1).slice(0, 3) shouldBe ByteSlice(1, 1)
       b3_2.rewind(1).slice(0, 2) shouldBe ByteSlice(1)
     }
+
+    "have an emptyCopy" in {
+      val buffer = ByteBuffer(1, 3, 5)
+      buffer.emptyCopy.append(7).toArray shouldBe Array(7)
+      buffer.emptyCopy.append(127).toArray shouldBe Array(127)
+      buffer.toArray shouldBe Array(1, 3, 5)
+    }
   }
 
 }

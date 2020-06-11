@@ -126,11 +126,13 @@ Buffer(1,2,3,4,5,6,7,8,9).asSlice
 
 Buffer(1,2,3,4,5,6,7,8,9).toArray
 
-val b1 = Buffer(1,2)
+val b1 = ByteBuffer(1,2)
 
 b1.copy.append(3)
 
 b1.copy.append(4)
+
+b1.emptyCopy.append(9)
 ```
 
 - Specialized `IntBuffer`:
@@ -143,10 +145,20 @@ IntBuffer(Array(0,1,2,3))
 IntBuffer(0,1,2,3).asSlice
 ```
 
+- Specialized `ByteBuffer`:
+
+```scala mdoc
+ByteBuffer(0,1,2,3)
+
+ByteBuffer(Array(0,1,2,3).map(_.toByte))
+
+ByteBuffer(0,1,2,3).asSlice
+```
+
 - Modifying the content:
 
 ```scala mdoc
-Buffer(1,2,3).update(1,0)
+ByteBuffer(1,2,3).update(1,0)
 
 Buffer(0,0,0).modify(1,_ + 1)
 

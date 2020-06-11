@@ -245,6 +245,20 @@ class IntBufferSpec extends AnyWordSpecCompat {
       b3_2.rewind(1).slice(0, 3) shouldBe IntSlice(1, 1)
       b3_2.rewind(1).slice(0, 2) shouldBe IntSlice(1)
     }
+
+    "have a copy" in {
+      val buffer = IntBuffer(1, 3, 5)
+      buffer.copy.append(7).toArray shouldBe Array(1, 3, 5, 7)
+      buffer.copy.append(9).toArray shouldBe Array(1, 3, 5, 9)
+      buffer.toArray shouldBe Array(1, 3, 5)
+    }
+
+    "have an emptyCopy" in {
+      val buffer = IntBuffer(1, 3, 5)
+      buffer.emptyCopy.append(7).toArray shouldBe Array(7)
+      buffer.emptyCopy.append(9).toArray shouldBe Array(9)
+      buffer.toArray shouldBe Array(1, 3, 5)
+    }
   }
 
 }

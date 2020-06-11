@@ -71,6 +71,10 @@ trait Buffer[T] extends (Int => T) {
     * @group Abstract */
   def copy: this.type
 
+  /** Creates a copy of this buffer.
+    * @group Abstract */
+  def emptyCopy: this.type
+
   /** Returns an Array with a copy of an accessible buffer range.
     * @group Read */
   def toArray: Array[T]

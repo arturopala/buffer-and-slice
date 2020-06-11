@@ -53,6 +53,9 @@ final class IntBuffer(initialSize: Int = 8) extends ArrayBufferLike[Int] {
   override def copy: this.type =
     new IntBuffer(length).appendArray(toArray).asInstanceOf[this.type]
 
+  override def emptyCopy: this.type =
+    new IntBuffer(0).asInstanceOf[this.type]
+
   /** Returns an Array with a copy of an accessible buffer range. */
   override def toArray: Array[Int] = java.util.Arrays.copyOf(_array, length)
 
