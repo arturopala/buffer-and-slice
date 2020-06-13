@@ -34,8 +34,11 @@ final class ArraySlice[T] private[bufferandslice] (
 
   /** Returns buffer with a copy of this Slice.
     * @group Read */
-  @`inline` override def toBuffer(implicit tag: ClassTag[T]): ArrayBuffer[T] =
-    new ArrayBuffer(toArray)
+  @`inline` override def toBuffer[T1 >: T: ClassTag]: ArrayBuffer[T1] =
+    new ArrayBuffer(toArray[T1])
+
+  /** Returns a buffer with a copy of this Slice. */
+  @`inline` override def asBuffer: ArrayBuffer[T] = new ArrayBuffer[T](asArray)
 }
 
 object ArraySlice {

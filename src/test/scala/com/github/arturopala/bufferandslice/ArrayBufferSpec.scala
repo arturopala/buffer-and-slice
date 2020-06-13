@@ -937,6 +937,26 @@ class ArrayBufferSpec extends AnyWordSpecCompat {
       b3_2.rewind(1).slice(0, 2) shouldBe Slice("a")
     }
 
+    "have contains" in {
+      Buffer("a", "b", "c").contains("a") shouldBe true
+      Buffer("a", "b", "c").contains("b") shouldBe true
+      Buffer("a", "b", "c").contains("c") shouldBe true
+      Buffer("a", "b", "c").contains("d") shouldBe false
+      Buffer("a", "b", "c").contains("") shouldBe false
+      Buffer.empty[String].contains("") shouldBe false
+      Buffer.empty[String].contains("a") shouldBe false
+    }
+
+    "have exists" in {
+      Buffer("a", "b", "c").exists(_ == "a") shouldBe true
+      Buffer("a", "b", "c").exists(_ == "b") shouldBe true
+      Buffer("a", "b", "c").exists(_ == "c") shouldBe true
+      Buffer("a", "b", "c").exists(_ == "d") shouldBe false
+      Buffer("a", "b", "c").exists(_ == "") shouldBe false
+      Buffer.empty[String].exists(_ == "") shouldBe false
+      Buffer.empty[String].exists(_ == "a") shouldBe false
+    }
+
   }
 
 }

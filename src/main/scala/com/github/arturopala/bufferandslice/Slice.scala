@@ -178,7 +178,11 @@ trait Slice[T] extends (Int => T) {
 
   /** Returns a buffer with a copy of this Slice.
     * @group Export */
-  def toBuffer(implicit tag: ClassTag[T]): Buffer[T]
+  def toBuffer[T1 >: T: ClassTag]: Buffer[T1]
+
+  /** Returns a buffer with a copy of this Slice.
+    * @group Export */
+  def asBuffer: Buffer[T]
 
 }
 

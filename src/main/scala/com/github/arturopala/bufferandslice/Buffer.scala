@@ -87,6 +87,9 @@ trait Buffer[T] extends (Int => T) {
     * @group Slice */
   def slice(from: Int, to: Int): Slice[T]
 
+  /** Attempts to optimize buffer storage, if needed. */
+  def optimize(): this.type
+
   /** Length of the accessible part of the buffer.
     * @group Properties */
   @`inline` final def length: Int = topIndex + 1
@@ -250,7 +253,7 @@ trait Buffer[T] extends (Int => T) {
     this
   }
 
-  /** Trims the buffer, if needed, to be have at most the `size`.
+  /** Trims the buffer, if needed, to have at most the `size`.
     * @group Limit */
   final def trim(size: Int): this.type = {
     if (size >= 0 && size < length) {
@@ -659,6 +662,34 @@ trait Buffer[T] extends (Int => T) {
     }
   }
 
+  /** Returns true if buffer contains given value. */
+  final def contains(value: T): Boolean = {
+    var i = 0
+    var result = false
+    while (i < length) {
+      if (uncheckedApply(i) == value) {
+        result = true
+        i = length
+      }
+      i = i + 1
+    }
+    result
+  }
+
+  /** Returns true if buffer contains value fulfilling the predicate. */
+  final def exists(pred: T => Boolean): Boolean = {
+    var i = 0
+    var result = false
+    while (i < length) {
+      if (pred(uncheckedApply(i))) {
+        result = true
+        i = length
+      }
+      i = i + 1
+    }
+    result
+  }
+
 }
 
 /** Buffer factory. */
@@ -666,7 +697,7 @@ object Buffer {
 
   @`inline` def apply[T: ClassTag](elems: T*): Buffer[T] = apply(elems.toArray)
 
-  def apply[T: ClassTag](array: Array[T]): Buffer[T] =
+  def apply[T](array: Array[T]): Buffer[T] =
     if (array.isInstanceOf[Array[Int]])
       new IntBuffer(array.length)
         .appendArray(array.asInstanceOf[Array[Int]])
@@ -678,7 +709,7 @@ object Buffer {
     else
       new ArrayBuffer[T](array)
 
-  @`inline` def apply[T: ClassTag](array: Array[T], length: Int): Buffer[T] =
+  @`inline` def apply[T](array: Array[T], length: Int): Buffer[T] =
     apply(array).set(length)
 
   def ofSize[T: ClassTag](size: Int): Buffer[T] =

@@ -227,6 +227,12 @@ Buffer(1,2,3,4,5,6,7,8,9).moveRangeLeft(6,8,4)
 Buffer(1,2,3,4).swap(0,3)
 
 Buffer(1,2,3,4,5,6,7,8,9).swapRange(0,5,3)
+
+Buffer(1,2,3,4,5,6,7,8,9).contains(7)
+
+Buffer(1,2,3,4,5,6,7,8,9).exists(_ > 8)
+
+Buffer(1,2,3,4,5,6,7,8,9).exists(_ < 0)
 ```
 
 - Using `Buffer` as a stack:
@@ -371,6 +377,8 @@ slice.toArray
 slice.copyToArray(3, new Array[String](15))
 
 slice.toBuffer
+
+slice.asBuffer
 
 val slice3 = slice.detach
 ```

@@ -33,8 +33,10 @@ final class IntSlice private[bufferandslice] (
 
   /** Returns buffer with a copy of this Slice.
     * @group Read */
-  @`inline` override def toBuffer(implicit tag: ClassTag[Int]): IntBuffer =
-    new IntBuffer(length).appendArray(toArray)
+  @`inline` override def toBuffer[T1 >: Int: ClassTag]: Buffer[T1] = Buffer(toArray[T1])
+
+  /** Returns a buffer with a copy of this Slice. */
+  @`inline` override def asBuffer: IntBuffer = IntBuffer(asArray)
 }
 
 object IntSlice {

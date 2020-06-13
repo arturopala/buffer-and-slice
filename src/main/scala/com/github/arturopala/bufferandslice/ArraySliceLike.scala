@@ -65,7 +65,7 @@ trait ArraySliceLike[T] extends Slice[T] {
   /** Lazily composes mapping function and returns new [[LazyMapArraySlice]].
     * Does not modify nor copy underlying array. */
   @`inline` final override def map[K](f: T => K): Slice[K] =
-    LazyMapArraySlice.lazyMapped[K, T](fromIndex, toIndex, array, f, detached)
+    LazyMapArraySlice.lazilyMapped[K, T](fromIndex, toIndex, array, f, detached)
 
   /** Counts values fulfilling the predicate. */
   final override def count(pred: T => Boolean): Int = {

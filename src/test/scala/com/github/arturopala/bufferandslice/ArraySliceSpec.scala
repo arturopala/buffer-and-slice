@@ -301,6 +301,20 @@ class ArraySliceSpec extends AnyWordSpecCompat {
       ArraySlice(1, 2, 3).exists(_ > 1) shouldBe true
       ArraySlice(1, 2, 3).exists(_ > 3) shouldBe false
     }
+
+    "have toBuffer" in {
+      ArraySlice.empty[Int].toBuffer.push(4).toArray shouldBe Array(4)
+      ArraySlice(1, 2, 3).toBuffer.push(4).toArray shouldBe Array(1, 2, 3, 4)
+      ArraySlice.empty[String].toBuffer.push("a").toArray shouldBe Array("a")
+      ArraySlice("a", "b", "c").toBuffer.push("d").toArray shouldBe Array("a", "b", "c", "d")
+    }
+
+    "have asBuffer" in {
+      ArraySlice.empty[Int].asBuffer.push(4).toArray shouldBe Array(4)
+      ArraySlice(1, 2, 3).asBuffer.push(4).toArray shouldBe Array(1, 2, 3, 4)
+      ArraySlice.empty[String].asBuffer.push("a").toArray shouldBe Array("a")
+      ArraySlice("a", "b", "c").asBuffer.push("d").toArray shouldBe Array("a", "b", "c", "d")
+    }
   }
 
 }

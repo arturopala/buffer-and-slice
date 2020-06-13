@@ -17,6 +17,7 @@
 package com.github.arturopala.bufferandslice
 
 import scala.runtime.BoxedUnit
+import scala.util.control.NonFatal
 
 /** Array modifications helper. */
 object ArrayOps {
@@ -39,5 +40,90 @@ object ArrayOps {
       case x if x.isInstanceOf[Array[Short]]   => java.util.Arrays.copyOf(x.asInstanceOf[Array[Short]], newLength)
       case x if x.isInstanceOf[Array[Boolean]] => java.util.Arrays.copyOf(x.asInstanceOf[Array[Boolean]], newLength)
     }).asInstanceOf[Array[K]]
+
+  /** Makes a copy of a portions of an array with elements mapped.
+    * Does not require ClassTag instance. */
+  final def copyMapOf[K, T](from: Int, to: Int, array: Array[K], map: K => T): Array[T] = {
+    val fromIndex = Math.max(0, from)
+    val toIndex = Math.min(array.length, Math.max(from, to))
+    val length = Math.max(0, toIndex - fromIndex)
+    val newArray: Array[T] = if (array.length > 0) {
+      try {
+        val item: T = map(array(fromIndex))
+        val arr: Array[T] = new Array[String](length).asInstanceOf[Array[T]]
+        arr(0) = item
+        arr
+      } catch {
+        case NonFatal(_) =>
+          try {
+            val item: T = map(array(fromIndex))
+            val arr: Array[T] = new Array[Int](length).asInstanceOf[Array[T]]
+            arr(0) = item
+            arr
+          } catch {
+            case NonFatal(_) =>
+              try {
+                val item: T = map(array(fromIndex))
+                val arr: Array[T] = new Array[Double](length).asInstanceOf[Array[T]]
+                arr(0) = item
+                arr
+              } catch {
+                case NonFatal(_) =>
+                  try {
+                    val item: T = map(array(fromIndex))
+                    val arr: Array[T] = new Array[Byte](length).asInstanceOf[Array[T]]
+                    arr(0) = item
+                    arr
+                  } catch {
+                    case NonFatal(_) =>
+                      try {
+                        val item: T = map(array(fromIndex))
+                        val arr: Array[T] = new Array[Char](length).asInstanceOf[Array[T]]
+                        arr(0) = item
+                        arr
+                      } catch {
+                        case NonFatal(_) =>
+                          try {
+                            val item: T = map(array(fromIndex))
+                            val arr: Array[T] = new Array[Boolean](length).asInstanceOf[Array[T]]
+                            arr(0) = item
+                            arr
+                          } catch {
+                            case NonFatal(_) =>
+                              try {
+                                val item: T = map(array(fromIndex))
+                                val arr: Array[T] = new Array[Float](length).asInstanceOf[Array[T]]
+                                arr(0) = item
+                                arr
+                              } catch {
+                                case NonFatal(_) =>
+                                  try {
+                                    val item: T = map(array(fromIndex))
+                                    val arr: Array[T] = new Array[Short](length).asInstanceOf[Array[T]]
+                                    arr(0) = item
+                                    arr
+                                  } catch {
+                                    case NonFatal(_) =>
+                                      val item: T = map(array(fromIndex))
+                                      val arr: Array[T] = new Array[Object](length).asInstanceOf[Array[T]]
+                                      arr(0) = item
+                                      arr
+                                  }
+                              }
+                          }
+                      }
+                  }
+              }
+          }
+      }
+    } else Array.empty[Object].asInstanceOf[Array[T]]
+
+    var i = 0
+    while (i < length) {
+      newArray(i) = map(array(fromIndex + i))
+      i = i + 1
+    }
+    newArray
+  }
 
 }

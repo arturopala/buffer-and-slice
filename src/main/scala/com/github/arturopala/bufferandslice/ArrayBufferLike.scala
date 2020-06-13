@@ -209,4 +209,9 @@ trait ArrayBufferLike[T] extends Buffer[T] {
     this
   }
 
+  /** Attempts to optimize buffer storage, if needed. */
+  final override def optimize(): this.type =
+    (if (underlyingUnsafe.length > 64 && underlyingUnsafe.length / (length + 1) > 3) copy
+     else this).asInstanceOf[this.type]
+
 }
