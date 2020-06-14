@@ -48,75 +48,19 @@ object ArrayOps {
     val toIndex = Math.min(array.length, Math.max(from, to))
     val length = Math.max(0, toIndex - fromIndex)
     val newArray: Array[T] = if (array.length > 0) {
-      try {
-        val item: T = map(array(fromIndex))
-        val arr: Array[T] = new Array[String](length).asInstanceOf[Array[T]]
-        arr(0) = item
-        arr
-      } catch {
-        case NonFatal(_) =>
-          try {
-            val item: T = map(array(fromIndex))
-            val arr: Array[T] = new Array[Int](length).asInstanceOf[Array[T]]
-            arr(0) = item
-            arr
-          } catch {
-            case NonFatal(_) =>
-              try {
-                val item: T = map(array(fromIndex))
-                val arr: Array[T] = new Array[Double](length).asInstanceOf[Array[T]]
-                arr(0) = item
-                arr
-              } catch {
-                case NonFatal(_) =>
-                  try {
-                    val item: T = map(array(fromIndex))
-                    val arr: Array[T] = new Array[Byte](length).asInstanceOf[Array[T]]
-                    arr(0) = item
-                    arr
-                  } catch {
-                    case NonFatal(_) =>
-                      try {
-                        val item: T = map(array(fromIndex))
-                        val arr: Array[T] = new Array[Char](length).asInstanceOf[Array[T]]
-                        arr(0) = item
-                        arr
-                      } catch {
-                        case NonFatal(_) =>
-                          try {
-                            val item: T = map(array(fromIndex))
-                            val arr: Array[T] = new Array[Boolean](length).asInstanceOf[Array[T]]
-                            arr(0) = item
-                            arr
-                          } catch {
-                            case NonFatal(_) =>
-                              try {
-                                val item: T = map(array(fromIndex))
-                                val arr: Array[T] = new Array[Float](length).asInstanceOf[Array[T]]
-                                arr(0) = item
-                                arr
-                              } catch {
-                                case NonFatal(_) =>
-                                  try {
-                                    val item: T = map(array(fromIndex))
-                                    val arr: Array[T] = new Array[Short](length).asInstanceOf[Array[T]]
-                                    arr(0) = item
-                                    arr
-                                  } catch {
-                                    case NonFatal(_) =>
-                                      val item: T = map(array(fromIndex))
-                                      val arr: Array[T] = new Array[Object](length).asInstanceOf[Array[T]]
-                                      arr(0) = item
-                                      arr
-                                  }
-                              }
-                          }
-                      }
-                  }
-              }
-          }
+      map(array(fromIndex)) match {
+        case _: String  => new Array[String](length)
+        case _: Int     => new Array[Int](length)
+        case _: Byte    => new Array[Byte](length)
+        case _: Double  => new Array[Double](length)
+        case _: Float   => new Array[Float](length)
+        case _: Char    => new Array[Char](length)
+        case _: Boolean => new Array[Boolean](length)
+        case _: Short   => new Array[Short](length)
+        case _          => new Array[Object](length)
       }
-    } else Array.empty[Object].asInstanceOf[Array[T]]
+    }.asInstanceOf[Array[T]]
+    else Array.empty[Object].asInstanceOf[Array[T]]
 
     var i = 0
     while (i < length) {
