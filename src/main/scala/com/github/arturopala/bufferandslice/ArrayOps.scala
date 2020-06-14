@@ -17,7 +17,6 @@
 package com.github.arturopala.bufferandslice
 
 import scala.runtime.BoxedUnit
-import scala.util.control.NonFatal
 
 /** Array modifications helper. */
 object ArrayOps {
@@ -47,27 +46,31 @@ object ArrayOps {
     val fromIndex = Math.max(0, from)
     val toIndex = Math.min(array.length, Math.max(from, to))
     val length = Math.max(0, toIndex - fromIndex)
-    val newArray: Array[T] = if (array.length > 0) {
-      map(array(fromIndex)) match {
-        case _: String  => new Array[String](length)
-        case _: Int     => new Array[Int](length)
-        case _: Byte    => new Array[Byte](length)
-        case _: Double  => new Array[Double](length)
-        case _: Float   => new Array[Float](length)
-        case _: Char    => new Array[Char](length)
-        case _: Boolean => new Array[Boolean](length)
-        case _: Short   => new Array[Short](length)
-        case _          => new Array[Object](length)
-      }
-    }.asInstanceOf[Array[T]]
-    else Array.empty[Object].asInstanceOf[Array[T]]
+    val array2: Array[T] =
+      if (array.length > 0) newArray(map(array(fromIndex)), length)
+      else Array.empty[AnyRef].asInstanceOf[Array[T]]
 
     var i = 0
     while (i < length) {
-      newArray(i) = map(array(fromIndex + i))
+      array2(i) = map(array(fromIndex + i))
       i = i + 1
     }
-    newArray
+    array2
   }
 
+  /** Creates a new array based on the type of the example item provided.
+    * Does not require ClassTag instance. */
+  final def newArray[T](exampleItem: T, length: Int): Array[T] = {
+    exampleItem match {
+      case _: String  => new Array[String](length)
+      case _: Int     => new Array[Int](length)
+      case _: Byte    => new Array[Byte](length)
+      case _: Double  => new Array[Double](length)
+      case _: Float   => new Array[Float](length)
+      case _: Char    => new Array[Char](length)
+      case _: Boolean => new Array[Boolean](length)
+      case _: Short   => new Array[Short](length)
+      case _          => new Array[AnyRef](length)
+    }
+  }.asInstanceOf[Array[T]]
 }
