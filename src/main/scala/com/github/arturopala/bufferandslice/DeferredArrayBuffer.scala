@@ -111,14 +111,13 @@ final class DeferredArrayBuffer[T](initialLength: Int) extends ArrayBufferLike[T
     new DeferredArrayBuffer(0).asInstanceOf[this.type]
 
   /** Returns a trimmed copy of an underlying array. */
-  override def toArray[T1 >: T: ClassTag]: Array[T1] =
-    if (pristine) {
-      new Array[T1](initialSize)
-    } else {
-      val newArray = new Array[T1](length)
+  override def toArray[T1 >: T: ClassTag]: Array[T1] = {
+    val newArray = new Array[T1](length)
+    if (!pristine) {
       java.lang.System.arraycopy(_array, 0, newArray, 0, length)
-      newArray
     }
+    newArray
+  }
 
   /** Returns an array with a copy of an accessible buffer range.
     *

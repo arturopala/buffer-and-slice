@@ -78,6 +78,18 @@ class DeferredArrayBufferSpec extends AnyWordSpecCompat {
         ArrayBuffer[Int]().push(1).push(2).apply(0)
       DeferredArrayBuffer().push(1).update(0, 2).apply(0) shouldBe
         ArrayBuffer[Int]().push(1).update(0, 2).apply(0)
+      DeferredArrayBuffer().push(1).shiftLeft(0, 1).toArray shouldBe
+        ArrayBuffer[Int]().push(1).shiftLeft(0, 1).toArray
+      DeferredArrayBuffer(4).push(1).shiftLeft(3, 3).toArray shouldBe
+        ArrayBuffer[Int](4).push(1).shiftLeft(3, 3).toArray
+      DeferredArrayBuffer(4).push(1).shiftLeft(3, 6).toArray shouldBe
+        ArrayBuffer[Int](4).push(1).shiftLeft(3, 6).toArray
+      DeferredArrayBuffer(4).shiftLeft(3, 2).length shouldBe
+        ArrayBuffer[Int](4).shiftLeft(3, 2).length
+      DeferredArrayBuffer(4).shiftLeft(0, 1).length shouldBe
+        ArrayBuffer[Int](4).shiftLeft(0, 1).length
+      DeferredArrayBuffer[Int](4).shiftLeft(3, 2).toArray shouldBe
+        ArrayBuffer[Int](4).shiftLeft(3, 2).toArray
 
       val a = new A
       val b = new B
@@ -92,6 +104,10 @@ class DeferredArrayBufferSpec extends AnyWordSpecCompat {
         ArrayBuffer[A]().push(a).push(b).apply(0)
       DeferredArrayBuffer().push(a).update(0, b).apply(0) shouldBe
         ArrayBuffer[A]().push(a).update(0, b).apply(0)
+      DeferredArrayBuffer().push(a).shiftLeft(0, 1).toArray shouldBe
+        ArrayBuffer[A]().push(a).shiftLeft(0, 1).toArray
+      DeferredArrayBuffer[A](4).shiftLeft(3, 2).toArray shouldBe
+        ArrayBuffer[A](4).shiftLeft(3, 2).toArray
 
     }
   }
