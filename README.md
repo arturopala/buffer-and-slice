@@ -104,273 +104,285 @@ Buffer
 ```scala
 import com.github.arturopala.bufferandslice._
 
-Buffer.apply[String]()
+Buffer.empty[String]
 // res4: Buffer[String] = []
 
+Buffer.empty[Double]
+// res5: Buffer[Double] = []
+
+Buffer.empty[Int]
+// res6: Buffer[Int] = []
+
+Buffer.empty[Byte]
+// res7: Buffer[Byte] = []
+
 Buffer("a","b","c")
-// res5: Buffer[String] = [a,b,c]
+// res8: Buffer[String] = [a,b,c]
 
 Buffer(Array("a","b","c"))
-// res6: Buffer[String] = [a,b,c]
+// res9: Buffer[String] = [a,b,c]
 
 Buffer(1,2,3).apply(1)
-// res7: Int = 2
+// res10: Int = 2
 
 Buffer(1,2,3).get(2)
-// res8: Option[Int] = Some(3)
+// res11: Option[Int] = Some(3)
 
 Buffer("a","b","c").head
-// res9: String = "c"
+// res12: String = "c"
 
 Buffer("a","b","c").last
-// res10: String = "a"
+// res13: String = "a"
 
 Buffer("a","b","c").tail
-// res11: Buffer[String] = [a,b]
+// res14: Buffer[String] = [a,b]
 
 Buffer("a","b","c").init
-// res12: Buffer[String] = [b,c]
+// res15: Buffer[String] = [b,c]
 
 Buffer(1,2,3,4,5,6,7,8,9).asSlice
-// res13: Slice[Int] = Slice(1,2,3,4,5,6,7,8,9)
+// res16: Slice[Int] = Slice(1,2,3,4,5,6,7,8,9)
 
 Buffer(1,2,3,4,5,6,7,8,9).toArray
-// res14: Array[Int] = Array(1, 2, 3, 4, 5, 6, 7, 8, 9)
+// res17: Array[Int] = Array(1, 2, 3, 4, 5, 6, 7, 8, 9)
+
+Buffer(1d,2d,3d,4d,5d,6d,7d,8d,9d).asArray
+// res18: Array[Double] = Array(1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0)
 
 val b1 = ByteBuffer(1,2)
 // b1: ByteBuffer = [1,2]
 
 b1.copy.append(3)
-// res15: ByteBuffer = [1,2,3]
+// res19: ByteBuffer = [1,2,3]
 
 b1.copy.append(4)
-// res16: ByteBuffer = [1,2,4]
+// res20: ByteBuffer = [1,2,4]
 
 b1.emptyCopy.append(9)
-// res17: ByteBuffer = [9]
+// res21: ByteBuffer = [9]
 ```
 
 - Specialized `IntBuffer`:
 
 ```scala
 IntBuffer(0,1,2,3)
-// res18: IntBuffer = [0,1,2,3]
+// res22: IntBuffer = [0,1,2,3]
 
 IntBuffer(Array(0,1,2,3))
-// res19: IntBuffer = [0,1,2,3]
+// res23: IntBuffer = [0,1,2,3]
 
 IntBuffer(0,1,2,3).asSlice
-// res20: IntSlice = Slice(0,1,2,3)
+// res24: IntSlice = Slice(0,1,2,3)
 ```
 
 - Specialized `ByteBuffer`:
 
 ```scala
 ByteBuffer(0,1,2,3)
-// res21: ByteBuffer = [0,1,2,3]
+// res25: ByteBuffer = [0,1,2,3]
 
 ByteBuffer(Array(0,1,2,3).map(_.toByte))
-// res22: ByteBuffer = [0,1,2,3]
+// res26: ByteBuffer = [0,1,2,3]
 
 ByteBuffer(0,1,2,3).asSlice
-// res23: ByteSlice = Slice(0,1,2,3)
+// res27: ByteSlice = Slice(0,1,2,3)
 ```
 
 - Modifying the content:
 
 ```scala
 ByteBuffer(1,2,3).update(1,0)
-// res24: ByteBuffer = [1,0,3]
+// res28: ByteBuffer = [1,0,3]
 
 Buffer(0,0,0).modify(1,_ + 1)
-// res25: Buffer[Int] = [0,1,0]
+// res29: Buffer[Int] = [0,1,0]
 
 Buffer("c").append("a")
-// res26: Buffer[String] = [c,a]
+// res30: Buffer[String] = [c,a]
 
 Buffer("x","y","z").insert(1,"a")
-// res27: Buffer[String] = [x,a,y,z]
+// res31: Buffer[String] = [x,a,y,z]
 
 Buffer("a","b","c").remove(1)
-// res28: Buffer[String] = [a,c]
+// res32: Buffer[String] = [a,c]
 
 IntBuffer(0,1,1).appendSlice(Slice(0,1,2,3))
-// res29: IntBuffer = [0,1,1,0,1,2,3]
+// res33: IntBuffer = [0,1,1,0,1,2,3]
 
 IntBuffer(0,1,1).appendArray(Array(0,1,2,3))
-// res30: IntBuffer = [0,1,1,0,1,2,3]
+// res34: IntBuffer = [0,1,1,0,1,2,3]
 
 Buffer("a").appendSequence(IndexedSeq("a","a","a"))
-// res31: Buffer[String] = [a,a,a,a]
+// res35: Buffer[String] = [a,a,a,a]
 
 Buffer(0).appendIterable(1 to 10)
-// res32: Buffer[Int] = [0,1,2,3,4,5,6,7,8,9,10]
+// res36: Buffer[Int] = [0,1,2,3,4,5,6,7,8,9,10]
 
 Buffer("b").appendFromIterator(Iterator.fill(10)("a"))
-// res33: Buffer[String] = [b,a,a,a,a,a,a,a,a,a,a]
+// res37: Buffer[String] = [b,a,a,a,a,a,a,a,a,a,a]
 
 Buffer("b").appendFromIterator(3, Iterator.fill(10)("a"))
-// res34: Buffer[String] = [b,a,a,a]
+// res38: Buffer[String] = [b,a,a,a]
 
 Buffer(0,0,0).insertValues(1,2,3,List(0,1,2,3,4,5))
-// res35: Buffer[Int] = [0,2,3,4,0,0]
+// res39: Buffer[Int] = [0,2,3,4,0,0]
 
 Buffer(0,0,0).insertFromIterator(2, 3, (1 to 7).iterator)
-// res36: Buffer[Int] = [0,0,1,2,3,0]
+// res40: Buffer[Int] = [0,0,1,2,3,0]
 
 Buffer(0,0,0).insertFromIterator(2, (1 to 7).iterator)
-// res37: Buffer[Int] = [0,0,1,2,3,4,5,6,7,0]
+// res41: Buffer[Int] = [0,0,1,2,3,4,5,6,7,0]
 
 Buffer(0,0,0).insertFromIteratorReverse(1, 5, (1 to 7).iterator)
-// res38: Buffer[Int] = [0,5,4,3,2,1,0,0]
+// res42: Buffer[Int] = [0,5,4,3,2,1,0,0]
 
 Buffer(0,0,0).insertFromIteratorReverse(1, (1 to 7).iterator)
-// res39: Buffer[Int] = [0,7,6,5,4,3,2,1,0,0]
+// res43: Buffer[Int] = [0,7,6,5,4,3,2,1,0,0]
 
 Buffer("a","b","c").insertSlice(1, Slice("e","f"))
-// res40: Buffer[String] = [a,e,f,b,c]
+// res44: Buffer[String] = [a,e,f,b,c]
 
 Buffer(0,0,0).insertArray(1,2,3,Array(0,1,2,3,4,5))
-// res41: Buffer[Int] = [0,2,3,4,0,0]
+// res45: Buffer[Int] = [0,2,3,4,0,0]
 
 Buffer("a","b","c","d","e","f").replaceFromSlice(4,Slice("a","b","c"))
-// res42: Buffer[String] = [a,b,c,d,a,b,c]
+// res46: Buffer[String] = [a,b,c,d,a,b,c]
 
 Buffer(0,0,0).replaceValues(1,2,3,List(0,1,2,3,4,5))
-// res43: Buffer[Int] = [0,2,3,4]
+// res47: Buffer[Int] = [0,2,3,4]
 
 Buffer(0,0,0).replaceFromIterator(2,3, (1 to 7).iterator)
-// res44: Buffer[Int] = [0,0,1,2,3]
+// res48: Buffer[Int] = [0,0,1,2,3]
 
 Buffer(0,0,0,0,0,0,0).replaceFromIteratorReverse(5,3, (1 to 7).iterator)
-// res45: Buffer[Int] = [0,0,0,0,0,3,2,1]
+// res49: Buffer[Int] = [0,0,0,0,0,3,2,1]
 
 Buffer(0,0,0).replaceFromArray(1,2,3,Array(0,1,2,3,4,5))
-// res46: Buffer[Int] = [0,2,3,4]
+// res50: Buffer[Int] = [0,2,3,4]
 
 Buffer("a","b","c","d","e").removeRange(1,4)
-// res47: Buffer[String] = [a,e]
+// res51: Buffer[String] = [a,e]
 
 Buffer(1,2,3,5,6).mapInPlace(_ * 2)
-// res48: Buffer[Int] = [2,4,6,10,12]
+// res52: Buffer[Int] = [2,4,6,10,12]
 
 Buffer(1,2,3,5,6).modifyAll(_ + 1)
-// res49: Buffer[Int] = [2,3,4,6,7]
+// res53: Buffer[Int] = [2,3,4,6,7]
 
 Buffer(1,2,3,5,6).modifyAllWhen(_ + 1, _ % 2 == 0)
-// res50: Buffer[Int] = [1,3,3,5,7]
+// res54: Buffer[Int] = [1,3,3,5,7]
 
 Buffer(0,0,0,0,0).modifyRange(1, 3, _ + 1)
-// res51: Buffer[Int] = [0,1,1,0,0]
+// res55: Buffer[Int] = [0,1,1,0,0]
 
 Buffer(1,2,3,4,5).modifyRangeWhen(1, 3, _ + 1, _ % 2 != 0)
-// res52: Buffer[Int] = [1,2,4,4,5]
+// res56: Buffer[Int] = [1,2,4,4,5]
 
 IntBuffer(1,2,3,4,5,6,7,8,9).shiftLeft(5,3)
-// res53: IntBuffer = [1,2,6,7,8,9]
+// res57: IntBuffer = [1,2,6,7,8,9]
 
 Buffer(1,2,3,4,5,6,7,8,9).shiftRight(5,3)
-// res54: Buffer[Int] = [1,2,3,4,5,6,7,8,6,7,8,9]
+// res58: Buffer[Int] = [1,2,3,4,5,6,7,8,6,7,8,9]
 
 Buffer(1,2,3,4,5,6,7,8,9).moveRangeRight(1,4,3)
-// res55: Buffer[Int] = [1,5,6,7,2,3,4,8,9]
+// res59: Buffer[Int] = [1,5,6,7,2,3,4,8,9]
 
 Buffer(1,2,3,4,5,6,7,8,9).moveRangeLeft(6,8,4)
-// res56: Buffer[Int] = [1,2,7,8,3,4,5,6,9]
+// res60: Buffer[Int] = [1,2,7,8,3,4,5,6,9]
 
 Buffer(1,2,3,4).swap(0,3)
-// res57: Buffer[Int] = [4,2,3,1]
+// res61: Buffer[Int] = [4,2,3,1]
 
 Buffer(1,2,3,4,5,6,7,8,9).swapRange(0,5,3)
-// res58: Buffer[Int] = [6,7,8,4,5,1,2,3,9]
+// res62: Buffer[Int] = [6,7,8,4,5,1,2,3,9]
 
 Buffer(1,2,3,4,5,6,7,8,9).contains(7)
-// res59: Boolean = true
+// res63: Boolean = true
 
 Buffer(1,2,3,4,5,6,7,8,9).exists(_ > 8)
-// res60: Boolean = true
+// res64: Boolean = true
 
 Buffer(1,2,3,4,5,6,7,8,9).exists(_ < 0)
-// res61: Boolean = false
+// res65: Boolean = false
 ```
 
 - Using `Buffer` as a stack:
 
 ```scala
 Buffer(1,2,3).peek
-// res62: Int = 3
-
-Buffer(1,2,3).peek(1)
-// res63: Int = 2
-
-Buffer(1,2,3).peekOption(2)
-// res64: Option[Int] = Some(1)
-
-Buffer(1,2,3).peekOption(3)
-// res65: Option[Int] = None
-
-Buffer(1,2,3).pop
 // res66: Int = 3
 
+Buffer(1,2,3).peek(1)
+// res67: Int = 2
+
+Buffer(1,2,3).peekOption(2)
+// res68: Option[Int] = Some(1)
+
+Buffer(1,2,3).peekOption(3)
+// res69: Option[Int] = None
+
+Buffer(1,2,3).pop
+// res70: Int = 3
+
 Buffer(1,2,3).push(1).push(1).push(0)
-// res67: Buffer[Int] = [1,2,3,1,1,0]
+// res71: Buffer[Int] = [1,2,3,1,1,0]
 ```
 
 - Manipulating `topIndex` limit:
 
 ```scala
 Buffer(1,2,3).top
-// res68: Int = 2
+// res72: Int = 2
 
 Buffer(1,2,3).set(1)
-// res69: Buffer[Int] = [1,2]
+// res73: Buffer[Int] = [1,2]
 
 Buffer(1,2,3).forward(3)
-// res70: Buffer[Int] = [1,2,3,0,0,0]
+// res74: Buffer[Int] = [1,2,3,0,0,0]
 
 Buffer(1,2,3).rewind(2)
-// res71: Buffer[Int] = [1]
+// res75: Buffer[Int] = [1]
 
 Buffer(1,2,3).reset
-// res72: Int = 2
+// res76: Int = 2
 ```
 
 - Making a `Slice` of a `Buffer`:
 
 ```scala
 Buffer(1,2,3,4,5,6,7,8,9).asSlice
-// res73: Slice[Int] = Slice(1,2,3,4,5,6,7,8,9)
+// res77: Slice[Int] = Slice(1,2,3,4,5,6,7,8,9)
 
 Buffer(1,2,3,4,5,6,7,8,9).slice(2,6)
-// res74: Slice[Int] = Slice(3,4,5,6)
+// res78: Slice[Int] = Slice(3,4,5,6)
 
 Buffer("a","c","e").asSlice
-// res75: Slice[String] = Slice(a,c,e)
+// res79: Slice[String] = Slice(a,c,e)
 
 Buffer("a","c","e","d","b").slice(2,6)
-// res76: Slice[String] = Slice(e,d,b)
+// res80: Slice[String] = Slice(e,d,b)
 ```
 
 - Accessing buffer content
 
 ```scala
 Buffer("a","c","e").toArray
-// res77: Array[String] = Array("a", "c", "e")
+// res81: Array[String] = Array("a", "c", "e")
 
 Buffer("a","c","e").asSlice.toList
-// res78: List[String] = List("a", "c", "e")
+// res82: List[String] = List("a", "c", "e")
 
 Buffer(1,2,3,4,5,6,7,8,9).iterator
-// res79: Iterator[Int] = non-empty iterator
+// res83: Iterator[Int] = non-empty iterator
 
 Buffer(1,2,3,4,5,6,7,8,9).reverseIterator
-// res80: Iterator[Int] = non-empty iterator
+// res84: Iterator[Int] = non-empty iterator
 
 val s = "abscdefghijklmnopqrstuvxyz"
 // s: String = "abscdefghijklmnopqrstuvxyz"
 
 Buffer(1,2,3,4,5,6,7,8,9).map(s.apply).toList
-// res81: List[Char] = List('b', 's', 'c', 'd', 'e', 'f', 'g', 'h', 'i')
+// res85: List[Char] = List('b', 's', 'c', 'd', 'e', 'f', 'g', 'h', 'i')
 ```
 
 
@@ -400,79 +412,79 @@ val slice = Slice.of(array)
 // slice: Slice[String] = Slice(a,b,c,d,ee,f,g,h,i,j)
 
 slice.length
-// res82: Int = 10
+// res86: Int = 10
 
 slice.top
-// res83: Int = 9
+// res87: Int = 9
 
 slice.apply(0)
-// res84: String = "a"
+// res88: String = "a"
 
 slice.apply(5)
-// res85: String = "f"
+// res89: String = "f"
 
 slice.get(0)
-// res86: Option[String] = Some("a")
+// res90: Option[String] = Some("a")
 
 slice.get(50)
-// res87: Option[String] = None
+// res91: Option[String] = None
 
 slice.update(4,"a")
-// res88: Slice[String] = Slice(a,b,c,d,a,f,g,h,i,j)
+// res92: Slice[String] = Slice(a,b,c,d,a,f,g,h,i,j)
 
 slice.update(5,"b")
-// res89: Slice[String] = Slice(a,b,c,d,ee,b,g,h,i,j)
+// res93: Slice[String] = Slice(a,b,c,d,ee,b,g,h,i,j)
 
 slice.slice(1,5)
-// res90: Slice[String] = Slice(b,c,d,ee)
+// res94: Slice[String] = Slice(b,c,d,ee)
 
 slice.take(5)
-// res91: Slice[String] = Slice(a,b,c,d,ee)
+// res95: Slice[String] = Slice(a,b,c,d,ee)
 
 slice.drop(5)
-// res92: Slice[String] = Slice(f,g,h,i,j)
+// res96: Slice[String] = Slice(f,g,h,i,j)
 
 slice.takeRight(5)
-// res93: Slice[String] = Slice(f,g,h,i,j)
+// res97: Slice[String] = Slice(f,g,h,i,j)
 
 slice.dropRight(5)
-// res94: Slice[String] = Slice(a,b,c,d,ee)
+// res98: Slice[String] = Slice(a,b,c,d,ee)
 
 slice.slice(2,6)
-// res95: Slice[String] = Slice(c,d,ee,f)
+// res99: Slice[String] = Slice(c,d,ee,f)
 
 slice.head
-// res96: String = "a"
+// res100: String = "a"
 
 slice.headOption
-// res97: Option[String] = Some("a")
+// res101: Option[String] = Some("a")
 
 slice.init
-// res98: Slice[String] = Slice(a,b,c,d,ee,f,g,h,i)
+// res102: Slice[String] = Slice(a,b,c,d,ee,f,g,h,i)
 
 slice.last
-// res99: String = "j"
+// res103: String = "j"
 
 slice.find("slice".contains)
-// res100: Option[String] = Some("c")
+// res104: Option[String] = Some("c")
 
 slice.exists("slice".contains)
-// res101: Boolean = true
+// res105: Boolean = true
 
 slice.count(_.length > 1)
-// res102: Int = 1
+// res106: Int = 1
 
 slice.count(_.length == 1)
-// res103: Int = 9
+// res107: Int = 9
 
 slice.map(s => s+s)
-// res104: Slice[String] = Slice(aa,bb,cc,dd,eeee,ff,gg,hh,ii,jj)
+// res108: Slice[String] = Slice(aa,bb,cc,dd,eeee,ff,gg,hh,ii,jj)
 
 slice.map(s => s"($s)")
-// res105: Slice[String] = Slice((a),(b),(c),(d),(ee),(f),(g),(h),(i),(j))
+// res109: Slice[String] = Slice((a),(b),(c),(d),(ee),(f),(g),(h),(i),(j))
 
 slice.asIterable
-// res106: Iterable[String] = Iterable(
+// res110: Iterable[String] = Iterable(
 //   "a",
 //   "b",
 //   "c",
@@ -486,7 +498,7 @@ slice.asIterable
 // )
 
 slice.iterator.toList
-// res107: List[String] = List(
+// res111: List[String] = List(
 //   "a",
 //   "b",
 //   "c",
@@ -500,13 +512,13 @@ slice.iterator.toList
 // )
 
 slice.indexIterator("abeij".contains(_)).toList
-// res108: List[Int] = List(0, 1, 8, 9)
+// res112: List[Int] = List(0, 1, 8, 9)
 
 slice.iterator("abeij".contains(_)).toList
-// res109: List[String] = List("a", "b", "i", "j")
+// res113: List[String] = List("a", "b", "i", "j")
 
 slice.reverseIterator.toList
-// res110: List[String] = List(
+// res114: List[String] = List(
 //   "j",
 //   "i",
 //   "h",
@@ -520,13 +532,13 @@ slice.reverseIterator.toList
 // )
 
 slice.reverseIndexIterator("adgh".contains(_)).toList
-// res111: List[Int] = List(7, 6, 3, 0)
+// res115: List[Int] = List(7, 6, 3, 0)
 
 slice.reverseIterator("adgh".contains(_)).toList
-// res112: List[String] = List("h", "g", "d", "a")
+// res116: List[String] = List("h", "g", "d", "a")
 
 slice.toList
-// res113: List[String] = List(
+// res117: List[String] = List(
 //   "a",
 //   "b",
 //   "c",
@@ -540,7 +552,7 @@ slice.toList
 // )
 
 slice.toSeq
-// res114: Seq[String] = Vector(
+// res118: Seq[String] = Vector(
 //   "a",
 //   "b",
 //   "c",
@@ -554,7 +566,7 @@ slice.toSeq
 // )
 
 slice.toArray
-// res115: Array[String] = Array(
+// res119: Array[String] = Array(
 //   "a",
 //   "b",
 //   "c",
@@ -568,7 +580,7 @@ slice.toArray
 // )
 
 slice.copyToArray(3, new Array[String](15))
-// res116: Array[String] = Array(
+// res120: Array[String] = Array(
 //   null,
 //   null,
 //   null,
@@ -587,10 +599,10 @@ slice.copyToArray(3, new Array[String](15))
 // )
 
 slice.toBuffer
-// res117: Buffer[String] = [a,b,c,d,ee,f,g,h,i,j]
+// res121: Buffer[String] = [a,b,c,d,ee,f,g,h,i,j]
 
 slice.asBuffer
-// res118: Buffer[String] = [a,b,c,d,ee,f,g,h,i,j]
+// res122: Buffer[String] = [a,b,c,d,ee,f,g,h,i,j]
 
 val slice3 = slice.detach
 // slice3: Slice[String] = Slice(a,b,c,d,ee,f,g,h,i,j)

@@ -104,7 +104,13 @@ Buffer
 ```scala mdoc
 import com.github.arturopala.bufferandslice._
 
-Buffer.apply[String]()
+Buffer.empty[String]
+
+Buffer.empty[Double]
+
+Buffer.empty[Int]
+
+Buffer.empty[Byte]
 
 Buffer("a","b","c")
 
@@ -125,6 +131,8 @@ Buffer("a","b","c").init
 Buffer(1,2,3,4,5,6,7,8,9).asSlice
 
 Buffer(1,2,3,4,5,6,7,8,9).toArray
+
+Buffer(1d,2d,3d,4d,5d,6d,7d,8d,9d).asArray
 
 val b1 = ByteBuffer(1,2)
 
