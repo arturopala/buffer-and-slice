@@ -25,7 +25,10 @@ class DeferredArrayBufferSpec extends AnyWordSpecCompat {
   "DeferredArrayBuffer" should {
 
     "behave as empty when uninitialized" in {
-      DeferredArrayBuffer(4).asArray should not be null
+      DeferredArrayBuffer(0).asArray should not be null
+      an[RuntimeException] shouldBe thrownBy {
+        DeferredArrayBuffer(4).asArray
+      }
       DeferredArrayBuffer(0).asSlice should not be null
       DeferredArrayBuffer(0).slice(1, 3) should not be null
       an[IndexOutOfBoundsException] shouldBe thrownBy {

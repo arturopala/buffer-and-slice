@@ -20,6 +20,12 @@ import scala.reflect.ClassTag
 
 /** Growable, mutable array of values with deferred initialization.
   *
+  * @note This is to avoid ClassTag parameters as much as possible, but
+  *       comes with a price of a few rough corners. Especially, if your type
+  *       parameter is non-primitive do not try to call [[asArray]] and assign result to variable,
+  *       as it will raise ClassCastException,
+  *       instead pass the array as a parameter or call methods on it.
+  *
   * @tparam T type of the underlying array items */
 final class DeferredArrayBuffer[T](initialSize: Int) extends ArrayBufferLike[T] {
 
@@ -34,6 +40,7 @@ final class DeferredArrayBuffer[T](initialSize: Int) extends ArrayBufferLike[T] 
       pristine = false
     }
 
+  /** @throws RuntimeException if not yet initialized */
   @`inline` override protected def uncheckedApply(index: Int): T =
     if (pristine) throw new RuntimeException("Deferred buffer not yet initialized.")
     else _array(index)
@@ -94,32 +101,50 @@ final class DeferredArrayBuffer[T](initialSize: Int) extends ArrayBufferLike[T] 
 
   /** Returns an empty copy of this buffer type. */
   override def emptyCopy: this.type =
-    if (pristine) new DeferredArrayBuffer(0).asInstanceOf[this.type]
-    else new DeferredArrayBuffer(length).asInstanceOf[this.type]
+    new DeferredArrayBuffer(0).asInstanceOf[this.type]
 
   /** Returns a trimmed copy of an underlying array. */
-  override def toArray[T1 >: T: ClassTag]: Array[T1] = {
-    val newArray = new Array[T1](length)
-    if (!pristine) {
+  override def toArray[T1 >: T: ClassTag]: Array[T1] =
+    if (pristine) {
+      new Array[T1](initializeWithSize)
+    } else {
+      val newArray = new Array[T1](length)
       java.lang.System.arraycopy(_array, 0, newArray, 0, length)
+      newArray
     }
-    newArray
-  }
 
-  /** Returns an array with a copy of an accessible buffer range. */
+  /** Returns an array with a copy of an accessible buffer range.
+    *
+    * @note this method avoids ClassTag but at the price of:
+    *       - RuntimeException if non-empty buffer not yet initialized
+    *       - ClassCastExceptions when assigning returned non-primitive array to a variable.
+    *       Try using [[toArray]] when possible.
+    *
+    * @throws RuntimeException if not yet initialized
+    */
   override def asArray: Array[T] =
-    if (pristine) Array.empty[AnyRef].asInstanceOf[Array[T]]
-    else ArrayOps.copyOf(_array, length)
+    if (pristine) {
+      if (initializeWithSize == 0) Array.empty[Any].asInstanceOf[Array[T]]
+      else throw new RuntimeException("Deferred buffer not yet initialized. Maybe try using .toArray instead.")
+    } else ArrayOps.copyOf(_array, length)
 
-  /** Wraps accessible internal state as a Slice without making any copy. */
+  /** Wraps accessible internal state as a Slice without making any copy.
+    * @throws RuntimeException if not yet initialized
+    */
   override def asSlice: Slice[T] =
-    if (pristine) Slice.empty[AnyRef].asInstanceOf[Slice[T]]
-    else new ArraySlice(0, length, _array, detached = false)
+    if (pristine) {
+      if (initializeWithSize == 0) Slice.empty[AnyRef].asInstanceOf[Slice[T]]
+      else throw new RuntimeException("Deferred buffer not yet initialized. Maybe try using ArrayBuffer instead.")
+    } else new ArraySlice(0, length, _array, detached = false)
 
-  /** Takes range and returns a Slice. */
+  /** Takes range and returns a Slice.
+    * @throws RuntimeException if not yet initialized
+    */
   override def slice(from: Int, to: Int): Slice[T] =
-    if (pristine) Slice.empty[Object].asInstanceOf[Slice[T]]
-    else {
+    if (pristine) {
+      if (initializeWithSize == 0) Slice.empty[Any].asInstanceOf[Slice[T]]
+      else throw new RuntimeException("Deferred buffer not yet initialized. Maybe try ArrayBuffer instead.")
+    } else {
       val t = Math.min(length, to)
       val f = Math.min(from, t)
       new ArraySlice(f, t, _array, detached = false)
