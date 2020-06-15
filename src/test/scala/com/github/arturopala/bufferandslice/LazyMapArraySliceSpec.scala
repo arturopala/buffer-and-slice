@@ -20,6 +20,9 @@ import scala.reflect.ClassTag
 
 class LazyMapArraySliceSpec extends AnyWordSpecCompat {
 
+  class A
+  case class B() extends A
+
   def lazyMapArraySliceOf[T](array: Array[T], from: Int, to: Int): LazyMapArraySlice[T] =
     LazyMapArraySlice.lazilyMapped(from, to, array, identity[T], detached = true)
 
@@ -123,7 +126,7 @@ class LazyMapArraySliceSpec extends AnyWordSpecCompat {
       Slice(0, 0, 0, 0, 0).count(_ == 0) shouldBe 5
       Slice(0).count(_ == 0) shouldBe 1
       Slice(1).count(_ == 0) shouldBe 0
-      Slice[Int]().count(_ == 0) shouldBe 0
+      Slice.empty[Int].count(_ == 0) shouldBe 0
     }
 
     "top a value by an index" in {
@@ -152,6 +155,12 @@ class LazyMapArraySliceSpec extends AnyWordSpecCompat {
       an[IndexOutOfBoundsException] shouldBe thrownBy {
         lazyMapArraySliceOf(Array(1, 2, 3, 4, 5, 6, 7, 8, 9), 2, 6).update(-1, 0)
       }
+
+      val b = new B
+      val b1 = new B
+      val a = new A
+      lazyMapArraySliceOf(b, b, b).update(2, b1).toArray shouldBe Array(b, b, b1)
+      lazyMapArraySliceOf(b, b, b).update(2, a).toArray shouldBe Array(b, b, a)
     }
 
     "have a length" in {
@@ -167,7 +176,7 @@ class LazyMapArraySliceSpec extends AnyWordSpecCompat {
     }
 
     "have a slice" in {
-      Slice[Int]().slice(-5, 10) shouldBe Slice[Int]()
+      Slice.empty[Int].slice(-5, 10) shouldBe Slice.empty[Int]
       Slice(1, 2, 3).slice(-5, 10) shouldBe Slice(1, 2, 3)
       Slice(1, 2, 3, 4, 5, 6, 7, 8, 9).slice(-5, 5) shouldBe Slice(1, 2, 3, 4, 5)
       lazyMapArraySliceOf(Array(1, 2, 3, 4, 5, 6, 7, 8, 9), 2, 7).slice(-5, 5) shouldBe
@@ -354,10 +363,10 @@ class LazyMapArraySliceSpec extends AnyWordSpecCompat {
     }
 
     "have asBuffer" in {
-      lazyMapArraySliceOf[Int](0, 1, 2, 3).asBuffer.push(4).toArray shouldBe Array(0, 1, 2, 3, 4)
-      lazyMapArraySliceOf[String]("a", "b", "c", "d").asBuffer.push("e").toArray shouldBe
+      lazyMapArraySliceOf[Int](0, 1, 2, 3).asBuffer.push(4).asArray shouldBe Array(0, 1, 2, 3, 4)
+      lazyMapArraySliceOf[String]("a", "b", "c", "d").asBuffer.push("e").asArray shouldBe
         Array("a", "b", "c", "d", "e")
-      lazyMapArraySliceOf[Int](0, 1, 2, 3).map(_.toDouble).asBuffer.push(4d).toArray shouldBe
+      lazyMapArraySliceOf[Int](0, 1, 2, 3).map(_.toDouble).asBuffer.push(4d).asArray shouldBe
         Array(0d, 1d, 2d, 3d, 4d)
     }
   }

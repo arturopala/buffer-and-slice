@@ -19,15 +19,10 @@ package com.github.arturopala.bufferandslice
 /** Common buffer functions impl for array-backend buffers. */
 trait ArrayBufferLike[T] extends Buffer[T] {
 
-  /** Very unsafe access to the underlying array, if you really need it.
-    * @group Unsafe */
-  def underlyingUnsafe: Array[T]
-
-  @`inline` final override protected def uncheckedApply(index: Int): T =
-    underlyingUnsafe(index)
-
-  @`inline` final override protected def uncheckedUpdate(index: Int, value: T): Unit =
-    underlyingUnsafe.update(index, value)
+  protected def copyFrom(sourceArray: Array[T], sourceIndex: Int, targetIndex: Int, copyLength: Int): Unit
+  protected def copyFrom(slice: Slice[T], targetIndex: Int): Unit
+  protected def copyFromSelf(sourceIndex: Int, targetIndex: Int, copyLength: Int): Unit
+  protected def emptyArray(length: Int): Array[T]
 
   /** Updates value at the provided index.
     * Alters underlying array if necessary.
@@ -37,13 +32,13 @@ trait ArrayBufferLike[T] extends Buffer[T] {
     if (index < 0) throw new IndexOutOfBoundsException
     else {
       ensureIndex(index)
-      underlyingUnsafe.update(index, value)
+      uncheckedUpdate(index, value)
       set(Math.max(index, top))
       this
     }
 
   final override def toString: String =
-    underlyingUnsafe.take(Math.min(20, length)).mkString("[", ",", if (length > 20) ", ... ]" else "]")
+    iterator.take(Math.min(20, length)).mkString("[", ",", if (length > 20) ", ... ]" else "]")
 
   /** Shift current content to the right starting from `index`at the `insertLength` distance,
     * and copies array chunk into the gap.
@@ -54,10 +49,9 @@ trait ArrayBufferLike[T] extends Buffer[T] {
     val copyLength = Math.min(insertLength, sourceArray.length)
     if (copyLength > 0) {
       shiftRight(index, copyLength)
-      java.lang.System.arraycopy(sourceArray, sourceIndex, underlyingUnsafe, index, copyLength)
+      copyFrom(sourceArray, sourceIndex, index, copyLength)
     }
     set(Math.max(top, index + copyLength - 1))
-
     this
   }
 
@@ -68,9 +62,8 @@ trait ArrayBufferLike[T] extends Buffer[T] {
   final override def insertSlice(index: Int, slice: Slice[T]): this.type = {
     if (index < 0) throw new IndexOutOfBoundsException
     shiftRight(index, slice.length)
-    slice.copyToArray(index, underlyingUnsafe)
+    copyFrom(slice, index)
     set(Math.max(top, index + slice.length - 1))
-
     this
   }
 
@@ -87,10 +80,9 @@ trait ArrayBufferLike[T] extends Buffer[T] {
     val copyLength = Math.min(replaceLength, sourceArray.length)
     if (copyLength > 0) {
       ensureIndex(index + replaceLength)
-      java.lang.System.arraycopy(sourceArray, sourceIndex, underlyingUnsafe, index, copyLength)
+      copyFrom(sourceArray, sourceIndex, index, copyLength)
     }
     set(Math.max(top, index + copyLength - 1))
-
     this
   }
 
@@ -99,9 +91,8 @@ trait ArrayBufferLike[T] extends Buffer[T] {
   final override def replaceFromSlice(index: Int, slice: Slice[T]): this.type = {
     if (index < 0) throw new IndexOutOfBoundsException
     ensureIndex(index + slice.length)
-    slice.copyToArray(index, underlyingUnsafe)
+    copyFrom(slice, index)
     set(Math.max(top, index + slice.length - 1))
-
     this
   }
 
@@ -115,7 +106,7 @@ trait ArrayBufferLike[T] extends Buffer[T] {
     if (distance > 0 && index >= 0) {
       ensureIndex(Math.max(length, index) + distance)
       if (length - index > 0) {
-        java.lang.System.arraycopy(underlyingUnsafe, index, underlyingUnsafe, index + distance, length - index)
+        copyFromSelf(index, index + distance, length - index)
       }
       if (top == -1) set(distance - 1)
       else if (top >= index) {
@@ -135,8 +126,7 @@ trait ArrayBufferLike[T] extends Buffer[T] {
       val distance2 = Math.min(index, distance)
       val offset = distance - distance2
       if (length - index - offset > 0) {
-        java.lang.System
-          .arraycopy(underlyingUnsafe, index + offset, underlyingUnsafe, index - distance2, length - index - offset)
+        copyFromSelf(index + offset, index - distance2, length - index - offset)
       }
       if (top >= index - distance2) {
         set(Math.max(-1, top - distance))
@@ -157,10 +147,10 @@ trait ArrayBufferLike[T] extends Buffer[T] {
     if (distance > 0 && fromIndex >= 0 && toIndex > fromIndex && fromIndex < length) {
       val to = Math.min(toIndex, length)
       ensureIndex(to + distance - 1)
-      val backup = ArrayOps.copyOf(ArrayOps.copyOf(underlyingUnsafe, 0), distance)
+      val backup = emptyArray(distance)
       this.slice(to, Math.min(to + distance, length)).copyToArray(0, backup)
-      java.lang.System.arraycopy(underlyingUnsafe, fromIndex, underlyingUnsafe, fromIndex + distance, to - fromIndex)
-      java.lang.System.arraycopy(backup, 0, underlyingUnsafe, fromIndex, backup.length)
+      copyFromSelf(fromIndex, fromIndex + distance, to - fromIndex)
+      copyFrom(backup, 0, fromIndex, backup.length)
       set(Math.max(top, to + distance - 1))
     }
     this
@@ -179,14 +169,13 @@ trait ArrayBufferLike[T] extends Buffer[T] {
     if (distance > 0 && fromIndex >= 0 && toIndex > fromIndex && fromIndex < length) {
       val from = Math.max(fromIndex, distance)
       val to = Math.min(toIndex, length)
-      val backup = ArrayOps.copyOf(ArrayOps.copyOf(underlyingUnsafe, 0), distance)
+      val backup = emptyArray(distance)
       val relocating = this.slice(from - distance, fromIndex)
       relocating.copyToArray(backup.length - relocating.length, backup)
       val gap = Math.max(0, distance - fromIndex)
       shiftRight(0, gap)
-      java.lang.System
-        .arraycopy(underlyingUnsafe, fromIndex + gap, underlyingUnsafe, fromIndex - distance + gap, to - fromIndex)
-      java.lang.System.arraycopy(backup, 0, underlyingUnsafe, to - distance + gap, backup.length)
+      copyFromSelf(fromIndex + gap, fromIndex - distance + gap, to - fromIndex)
+      copyFrom(backup, 0, to - distance + gap, backup.length)
     }
     this
   }
@@ -201,17 +190,15 @@ trait ArrayBufferLike[T] extends Buffer[T] {
     if (swapLength > 0 && first >= 0 && second >= 0 && first != second && first < length && second < length
         && first + swapLength >= 0 && second + swapLength >= 0) {
       val backupLength = Math.min(swapLength, length - Math.max(first, second))
-      val backup = ArrayOps.copyOf(underlyingUnsafe, backupLength)
+      val backup = emptyArray(backupLength)
       slice(second, second + backupLength).copyToArray(0, backup)
-      java.lang.System.arraycopy(underlyingUnsafe, first, underlyingUnsafe, second, backupLength)
-      java.lang.System.arraycopy(backup, 0, underlyingUnsafe, first, backupLength)
+      copyFromSelf(first, second, backupLength)
+      copyFrom(backup, 0, first, backupLength)
     }
     this
   }
 
   /** Attempts to optimize buffer storage, if needed. */
-  final override def optimize(): this.type =
-    (if (underlyingUnsafe.length > 64 && underlyingUnsafe.length / (length + 1) > 3) copy
-     else this).asInstanceOf[this.type]
+  final override def optimize(): this.type = copy
 
 }

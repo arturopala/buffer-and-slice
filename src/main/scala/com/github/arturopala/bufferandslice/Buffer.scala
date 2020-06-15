@@ -75,9 +75,13 @@ trait Buffer[T] extends (Int => T) {
     * @group Abstract */
   def emptyCopy: this.type
 
-  /** Returns an Array with a copy of an accessible buffer range.
+  /** Returns a trimmed copy of an underlying array.
+    * @group Export */
+  def toArray[T1 >: T: ClassTag]: Array[T1]
+
+  /** Returns a trimmed copy of an underlying array.
     * @group Read */
-  def toArray: Array[T]
+  def asArray: Array[T]
 
   /** Wraps accessible internal state as a Slice without making any copy.
     * @group Slice */

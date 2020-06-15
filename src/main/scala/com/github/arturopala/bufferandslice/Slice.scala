@@ -46,7 +46,7 @@ trait Slice[T] extends (Int => T) {
   /** Update a value at the given index.
     * Creates a copy of an underlying data.
     * @group Access */
-  def update[T1 >: T: ClassTag](index: Int, value: T1): Slice[T1]
+  def update[T1 >: T](index: Int, value: T1): Slice[T1]
 
   /** Returns length of the Slice.
     * @group Properties */
@@ -163,9 +163,13 @@ trait Slice[T] extends (Int => T) {
     * @group Export */
   def asIterable: Iterable[T]
 
-  /** Returns an array of a trimmed copy of an underlying data.
+  /** Returns a trimmed copy of an underlying array.
     * @group Export */
   def toArray[T1 >: T: ClassTag]: Array[T1]
+
+  /** Returns a trimmed copy of an underlying array.
+    * @group Export */
+  def asArray: Array[T]
 
   /** Detaches a slice creating a trimmed copy of an underlying data, if needed.
     * Subsequent detach operations will return the same instance without making new copies.
@@ -178,7 +182,7 @@ trait Slice[T] extends (Int => T) {
 
   /** Returns a buffer with a copy of this Slice.
     * @group Export */
-  def toBuffer[T1 >: T: ClassTag]: Buffer[T1]
+  def toBuffer[T1 >: T]: Buffer[T1]
 
   /** Returns a buffer with a copy of this Slice.
     * @group Export */
@@ -190,7 +194,12 @@ trait Slice[T] extends (Int => T) {
 object Slice {
 
   /** Creates new detached Slice out of given value sequence. */
-  def apply[T: ClassTag](is: T*): Slice[T] = ArraySlice(is: _*)
+  def apply[T](head: T, tail: T*): Slice[T] =
+    if (head.isInstanceOf[Int])
+      IntSlice(head.asInstanceOf[Int], tail.asInstanceOf[scala.Seq[Int]]: _*).asInstanceOf[Slice[T]]
+    else if (head.isInstanceOf[Byte])
+      ByteSlice(head.asInstanceOf[Byte], tail.asInstanceOf[scala.Seq[Byte]]: _*).asInstanceOf[Slice[T]]
+    else ArraySlice(head, tail: _*)
 
   /** Creates new Slice of given array values.
     *
@@ -198,7 +207,7 @@ object Slice {
     * directly affect the slice output. For full immutability does not share
     * array reference with other components.
     */
-  def of[T: ClassTag](array: Array[T]): Slice[T] =
+  def of[T](array: Array[T]): Slice[T] =
     if (array.isInstanceOf[Array[Int]])
       IntSlice.of(array.asInstanceOf[Array[Int]]).asInstanceOf[Slice[T]]
     else if (array.isInstanceOf[Array[Byte]])
@@ -206,7 +215,7 @@ object Slice {
     else ArraySlice.of(array)
 
   /** Creates new Slice of given subset of array values. */
-  def of[T: ClassTag](array: Array[T], from: Int, to: Int): Slice[T] =
+  def of[T](array: Array[T], from: Int, to: Int): Slice[T] =
     if (array.isInstanceOf[Array[Int]])
       IntSlice.of(array.asInstanceOf[Array[Int]], from, to).asInstanceOf[Slice[T]]
     else if (array.isInstanceOf[Array[Byte]])
@@ -214,6 +223,6 @@ object Slice {
     else ArraySlice.of(array, from, to)
 
   /** Creates an empty Slice of given type. */
-  def empty[T: ClassTag]: Slice[T] = ArraySlice.empty[T]
+  def empty[T]: Slice[T] = ArraySlice.empty[T]
 
 }

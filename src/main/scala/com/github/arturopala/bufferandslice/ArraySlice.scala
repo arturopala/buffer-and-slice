@@ -16,8 +16,6 @@
 
 package com.github.arturopala.bufferandslice
 
-import scala.reflect.ClassTag
-
 /** Lazy, immutable slice of an underlying array.
   * @note Truly immutable only if an underlying array kept private or if detached.
   * @tparam T type of the array's items
@@ -34,18 +32,26 @@ final class ArraySlice[T] private[bufferandslice] (
 
   /** Returns buffer with a copy of this Slice.
     * @group Read */
-  @`inline` override def toBuffer[T1 >: T: ClassTag]: ArrayBuffer[T1] =
-    new ArrayBuffer(toArray[T1])
+  @`inline` override def toBuffer[T1 >: T]: Buffer[T1] =
+    new DeferredArrayBuffer[T1](0).appendSlice(this.asInstanceOf[Slice[T1]])
 
   /** Returns a buffer with a copy of this Slice. */
-  @`inline` override def asBuffer: ArrayBuffer[T] = new ArrayBuffer[T](asArray)
+  @`inline` override def asBuffer: Buffer[T] =
+    if (array.isEmpty) new DeferredArrayBuffer[T](0)
+    else new ArrayBuffer[T](asArray)
 }
 
 object ArraySlice {
 
   /** Creates new detached ArraySlice out of given value sequence. */
-  def apply[T: ClassTag](is: T*): ArraySlice[T] = {
-    val array = Array(is: _*)
+  def apply[T](head: T, tail: T*): ArraySlice[T] = {
+    val array = ArrayOps.newArray(head, tail.length + 1)
+    array(0) = head
+    var i = 0
+    while (i < tail.length) {
+      array(i + 1) = tail(i)
+      i = i + 1
+    }
     new ArraySlice(0, array.length, array, true)
   }
 
@@ -61,6 +67,6 @@ object ArraySlice {
     new ArraySlice(from, to, array, false)
   }
 
-  def empty[T: ClassTag]: ArraySlice[T] = ArraySlice()
+  def empty[T]: ArraySlice[T] = ArraySlice.of(Array.empty[AnyRef].asInstanceOf[Array[T]])
 
 }

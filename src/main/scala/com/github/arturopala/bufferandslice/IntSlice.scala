@@ -33,7 +33,8 @@ final class IntSlice private[bufferandslice] (
 
   /** Returns buffer with a copy of this Slice.
     * @group Read */
-  @`inline` override def toBuffer[T1 >: Int: ClassTag]: Buffer[T1] = Buffer(toArray[T1])
+  @`inline` override def toBuffer[T1 >: Int]: Buffer[T1] =
+    Buffer(asArray.asInstanceOf[Array[T1]])
 
   /** Returns a buffer with a copy of this Slice. */
   @`inline` override def asBuffer: IntBuffer = IntBuffer(asArray)
@@ -41,9 +42,9 @@ final class IntSlice private[bufferandslice] (
 
 object IntSlice {
 
-  /** Creates new detached IntSlice out of given value sequence. */
-  def apply(is: Int*): IntSlice = {
-    val array = Array(is: _*)
+  /** Creates new detached IntSlice out of given integers. */
+  def apply(head: Int, tail: Int*): IntSlice = {
+    val array = Array(head, tail: _*)
     new IntSlice(0, array.length, array, detached = true)
   }
 
@@ -56,6 +57,6 @@ object IntSlice {
     new IntSlice(from, to, array, detached = false)
   }
 
-  def empty: IntSlice = IntSlice()
+  def empty: IntSlice = IntSlice.of(Array.empty[Int])
 
 }

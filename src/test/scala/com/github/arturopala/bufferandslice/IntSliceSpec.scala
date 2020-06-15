@@ -87,7 +87,7 @@ class IntSliceSpec extends AnyWordSpecCompat {
       Slice(0, 0, 0, 0, 0).count(_ == 0) shouldBe 5
       IntSlice(0).count(_ == 0) shouldBe 1
       IntSlice(1).count(_ == 0) shouldBe 0
-      IntSlice().count(_ == 0) shouldBe 0
+      IntSlice.empty.count(_ == 0) shouldBe 0
     }
 
     "top a value by an index" in {
@@ -131,12 +131,12 @@ class IntSliceSpec extends AnyWordSpecCompat {
     }
 
     "have a slice" in {
-      IntSlice().slice(-5, 10) shouldBe IntSlice()
+      IntSlice.empty.slice(-5, 10) shouldBe IntSlice.empty
       IntSlice(1, 2, 3).slice(-5, 10) shouldBe IntSlice(1, 2, 3)
       IntSlice(1, 2, 3, 4, 5, 6, 7, 8, 9).slice(-5, 5) shouldBe IntSlice(1, 2, 3, 4, 5)
       IntSlice.of(Array(1, 2, 3, 4, 5, 6, 7, 8, 9), 2, 7).slice(-5, 5) shouldBe IntSlice(3, 4, 5, 6, 7)
-      IntSlice.of(Array(1, 2, 3, 4, 5, 6, 7, 8, 9), 2, 5).slice(5, 8) shouldBe IntSlice()
-      IntSlice.of(Array(1, 2, 3, 4, 5, 6, 7, 8, 9), 5, 5).slice(1, 2) shouldBe IntSlice()
+      IntSlice.of(Array(1, 2, 3, 4, 5, 6, 7, 8, 9), 2, 5).slice(5, 8) shouldBe IntSlice.empty
+      IntSlice.of(Array(1, 2, 3, 4, 5, 6, 7, 8, 9), 5, 5).slice(1, 2) shouldBe IntSlice.empty
       IntSlice.of(Array(1, 2, 3, 4, 5, 6, 7, 8, 9), 3, 5).slice(1, 2) shouldBe IntSlice(5)
       IntSlice.of(Array(1, 2, 3, 4, 5, 6, 7, 8, 9), 0, 9).slice(7, 12) shouldBe IntSlice(8, 9)
       IntSlice(1, 2, 3, 4, 5, 6, 7, 8, 9).slice(2, 7).slice(2, 4) shouldBe IntSlice(5, 6)
@@ -228,7 +228,7 @@ class IntSliceSpec extends AnyWordSpecCompat {
     }
 
     "have a copyToArray" in {
-      IntSlice().copyToArray(0, new Array[Int](0)) shouldBe Array.empty[Int]
+      IntSlice.empty.copyToArray(0, new Array[Int](0)) shouldBe Array.empty[Int]
       IntSlice(1, 2, 3).copyToArray(0, new Array[Int](10)) shouldBe Array(1, 2, 3, 0, 0, 0, 0, 0, 0, 0)
       IntSlice(1, 2, 3).copyToArray(5, new Array[Int](10)) shouldBe Array(0, 0, 0, 0, 0, 1, 2, 3, 0, 0)
       IntSlice(1, 1, 1, 1, 1).copyToArray(5, new Array[Int](10)) shouldBe Array(0, 0, 0, 0, 0, 1, 1, 1, 1, 1)
@@ -298,6 +298,16 @@ class IntSliceSpec extends AnyWordSpecCompat {
       IntSlice(1, 2).top shouldBe 1
       IntSlice(1).top shouldBe 0
       IntSlice.empty.top shouldBe -1
+    }
+
+    "have toBuffer" in {
+      IntSlice(1, 2, 3).toBuffer[Int].toArray shouldBe Array(1, 2, 3)
+      IntSlice.empty.toBuffer[Int].toArray shouldBe Array.empty[Int]
+    }
+
+    "have asBuffer" in {
+      IntSlice(1, 2, 3).asBuffer.toArray shouldBe Array(1, 2, 3)
+      IntSlice.empty.asBuffer.toArray shouldBe Array.empty[Int]
     }
 
   }

@@ -22,13 +22,13 @@ class IndexTrackerSpec extends AnyWordSpecCompat {
 
     "modify a buffer of indexes tracking Buffer.shiftRight" in {
       val indexes = IntBuffer(0, 3, 7, 11, 28)
-      IndexTracker.trackShiftRight(5, 10, indexes).toArray shouldBe Array(0, 3, 17, 21, 38)
-      IndexTracker.trackShiftRight(5, 0, indexes).toArray shouldBe Array(0, 3, 17, 21, 38)
-      IndexTracker.trackShiftRight(-1, 5, indexes).toArray shouldBe Array(0, 3, 17, 21, 38)
-      IndexTracker.trackShiftRight(20, 3, indexes).toArray shouldBe Array(0, 3, 17, 24, 41)
-      IndexTracker.trackShiftRight(0, 1, indexes).toArray shouldBe Array(1, 4, 18, 25, 42)
-      IndexTracker.trackShiftRight(30, 7, indexes).toArray shouldBe Array(1, 4, 18, 25, 49)
-      IndexTracker.trackShiftRight(4, 1, indexes).toArray shouldBe Array(1, 5, 19, 26, 50)
+      IndexTracker.trackShiftRight(5, 10, indexes).asArray shouldBe Array(0, 3, 17, 21, 38)
+      IndexTracker.trackShiftRight(5, 0, indexes).asArray shouldBe Array(0, 3, 17, 21, 38)
+      IndexTracker.trackShiftRight(-1, 5, indexes).asArray shouldBe Array(0, 3, 17, 21, 38)
+      IndexTracker.trackShiftRight(20, 3, indexes).asArray shouldBe Array(0, 3, 17, 24, 41)
+      IndexTracker.trackShiftRight(0, 1, indexes).asArray shouldBe Array(1, 4, 18, 25, 42)
+      IndexTracker.trackShiftRight(30, 7, indexes).asArray shouldBe Array(1, 4, 18, 25, 49)
+      IndexTracker.trackShiftRight(4, 1, indexes).asArray shouldBe Array(1, 5, 19, 26, 50)
     }
 
     "modify a list of indexes tracking Buffer.shiftRight" in {
@@ -44,14 +44,14 @@ class IndexTrackerSpec extends AnyWordSpecCompat {
 
     "modify a buffer of indexes tracking Buffer.shiftLeft" in {
       val indexes = IntBuffer(0, 3, 7, 11, 28)
-      IndexTracker.trackShiftLeft(5, 2, indexes).toArray shouldBe Array(0, 5, 9, 26)
-      IndexTracker.trackShiftLeft(5, -2, indexes).toArray shouldBe Array(0, 5, 9, 26)
-      IndexTracker.trackShiftLeft(-1, 2, indexes).toArray shouldBe Array(0, 5, 9, 26)
-      IndexTracker.trackShiftLeft(8, 1, indexes).toArray shouldBe Array(0, 5, 8, 25)
-      IndexTracker.trackShiftLeft(8, 2, indexes).toArray shouldBe Array(0, 5, 6, 23)
-      IndexTracker.trackShiftLeft(6, 4, indexes).toArray shouldBe Array(0, 2, 19)
-      IndexTracker.trackShiftLeft(0, 2, indexes).toArray shouldBe Array(0, 17)
-      IndexTracker.trackShiftLeft(10, 10, indexes).toArray shouldBe Array(7)
+      IndexTracker.trackShiftLeft(5, 2, indexes).asArray shouldBe Array(0, 5, 9, 26)
+      IndexTracker.trackShiftLeft(5, -2, indexes).asArray shouldBe Array(0, 5, 9, 26)
+      IndexTracker.trackShiftLeft(-1, 2, indexes).asArray shouldBe Array(0, 5, 9, 26)
+      IndexTracker.trackShiftLeft(8, 1, indexes).asArray shouldBe Array(0, 5, 8, 25)
+      IndexTracker.trackShiftLeft(8, 2, indexes).asArray shouldBe Array(0, 5, 6, 23)
+      IndexTracker.trackShiftLeft(6, 4, indexes).asArray shouldBe Array(0, 2, 19)
+      IndexTracker.trackShiftLeft(0, 2, indexes).asArray shouldBe Array(0, 17)
+      IndexTracker.trackShiftLeft(10, 10, indexes).asArray shouldBe Array(7)
       IndexTracker.trackShiftLeft(5, 8, indexes).isEmpty shouldBe true
     }
 
@@ -70,13 +70,13 @@ class IndexTrackerSpec extends AnyWordSpecCompat {
 
     "modify a buffer of indexes tracking Buffer.moveRangeRight" in {
       val indexes = IntBuffer(0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16)
-      IndexTracker.trackMoveRangeRight(5, 10, 3, indexes).toArray shouldBe Array(0, 1, 2, 3, 4, 8, 9, 10, 11, 12, 5, 6,
+      IndexTracker.trackMoveRangeRight(5, 10, 3, indexes).asArray shouldBe Array(0, 1, 2, 3, 4, 8, 9, 10, 11, 12, 5, 6,
         7, 13, 14, 15, 16)
-      IndexTracker.trackMoveRangeRight(11, 14, 2, indexes).toArray shouldBe Array(0, 1, 2, 3, 4, 8, 9, 10, 13, 14, 5, 6,
+      IndexTracker.trackMoveRangeRight(11, 14, 2, indexes).asArray shouldBe Array(0, 1, 2, 3, 4, 8, 9, 10, 13, 14, 5, 6,
         7, 15, 11, 12, 16)
-      IndexTracker.trackMoveRangeRight(3, 10, 1, indexes).toArray shouldBe Array(0, 1, 2, 4, 5, 9, 10, 3, 13, 14, 6, 7,
+      IndexTracker.trackMoveRangeRight(3, 10, 1, indexes).asArray shouldBe Array(0, 1, 2, 4, 5, 9, 10, 3, 13, 14, 6, 7,
         8, 15, 11, 12, 16)
-      IndexTracker.trackMoveRangeRight(0, 3, 3, indexes).toArray shouldBe Array(3, 4, 5, 1, 2, 9, 10, 0, 13, 14, 6, 7,
+      IndexTracker.trackMoveRangeRight(0, 3, 3, indexes).asArray shouldBe Array(3, 4, 5, 1, 2, 9, 10, 0, 13, 14, 6, 7,
         8, 15, 11, 12, 16)
     }
 
@@ -94,13 +94,13 @@ class IndexTrackerSpec extends AnyWordSpecCompat {
 
     "modify a buffer of indexes tracking Buffer.moveRangeLeft" in {
       val indexes = IntBuffer(0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16)
-      IndexTracker.trackMoveRangeLeft(5, 10, 3, indexes).toArray shouldBe Array(0, 1, 7, 8, 9, 2, 3, 4, 5, 6, 10, 11,
+      IndexTracker.trackMoveRangeLeft(5, 10, 3, indexes).asArray shouldBe Array(0, 1, 7, 8, 9, 2, 3, 4, 5, 6, 10, 11,
         12, 13, 14, 15, 16)
-      IndexTracker.trackMoveRangeLeft(10, 13, 5, indexes).toArray shouldBe Array(0, 1, 10, 11, 12, 2, 3, 4, 8, 9, 5, 6,
+      IndexTracker.trackMoveRangeLeft(10, 13, 5, indexes).asArray shouldBe Array(0, 1, 10, 11, 12, 2, 3, 4, 8, 9, 5, 6,
         7, 13, 14, 15, 16)
-      IndexTracker.trackMoveRangeLeft(8, 11, 1, indexes).toArray shouldBe Array(0, 1, 9, 11, 12, 2, 3, 4, 7, 8, 5, 6,
+      IndexTracker.trackMoveRangeLeft(8, 11, 1, indexes).asArray shouldBe Array(0, 1, 9, 11, 12, 2, 3, 4, 7, 8, 5, 6,
         10, 13, 14, 15, 16)
-      IndexTracker.trackMoveRangeLeft(0, 5, 1, indexes).toArray shouldBe Array(0, 1, 10, 12, 13, 2, 3, 4, 8, 9, 6, 7,
+      IndexTracker.trackMoveRangeLeft(0, 5, 1, indexes).asArray shouldBe Array(0, 1, 10, 12, 13, 2, 3, 4, 8, 9, 6, 7,
         11, 14, 15, 16, 17)
     }
 
@@ -117,13 +117,13 @@ class IndexTrackerSpec extends AnyWordSpecCompat {
 
     "modify a buffer of indexes tracking Buffer.swapRange" in {
       val indexes = IntBuffer(0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16)
-      IndexTracker.trackSwapRange(3, 9, 4, indexes).toArray shouldBe Array(0, 1, 2, 9, 10, 11, 12, 7, 8, 3, 4, 5, 6, 13,
+      IndexTracker.trackSwapRange(3, 9, 4, indexes).asArray shouldBe Array(0, 1, 2, 9, 10, 11, 12, 7, 8, 3, 4, 5, 6, 13,
         14, 15, 16)
-      IndexTracker.trackSwapRange(9, 3, 4, indexes).toArray shouldBe Array(0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13,
+      IndexTracker.trackSwapRange(9, 3, 4, indexes).asArray shouldBe Array(0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13,
         14, 15, 16)
-      IndexTracker.trackSwapRange(3, 5, 10, indexes).toArray shouldBe Array(0, 1, 2, -1, -1, 3, 4, 5, 6, 7, 8, 9, 10,
+      IndexTracker.trackSwapRange(3, 5, 10, indexes).asArray shouldBe Array(0, 1, 2, -1, -1, 3, 4, 5, 6, 7, 8, 9, 10,
         11, 12, 15, 16)
-      IndexTracker.trackSwapRange(4, 1, 7, indexes).toArray shouldBe Array(0, 4, 5, -1, -1, 6, 7, 8, 9, 10, -1, -1, -1,
+      IndexTracker.trackSwapRange(4, 1, 7, indexes).asArray shouldBe Array(0, 4, 5, -1, -1, 6, 7, 8, 9, 10, -1, -1, -1,
         11, 12, 15, 16)
     }
 

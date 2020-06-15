@@ -33,7 +33,8 @@ final class ByteSlice private[bufferandslice] (
 
   /** Returns buffer with a copy of this Slice.
     * @group Read */
-  @`inline` override def toBuffer[T1 >: Byte: ClassTag]: Buffer[T1] = Buffer(toArray[T1])
+  @`inline` override def toBuffer[T1 >: Byte]: Buffer[T1] =
+    Buffer(asArray.asInstanceOf[Array[T1]])
 
   /** Returns a buffer with a copy of this Slice. */
   @`inline` override def asBuffer: ByteBuffer = ByteBuffer(asArray)
@@ -41,9 +42,9 @@ final class ByteSlice private[bufferandslice] (
 
 object ByteSlice {
 
-  /** Creates new detached ByteSlice out of given value sequence. */
-  def apply(is: Byte*): ByteSlice = {
-    val array = Array(is: _*)
+  /** Creates new detached ByteSlice out of given bytes. */
+  def apply(head: Byte, tail: Byte*): ByteSlice = {
+    val array = Array(head, tail: _*)
     new ByteSlice(0, array.length, array, detached = true)
   }
 
@@ -56,6 +57,6 @@ object ByteSlice {
     new ByteSlice(from, to, array, detached = false)
   }
 
-  def empty: ByteSlice = ByteSlice()
+  def empty: ByteSlice = ByteSlice.of(Array.empty[Byte])
 
 }

@@ -54,12 +54,10 @@ trait ArraySliceLike[T] extends Slice[T] {
   }
 
   /** Creates a copy of the slice with modified value. */
-  final override def update[T1 >: T: ClassTag](index: Int, value: T1): Slice[T1] = {
+  final override def update[T1 >: T](index: Int, value: T1): Slice[T1] = {
     if (index < 0 || index >= length)
       throw new IndexOutOfBoundsException(s"Expected an `update` index in the interval [0,$length), but was $index.")
-    val modified = toArray[T1]
-    modified.update(index, value)
-    Slice.of(modified)
+    Slice.of(toBuffer[T1].update(index, value).asArray)
   }
 
   /** Lazily composes mapping function and returns new [[LazyMapArraySlice]].
@@ -258,10 +256,12 @@ trait ArraySliceLike[T] extends Slice[T] {
     newArray
   }
 
-  /** Returns a minimal copy of an underlying array, trimmed to the actual range. */
-  final def asArray: Array[T] = {
+  /** Returns a trimmed copy of an underlying array. */
+  final override def asArray: Array[T] = {
     val newArray = ArrayOps.copyOf(array, length)
-    java.lang.System.arraycopy(array, fromIndex, newArray, 0, length)
+    if (fromIndex > 0) {
+      java.lang.System.arraycopy(array, fromIndex, newArray, 0, length)
+    }
     newArray
   }
 

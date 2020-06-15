@@ -48,12 +48,10 @@ abstract class LazyMapArraySlice[T] private (fromIndex: Int, toIndex: Int, detac
   }
 
   /** Creates a copy of the slice with modified value. */
-  final override def update[T1 >: T: ClassTag](index: Int, value: T1): Slice[T1] = {
+  final override def update[T1 >: T](index: Int, value: T1): Slice[T1] = {
     if (index < 0 || index >= length)
       throw new IndexOutOfBoundsException(s"Expected an `update` index in the interval [0,$length), but was $index.")
-    val modified: Array[T1] = toArray[T1]
-    modified.update(index, value)
-    LazyMapArraySlice.lazilyMapped[T1, T1](0, length, modified, identity, true)
+    Slice.of(toBuffer[T1].update(index, value).asArray)
   }
 
   /** Lazily composes mapping function and returns new Slice.
@@ -255,7 +253,9 @@ abstract class LazyMapArraySlice[T] private (fromIndex: Int, toIndex: Int, detac
     newArray
   }
 
-  final def asArray: Array[T] = ArrayOps.copyMapOf(fromIndex, toIndex, array, mapF)
+  /** Returns an array of mapped values. */
+  final override def asArray: Array[T] =
+    ArrayOps.copyMapOf(fromIndex, toIndex, array, mapF)
 
   /** Detaches a slice creating a trimmed copy of an underlying data. */
   final override def detach: this.type =
@@ -279,8 +279,8 @@ abstract class LazyMapArraySlice[T] private (fromIndex: Int, toIndex: Int, detac
   }
 
   /** Returns buffer with a copy of this Slice. */
-  final override def toBuffer[T1 >: T: ClassTag]: Buffer[T1] =
-    new ArrayBuffer(toArray[T1])
+  final override def toBuffer[T1 >: T]: Buffer[T1] =
+    new DeferredArrayBuffer[T1](0).appendSlice(this.asInstanceOf[Slice[T1]])
 
   /** Returns a buffer with a copy of this Slice. */
   final override def asBuffer: Buffer[T] = Buffer(asArray)

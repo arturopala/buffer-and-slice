@@ -80,7 +80,7 @@ class ByteSliceSpec extends AnyWordSpecCompat {
       Slice(0, 0, 0, 0, 0).count(_ == 0) shouldBe 5
       ByteSlice(0).count(_ == 0) shouldBe 1
       ByteSlice(1).count(_ == 0) shouldBe 0
-      ByteSlice().count(_ == 0) shouldBe 0
+      ByteSlice.empty.count(_ == 0) shouldBe 0
     }
 
     "top a value by an index" in {
@@ -124,12 +124,12 @@ class ByteSliceSpec extends AnyWordSpecCompat {
     }
 
     "have a slice" in {
-      ByteSlice().slice(-5, 10) shouldBe ByteSlice()
+      ByteSlice.empty.slice(-5, 10) shouldBe ByteSlice.empty
       ByteSlice(1, 2, 3).slice(-5, 10) shouldBe ByteSlice(1, 2, 3)
       ByteSlice(1, 2, 3, 4, 5, 6, 2, 0, 1).slice(-5, 5) shouldBe ByteSlice(1, 2, 3, 4, 5)
       ByteSlice.of(Array(1, 2, 3, 4, 5, 6, 2, 0, 1), 2, 8).slice(-5, 5) shouldBe ByteSlice(3, 4, 5, 6, 2)
-      ByteSlice.of(Array(1, 2, 3, 4, 5, 6, 2, 0, 1), 2, 5).slice(5, 8) shouldBe ByteSlice()
-      ByteSlice.of(Array(1, 2, 3, 4, 5, 6, 2, 0, 1), 5, 5).slice(1, 2) shouldBe ByteSlice()
+      ByteSlice.of(Array(1, 2, 3, 4, 5, 6, 2, 0, 1), 2, 5).slice(5, 8) shouldBe ByteSlice.empty
+      ByteSlice.of(Array(1, 2, 3, 4, 5, 6, 2, 0, 1), 5, 5).slice(1, 2) shouldBe ByteSlice.empty
       ByteSlice.of(Array(1, 2, 3, 4, 5, 6, 2, 0, 1), 3, 5).slice(1, 2) shouldBe ByteSlice(5)
       ByteSlice.of(Array(1, 2, 3, 4, 5, 6, 2, 0, 1), 0, 9).slice(2, 3) shouldBe ByteSlice(3)
     }
@@ -219,7 +219,7 @@ class ByteSliceSpec extends AnyWordSpecCompat {
     }
 
     "have a copyToArray" in {
-      ByteSlice().copyToArray(0, new Array[Byte](0)) shouldBe Array.empty[Byte]
+      ByteSlice.empty.copyToArray(0, new Array[Byte](0)) shouldBe Array.empty[Byte]
       ByteSlice(1, 2, 3).copyToArray(0, new Array[Byte](10)) shouldBe Array(1, 2, 3, 0, 0, 0, 0, 0, 0, 0)
       ByteSlice(1, 2, 3).copyToArray(5, new Array[Byte](10)) shouldBe Array(0, 0, 0, 0, 0, 1, 2, 3, 0, 0)
       ByteSlice(1, 1, 1, 1, 1).copyToArray(5, new Array[Byte](10)) shouldBe Array(0, 0, 0, 0, 0, 1, 1, 1, 1, 1)
@@ -258,6 +258,16 @@ class ByteSliceSpec extends AnyWordSpecCompat {
       ByteSlice(1, 2, 3).exists(_ > 0) shouldBe true
       ByteSlice(1, 2, 3).exists(_ > 1) shouldBe true
       ByteSlice(1, 2, 3).exists(_ > 3) shouldBe false
+    }
+
+    "have toBuffer" in {
+      ByteSlice(1, 2, 3).toBuffer[Byte].toArray shouldBe Array(1.toByte, 2.toByte, 3.toByte)
+      ByteSlice.empty.toBuffer[Byte].toArray shouldBe Array.empty[Byte]
+    }
+
+    "have asBuffer" in {
+      ByteSlice(1, 2, 3).asBuffer.toArray shouldBe Array(1.toByte, 2.toByte, 3.toByte)
+      ByteSlice.empty.asBuffer.toArray shouldBe Array.empty[Byte]
     }
   }
 

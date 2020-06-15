@@ -18,7 +18,22 @@ package com.github.arturopala.bufferandslice
 
 class ArraySliceSpec extends AnyWordSpecCompat {
 
+  class A
+  case class B() extends A
+
   "ArraySlice" should {
+
+    "return an Array of a wider type" in {
+      val slice = Slice(new B, new B, new B)
+      slice.toArray[B]
+      slice.toArray[A]
+    }
+
+    "have an empty" in {
+      ArraySlice.empty[String].length shouldBe 0
+      ArraySlice.empty[Double].length shouldBe 0
+    }
+
     "wrap a whole array" in {
       ArraySlice.of(Array("a", "b", "c", "d", "e")).toArray[String] shouldBe Array("a", "b", "c", "d", "e")
       ArraySlice.of(Array.empty[String]).toArray[String] shouldBe Array.empty[String]
@@ -105,7 +120,7 @@ class ArraySliceSpec extends AnyWordSpecCompat {
       Slice(0, 0, 0, 0, 0).count(_ == 0) shouldBe 5
       Slice(0).count(_ == 0) shouldBe 1
       Slice(1).count(_ == 0) shouldBe 0
-      Slice[Int]().count(_ == 0) shouldBe 0
+      Slice.empty[Int].count(_ == 0) shouldBe 0
     }
 
     "top a value by an index" in {
@@ -135,6 +150,12 @@ class ArraySliceSpec extends AnyWordSpecCompat {
       an[IndexOutOfBoundsException] shouldBe thrownBy {
         ArraySlice.of(Array(1, 2, 3, 4, 5, 6, 7, 8, 9), 2, 6).update(-1, 0)
       }
+
+      val b = new B
+      val b1 = new B
+      val a = new A
+      ArraySlice(b, b, b).update(2, b1).toArray shouldBe Array(b, b, b1)
+      ArraySlice(b, b, b).update(2, a).toArray shouldBe Array(b, b, a)
     }
 
     "have a length" in {
@@ -150,12 +171,12 @@ class ArraySliceSpec extends AnyWordSpecCompat {
     }
 
     "have a slice" in {
-      Slice[Int]().slice(-5, 10) shouldBe Slice[Int]()
+      Slice.empty[Int].slice(-5, 10) shouldBe Slice.empty[Int]
       Slice(1, 2, 3).slice(-5, 10) shouldBe Slice(1, 2, 3)
       Slice(1, 2, 3, 4, 5, 6, 7, 8, 9).slice(-5, 5) shouldBe Slice(1, 2, 3, 4, 5)
       ArraySlice.of(Array(1, 2, 3, 4, 5, 6, 7, 8, 9), 2, 7).slice(-5, 5) shouldBe ArraySlice(3, 4, 5, 6, 7)
-      ArraySlice.of(Array(1, 2, 3, 4, 5, 6, 7, 8, 9), 2, 5).slice(5, 8) shouldBe ArraySlice[Int]()
-      ArraySlice.of(Array(1, 2, 3, 4, 5, 6, 7, 8, 9), 5, 5).slice(1, 2) shouldBe ArraySlice[Int]()
+      ArraySlice.of(Array(1, 2, 3, 4, 5, 6, 7, 8, 9), 2, 5).slice(5, 8) shouldBe ArraySlice.empty[Int]
+      ArraySlice.of(Array(1, 2, 3, 4, 5, 6, 7, 8, 9), 5, 5).slice(1, 2) shouldBe ArraySlice.empty[Int]
       ArraySlice.of(Array(1, 2, 3, 4, 5, 6, 7, 8, 9), 3, 5).slice(1, 2) shouldBe ArraySlice(5)
       ArraySlice.of(Array(1, 2, 3, 4, 5, 6, 7, 8, 9), 0, 9).slice(7, 12) shouldBe ArraySlice(8, 9)
     }
@@ -244,14 +265,6 @@ class ArraySliceSpec extends AnyWordSpecCompat {
       ArraySlice.of(Array.empty[String]).init.toList shouldBe Nil
     }
 
-    "return an Array of a wider type" in {
-      class A
-      class B extends A
-      val slice = Slice(new B, new B, new B)
-      slice.toArray[B]
-      slice.toArray[A]
-    }
-
     "have a copyToArray" in {
       Slice.empty[String].copyToArray(0, new Array[String](0)) shouldBe Array.empty[String]
       Slice("a", "b", "c")
@@ -303,17 +316,25 @@ class ArraySliceSpec extends AnyWordSpecCompat {
     }
 
     "have toBuffer" in {
-      ArraySlice.empty[Int].toBuffer.push(4).toArray shouldBe Array(4)
-      ArraySlice(1, 2, 3).toBuffer.push(4).toArray shouldBe Array(1, 2, 3, 4)
-      ArraySlice.empty[String].toBuffer.push("a").toArray shouldBe Array("a")
-      ArraySlice("a", "b", "c").toBuffer.push("d").toArray shouldBe Array("a", "b", "c", "d")
+      ArraySlice.empty[Int].toBuffer.push(4).asArray shouldBe Array(4)
+      ArraySlice(1, 2, 3).toBuffer.push(4).asArray shouldBe Array(1, 2, 3, 4)
+      ArraySlice.empty[String].toBuffer.push("a").asArray shouldBe Array("a")
+      ArraySlice("a", "b", "c").toBuffer.push("d").asArray shouldBe Array("a", "b", "c", "d")
+
+      val b = new B
+      ArraySlice(b, b, b).toBuffer.asArray shouldBe Array(b, b, b)
+      ArraySlice(b, b, b).toBuffer[A].asArray shouldBe Array(b, b, b)
     }
 
     "have asBuffer" in {
-      ArraySlice.empty[Int].asBuffer.push(4).toArray shouldBe Array(4)
-      ArraySlice(1, 2, 3).asBuffer.push(4).toArray shouldBe Array(1, 2, 3, 4)
-      ArraySlice.empty[String].asBuffer.push("a").toArray shouldBe Array("a")
-      ArraySlice("a", "b", "c").asBuffer.push("d").toArray shouldBe Array("a", "b", "c", "d")
+      ArraySlice.empty[Int].asBuffer.push(4).asArray shouldBe Array(4)
+      ArraySlice(1, 2, 3).asBuffer.push(4).asArray shouldBe Array(1, 2, 3, 4)
+      ArraySlice.empty[String].asBuffer.push("a").asArray shouldBe Array("a")
+      ArraySlice("a", "b", "c").asBuffer.push("d").asArray shouldBe Array("a", "b", "c", "d")
+
+      val b = new B
+      ArraySlice(b, b, b).asBuffer.asArray shouldBe Array(b, b, b)
+      ArraySlice(b, b, b).asBuffer.toArray[A] shouldBe Array(b, b, b)
     }
   }
 
