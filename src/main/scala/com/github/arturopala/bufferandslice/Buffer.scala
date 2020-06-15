@@ -699,9 +699,18 @@ trait Buffer[T] extends (Int => T) {
 /** Buffer factory. */
 object Buffer {
 
-  @`inline` def apply[T: ClassTag](elems: T*): Buffer[T] = apply(elems.toArray)
+  def apply[T](head: T, tail: T*): Buffer[T] = {
+    val array = ArrayOps.newArray(head, tail.length + 1)
+    array(0) = head
+    var i = 0
+    while (i < tail.length) {
+      array(i + 1) = tail(i)
+      i = i + 1
+    }
+    apply(array)
+  }
 
-  def apply[T](array: Array[T]): Buffer[T] =
+  @`inline` def apply[T](array: Array[T]): Buffer[T] =
     if (array.isInstanceOf[Array[Int]])
       new IntBuffer(array.length)
         .appendArray(array.asInstanceOf[Array[Int]])
@@ -716,13 +725,8 @@ object Buffer {
   @`inline` def apply[T](array: Array[T], length: Int): Buffer[T] =
     apply(array).set(length)
 
-  def ofSize[T: ClassTag](size: Int): Buffer[T] =
-    new ArrayBuffer[T](new Array[T](size))
+  def ofSize[T](size: Int): Buffer[T] = DeferredArrayBuffer(size)
 
-  def empty[T: ClassTag]: Buffer[T] = {
-    val buffer = new ArrayBuffer[T](new Array[T](8))
-    buffer.reset
-    buffer
-  }
+  def empty[T]: Buffer[T] = DeferredArrayBuffer()
 
 }

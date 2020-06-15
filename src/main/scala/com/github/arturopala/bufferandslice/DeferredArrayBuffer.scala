@@ -81,7 +81,7 @@ final class DeferredArrayBuffer[T](initialSize: Int) extends ArrayBufferLike[T] 
   /** Ensures index is within buffer range. */
   override protected def ensureIndex(index: Int): Unit =
     if (pristine) {
-      initializeWithSize = index + 1
+      initializeWithSize = Math.max(index + 1, initializeWithSize)
     } else if (index >= _array.length) {
       val upswing = Math.min(_array.length, 1024 * 1024)
       _array = ArrayOps.copyOf(_array, Math.max(_array.length + upswing, index + 1))
@@ -90,12 +90,12 @@ final class DeferredArrayBuffer[T](initialSize: Int) extends ArrayBufferLike[T] 
   /** Returns copy of this buffer. */
   override def copy: this.type =
     if (pristine) this
-    else new ArrayBuffer(asArray).asInstanceOf[this.type]
+    else new DeferredArrayBuffer(length).appendArray(_array).asInstanceOf[this.type]
 
   /** Returns an empty copy of this buffer type. */
   override def emptyCopy: this.type =
     if (pristine) new DeferredArrayBuffer(0).asInstanceOf[this.type]
-    else new ArrayBuffer(ArrayOps.copyOf(_array, 0)).asInstanceOf[this.type]
+    else new DeferredArrayBuffer(length).asInstanceOf[this.type]
 
   /** Returns a trimmed copy of an underlying array. */
   override def toArray[T1 >: T: ClassTag]: Array[T1] = {
@@ -128,6 +128,6 @@ final class DeferredArrayBuffer[T](initialSize: Int) extends ArrayBufferLike[T] 
 
 object DeferredArrayBuffer {
 
-  def apply[T](initialSize: Int): DeferredArrayBuffer[T] = new DeferredArrayBuffer(initialSize)
+  def apply[T](initialSize: Int = 0): DeferredArrayBuffer[T] = new DeferredArrayBuffer(initialSize)
 
 }

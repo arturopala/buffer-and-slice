@@ -55,6 +55,9 @@ class DeferredArrayBufferSpec extends AnyWordSpecCompat {
       arr2 shouldBe Array(a, b)
       DeferredArrayBuffer(3).append(b).append(b).asSlice.toBuffer[A].push(a).toArray shouldBe Array(b, b, a)
       DeferredArrayBuffer(3).append(b).append(b).asSlice.toBuffer[A].push(a).asArray shouldBe Array(b, b, a)
+      DeferredArrayBuffer(3).append(b).append(b).emptyCopy.toArray shouldBe Array.empty[B]
+      DeferredArrayBuffer(3).append(a).append(b).copy.toArray shouldBe Array(a, b, null)
+      DeferredArrayBuffer().append(a).append(b).append(a).slice(1, 3).toArray shouldBe Array(b, a)
     }
   }
 
