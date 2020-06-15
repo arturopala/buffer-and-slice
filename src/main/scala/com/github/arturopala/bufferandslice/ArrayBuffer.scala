@@ -60,7 +60,7 @@ final class ArrayBuffer[T](initialArray: Array[T]) extends ArrayBufferLike[T] {
 
   override protected def ensureIndex(index: Int): Unit =
     if (index >= _array.length) {
-      val upswing = Math.min(_array.length, 1024 * 1024)
+      val upswing = Math.max(1, Math.min(_array.length, 1024 * 1024))
       _array = ArrayOps.copyOf(_array, Math.max(_array.length + upswing, index + 1))
     }
 
@@ -90,4 +90,10 @@ final class ArrayBuffer[T](initialArray: Array[T]) extends ArrayBufferLike[T] {
     val f = Math.min(from, t)
     new ArraySlice(f, t, _array, detached = false)
   }
+}
+
+object ArrayBuffer {
+
+  def apply[T: ClassTag](initialLength: Int = 0): ArrayBuffer[T] = new ArrayBuffer(new Array[T](initialLength))
+
 }
