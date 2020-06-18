@@ -360,6 +360,8 @@ class LazyMapArraySliceSpec extends AnyWordSpecCompat {
         Array(true, false, false, true)
       lazyMapArraySliceOf[Int](0, 1, 2, 3).map(_ % 2 == 0).asArray shouldBe
         Array(true, false, true, false)
+      lazyMapArraySliceOf[Long](0L, 1L, 2L, 3L).map(_ % 2 == 0).asArray shouldBe
+        Array(true, false, true, false)
     }
 
     "have asBuffer" in {

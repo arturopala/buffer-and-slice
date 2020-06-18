@@ -310,6 +310,36 @@ class IntSliceSpec extends AnyWordSpecCompat {
       IntSlice.empty.asBuffer.toArray shouldBe Array.empty[Int]
     }
 
+    "have sum" in {
+      IntSlice(1, 2, 3, 4, 5, 6, 7, 8, 9, 0).sum shouldBe 45
+      IntSlice(1, 2, 3, 4, 5, 6, 7, 8).sum shouldBe 36
+      IntSlice(0).sum shouldBe 0
+      IntSlice.empty.sum shouldBe 0
+    }
+
+    "have min" in {
+      IntSlice(1, 2, 3, 4, 0, 5, 6, 7, 8, 9).min shouldBe 0
+      IntSlice(1, 2, 3, 4, 5, 6, 7, 8, 9).min shouldBe 1
+      IntSlice(1, 2, -3, 4, -5, 0, 6, -7, 8).min shouldBe -7
+      IntSlice(0).min shouldBe 0
+      IntSlice(13).min shouldBe 13
+      an[UnsupportedOperationException] shouldBe thrownBy {
+        IntSlice.empty.min
+      }
+    }
+
+    "have max" in {
+      IntSlice(1, 9, 2, 3, 4, 0, -13, 5, 6, 7, 8).max shouldBe 9
+      IntSlice(1, 2, 3, 4, 8, 5, 6, -9, 7).max shouldBe 8
+      IntSlice(-1, -2, -3, -4, -5, 0, -6, -7, -8).max shouldBe 0
+      IntSlice(-1, -2, -3, -4, -5, -6, -7, -8).max shouldBe -1
+      IntSlice(0).max shouldBe 0
+      IntSlice(13).max shouldBe 13
+      an[UnsupportedOperationException] shouldBe thrownBy {
+        IntSlice.empty.max
+      }
+    }
+
   }
 
 }

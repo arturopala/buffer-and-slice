@@ -28,9 +28,9 @@ object ArrayOps {
         val result = new Array[Unit](newLength)
         java.util.Arrays.fill(result.asInstanceOf[Array[AnyRef]], ())
         result
-
       case x if x.isInstanceOf[Array[AnyRef]]  => java.util.Arrays.copyOf(x.asInstanceOf[Array[AnyRef]], newLength)
       case x if x.isInstanceOf[Array[Int]]     => java.util.Arrays.copyOf(x.asInstanceOf[Array[Int]], newLength)
+      case x if x.isInstanceOf[Array[Long]]    => java.util.Arrays.copyOf(x.asInstanceOf[Array[Long]], newLength)
       case x if x.isInstanceOf[Array[Double]]  => java.util.Arrays.copyOf(x.asInstanceOf[Array[Double]], newLength)
       case x if x.isInstanceOf[Array[Long]]    => java.util.Arrays.copyOf(x.asInstanceOf[Array[Long]], newLength)
       case x if x.isInstanceOf[Array[Float]]   => java.util.Arrays.copyOf(x.asInstanceOf[Array[Float]], newLength)
@@ -62,15 +62,17 @@ object ArrayOps {
     * Does not require ClassTag instance. */
   final def newArray[T](exampleItem: T, length: Int): Array[T] = {
     exampleItem match {
-      case _: String  => new Array[String](length)
-      case _: Int     => new Array[Int](length)
-      case _: Byte    => new Array[Byte](length)
-      case _: Double  => new Array[Double](length)
-      case _: Float   => new Array[Float](length)
-      case _: Char    => new Array[Char](length)
-      case _: Boolean => new Array[Boolean](length)
-      case _: Short   => new Array[Short](length)
-      case _          => new Array[AnyRef](length)
+      case _: String     => new Array[String](length)
+      case _: Int        => new Array[Int](length)
+      case _: Byte       => new Array[Byte](length)
+      case _: Double     => new Array[Double](length)
+      case _: Float      => new Array[Float](length)
+      case _: Char       => new Array[Char](length)
+      case _: Boolean    => new Array[Boolean](length)
+      case _: Long       => new Array[Long](length)
+      case _: Short      => new Array[Short](length)
+      case _: BigDecimal => new Array[BigDecimal](length)
+      case _             => new Array[AnyRef](length)
     }
   }.asInstanceOf[Array[T]]
 }

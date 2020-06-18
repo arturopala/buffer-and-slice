@@ -38,6 +38,48 @@ final class IntSlice private[bufferandslice] (
 
   /** Returns a buffer with a copy of this Slice. */
   @`inline` override def asBuffer: IntBuffer = IntBuffer(asArray)
+
+  /** Sums all integers.
+    * @group Aggregate */
+  def sum: Int =
+    if (isEmpty) 0
+    else {
+      var acc: Int = head
+      var i = fromIndex + 1
+      while (i < toIndex) {
+        acc = acc + array(i)
+        i = i + 1
+      }
+      acc
+    }
+
+  /** Max of all integers.
+    * @group Aggregate */
+  def max: Int =
+    if (isEmpty) throw new UnsupportedOperationException
+    else {
+      var acc: Int = head
+      var i = fromIndex + 1
+      while (i < toIndex) {
+        acc = Math.max(acc, array(i))
+        i = i + 1
+      }
+      acc
+    }
+
+  /** Min of all integers.
+    * @group Aggregate */
+  def min: Int =
+    if (isEmpty) throw new UnsupportedOperationException
+    else {
+      var acc: Int = head
+      var i = fromIndex + 1
+      while (i < toIndex) {
+        acc = Math.min(acc, array(i))
+        i = i + 1
+      }
+      acc
+    }
 }
 
 object IntSlice {

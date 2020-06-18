@@ -70,6 +70,56 @@ abstract class LazyMapArraySlice[T] private (fromIndex: Int, toIndex: Int, detac
     a
   }
 
+  /** Folds from left to right all elements, starting with initial.
+    * @group Aggregate */
+  final override def foldLeft[R](initial: R)(f: (R, T) => R): R = {
+    var acc: R = initial
+    var i = fromIndex
+    while (i < toIndex) {
+      acc = f(acc, mapF(array(i)))
+      i = i + 1
+    }
+    acc
+  }
+
+  /** Folds from right to left all elements, starting with initial.
+    * @group Aggregate */
+  final override def foldRight[R](initial: R)(f: (T, R) => R): R = {
+    var acc: R = initial
+    var i = toIndex - 1
+    while (i >= 0) {
+      acc = f(mapF(array(i)), acc)
+      i = i - 1
+    }
+    acc
+  }
+
+  /** Combines from left to right all elements, starting with initial.
+    * @group Aggregate */
+  final override def fold(initial: T)(f: (T, T) => T): T = {
+    var acc: T = initial
+    var i = fromIndex
+    while (i < toIndex) {
+      acc = f(acc, mapF(array(i)))
+      i = i + 1
+    }
+    acc
+  }
+
+  /** Combines from right to left all elements.
+    * @group Aggregate */
+  final override def reduce(f: (T, T) => T): T =
+    if (isEmpty) throw new NoSuchElementException
+    else {
+      var acc: T = head
+      var i = fromIndex + 1
+      while (i < toIndex) {
+        acc = f(acc, mapF(array(i)))
+        i = i + 1
+      }
+      acc
+    }
+
   /** Returns true if Slice has values, otherwise false. */
   final override def isEmpty: Boolean = length <= 0
 

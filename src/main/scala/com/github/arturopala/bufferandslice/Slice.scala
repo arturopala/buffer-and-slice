@@ -73,6 +73,22 @@ trait Slice[T] extends (Int => T) {
     * @group Aggregate */
   def count(pred: T => Boolean): Int
 
+  /** Folds from left to right all elements, starting with initial.
+    * @group Aggregate */
+  def foldLeft[R](initial: R)(f: (R, T) => R): R
+
+  /** Folds from right to left all elements, starting with initial.
+    * @group Aggregate */
+  def foldRight[R](initial: R)(f: (T, R) => R): R
+
+  /** Combines from left to right all elements, starting with initial.
+    * @group Aggregate */
+  def fold(initial: T)(f: (T, T) => T): T
+
+  /** Combines from right to left all elements.
+    * @group Aggregate */
+  def reduce(f: (T, T) => T): T
+
   /** Returns first value in the Slice.
     * @group Access */
   def head: T

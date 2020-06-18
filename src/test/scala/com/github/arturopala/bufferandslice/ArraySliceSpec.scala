@@ -336,6 +336,48 @@ class ArraySliceSpec extends AnyWordSpecCompat {
       ArraySlice(b, b, b).asBuffer.asArray shouldBe Array(b, b, b)
       ArraySlice(b, b, b).asBuffer.toArray[A] shouldBe Array(b, b, b)
     }
+
+    "have foldLeft" in {
+      ArraySlice(0, 1, 2, 3, 4, 5, 6, 7, 8, 9).foldLeft(0)(_ + _) shouldBe 45
+      ArraySlice(0, 1, 2, 3, 4, 5, 6, 7, 8, 9).foldLeft("x")(_.toString + _) shouldBe "x0123456789"
+      ArraySlice(0, 1, 2, 3, 4, 5, 6, 7, 8, 9).foldLeft(5)(_ + _) shouldBe 50
+      ArraySlice(0, 1, 2, 3, 4, 5, 6, 7, 8).foldLeft(0)(_ + _) shouldBe 36
+      ArraySlice("a", "b", "c", "d", "e", "f").foldLeft("-")(_ + _) shouldBe "-abcdef"
+      ArraySlice.empty[String].foldLeft("-")(_ + _) shouldBe "-"
+      ArraySlice.empty[Int].foldLeft(7)(_ + _) shouldBe 7
+    }
+
+    "have foldRight" in {
+      ArraySlice(0, 1, 2, 3, 4, 5, 6, 7, 8, 9).foldRight(0)(_ + _) shouldBe 45
+      ArraySlice(0, 1, 2, 3, 4, 5, 6, 7, 8, 9).foldRight("x")(_.toString + _) shouldBe "0123456789x"
+      ArraySlice(0, 1, 2, 3, 4, 5, 6, 7, 8, 9).foldRight(6)(_ + _) shouldBe 51
+      ArraySlice(0, 1, 2, 3, 4, 5, 6, 7, 8).foldRight(0)(_ + _) shouldBe 36
+      ArraySlice("a", "b", "c", "d", "e", "f").foldRight("-")(_ + _) shouldBe "abcdef-"
+      ArraySlice.empty[String].foldRight("-")(_ + _) shouldBe "-"
+      ArraySlice.empty[Int].foldRight(7)(_ + _) shouldBe 7
+    }
+
+    "have fold" in {
+      ArraySlice(0, 1, 2, 3, 4, 5, 6, 7, 8, 9).fold(0)(_ + _) shouldBe 45
+      ArraySlice(0, 1, 2, 3, 4, 5, 6, 7, 8, 9).fold(5)(_ + _) shouldBe 50
+      ArraySlice(0, 1, 2, 3, 4, 5, 6, 7, 8).fold(0)(_ + _) shouldBe 36
+      ArraySlice("a", "b", "c", "d", "e", "f").fold("-")(_ + _) shouldBe "-abcdef"
+      ArraySlice.empty[String].fold("-")(_ + _) shouldBe "-"
+      ArraySlice.empty[Int].fold(7)(_ + _) shouldBe 7
+    }
+
+    "have reduce" in {
+      ArraySlice(0, 1, 2, 3, 4, 5, 6, 7, 8, 9).reduce(_ + _) shouldBe 45
+      ArraySlice(0, 1, 2, 3, 4, 5, 6, 7, 8).reduce(_ + _) shouldBe 36
+      ArraySlice(2, 3, 4, 5, 6, 7, 8).reduce(_ + _) shouldBe 35
+      ArraySlice("a", "b", "c", "d", "e", "f").reduce(_ + _) shouldBe "abcdef"
+      an[UnsupportedOperationException] shouldBe thrownBy {
+        ArraySlice.empty[String].reduce(_ + _)
+      }
+      an[UnsupportedOperationException] shouldBe thrownBy {
+        ArraySlice.empty[Int].reduce(_ + _)
+      }
+    }
   }
 
 }
