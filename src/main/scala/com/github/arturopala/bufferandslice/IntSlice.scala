@@ -16,8 +16,6 @@
 
 package com.github.arturopala.bufferandslice
 
-import scala.reflect.ClassTag
-
 /** Lazy, specialized slice of the array of integers.
   * @note Truly immutable only if an underlying array kept private, or if detached.
   */
@@ -92,12 +90,8 @@ object IntSlice {
 
   def of(array: Array[Int]): IntSlice = new IntSlice(0, array.length, array, detached = false)
 
-  def of(array: Array[Int], from: Int, to: Int): IntSlice = {
-    assert(from >= 0, "When creating a IntSlice, parameter `from` must be greater or equal to 0.")
-    assert(to <= array.length, "When creating a IntSlice, parameter `to` must be lower or equal to the array length.")
-    assert(from <= to, "When creating a IntSlice, parameter `from` must be lower or equal to `to`.")
-    new IntSlice(from, to, array, detached = false)
-  }
+  def of(array: Array[Int], from: Int, to: Int): IntSlice =
+    new IntSlice(Math.max(0, Math.min(from, array.length)), Math.min(Math.max(from, to), array.length), array, false)
 
   def empty: IntSlice = IntSlice.of(Array.empty[Int])
 

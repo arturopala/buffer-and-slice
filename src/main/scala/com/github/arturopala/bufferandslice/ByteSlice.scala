@@ -50,12 +50,8 @@ object ByteSlice {
 
   def of(array: Array[Byte]): ByteSlice = new ByteSlice(0, array.length, array, detached = false)
 
-  def of(array: Array[Byte], from: Int, to: Int): ByteSlice = {
-    assert(from >= 0, "When creating a ByteSlice, parameter `from` must be greater or equal to 0.")
-    assert(to <= array.length, "When creating a ByteSlice, parameter `to` must be lower or equal to the array length.")
-    assert(from <= to, "When creating a ByteSlice, parameter `from` must be lower or equal to `to`.")
-    new ByteSlice(from, to, array, detached = false)
-  }
+  def of(array: Array[Byte], from: Int, to: Int): ByteSlice =
+    new ByteSlice(Math.max(0, Math.min(from, array.length)), Math.min(Math.max(from, to), array.length), array, false)
 
   def empty: ByteSlice = ByteSlice.of(Array.empty[Byte])
 

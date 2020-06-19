@@ -57,15 +57,8 @@ object ArraySlice {
 
   def of[T](array: Array[T]): ArraySlice[T] = new ArraySlice(0, array.length, array, false)
 
-  def of[T](array: Array[T], from: Int, to: Int): ArraySlice[T] = {
-    assert(from >= 0, "When creating an ArraySlice, parameter `from` must be greater or equal to 0.")
-    assert(
-      to <= array.length,
-      "When creating an ArraySlice, parameter `to` must be lower or equal to the array length."
-    )
-    assert(from <= to, "When creating an ArraySlice, parameter `from` must be lower or equal to `to`.")
-    new ArraySlice(from, to, array, false)
-  }
+  def of[T](array: Array[T], from: Int, to: Int): ArraySlice[T] =
+    new ArraySlice(Math.max(0, Math.min(from, array.length)), Math.min(Math.max(from, to), array.length), array, false)
 
   def empty[T]: ArraySlice[T] = ArraySlice.of(Array.empty[AnyRef].asInstanceOf[Array[T]])
 

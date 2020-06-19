@@ -46,6 +46,8 @@ class ArraySliceSpec extends AnyWordSpecCompat {
 
     "have isEmpty" in {
       ArraySlice.of(Array("a", "b", "c", "d", "e")).isEmpty shouldBe false
+      ArraySlice.of(Array("a", "b", "c", "d", "e"), 1, 3).isEmpty shouldBe false
+      ArraySlice.of(Array("a", "b", "c", "d", "e"), 1, 1).isEmpty shouldBe true
       ArraySlice.of(Array("a", "b", "c", "d", "e"), 2, 4).isEmpty shouldBe false
       ArraySlice.of(Array("a", "b", "c", "d", "e"), 2, 2).isEmpty shouldBe true
       ArraySlice.of(Array.empty[String], 0, 0).isEmpty shouldBe true
@@ -53,6 +55,7 @@ class ArraySliceSpec extends AnyWordSpecCompat {
 
     "iterate over slice of values" in {
       ArraySlice.of(Array("a", "b", "c", "d", "e")).iterator.toList shouldBe List("a", "b", "c", "d", "e")
+      ArraySlice.of(Array("a", "b", "c", "d", "e"), 1, 1).iterator.toList shouldBe List()
       ArraySlice.of(Array("a", "b", "c", "d", "e"), 1, 5).iterator.toList shouldBe List("b", "c", "d", "e")
       ArraySlice.of(Array("a", "b", "c", "d", "e"), 1, 4).iterator.toList shouldBe List("b", "c", "d")
       ArraySlice.of(Array("a", "b", "c", "d", "e"), 2, 3).iterator.toList shouldBe List("c")
@@ -121,6 +124,9 @@ class ArraySliceSpec extends AnyWordSpecCompat {
       Slice(0).count(_ == 0) shouldBe 1
       Slice(1).count(_ == 0) shouldBe 0
       Slice.empty[Int].count(_ == 0) shouldBe 0
+      Slice.of(Array(1, 2, 3, 4, 5, 6, 7, 8, 9), 9, 9).count(_ => true) shouldBe 0
+      Slice.of(Array(1, 2, 3, 4, 5, 6, 7, 8, 9), 8, 9).count(_ => true) shouldBe 1
+      Slice.of(Array(1, 2, 3, 4, 5, 6, 7, 8, 9), 8, 9).count(_ => false) shouldBe 0
     }
 
     "top a value by an index" in {
@@ -191,6 +197,10 @@ class ArraySliceSpec extends AnyWordSpecCompat {
       ArraySlice.of(Array(1, 2)).drop(3).toList shouldBe Nil
       ArraySlice.of(Array(1)).drop(3).toList shouldBe Nil
       ArraySlice.of(Array.empty[Int]).drop(3).toList shouldBe Nil
+      ArraySlice.of(Array(1, 2, 3, 4, 5, 6, 7, 8, 9), 8, 9).drop(2).toList shouldBe List()
+      ArraySlice.of(Array(1, 2, 3, 4, 5, 6, 7, 8, 9), 8, 8).drop(2).toList shouldBe List()
+      ArraySlice.of(Array(1, 2, 3, 4, 5, 6, 7, 8, 9), 5, 6).drop(2).toList shouldBe List()
+      ArraySlice.of(Array(1, 2, 3, 4, 5, 6, 7, 8, 9), 5, 8).drop(2).toList shouldBe List(8)
     }
 
     "have a dropRight" in {
@@ -203,6 +213,10 @@ class ArraySliceSpec extends AnyWordSpecCompat {
       ArraySlice.of(Array(1, 2)).dropRight(3).toList shouldBe Nil
       ArraySlice.of(Array(1)).dropRight(3).toList shouldBe Nil
       ArraySlice.of(Array.empty[Int]).dropRight(3).toList shouldBe Nil
+      ArraySlice.of(Array(1, 2, 3, 4, 5, 6, 7, 8, 9), 8, 9).dropRight(2).toList shouldBe List()
+      ArraySlice.of(Array(1, 2, 3, 4, 5, 6, 7, 8, 9), 8, 8).dropRight(2).toList shouldBe List()
+      ArraySlice.of(Array(1, 2, 3, 4, 5, 6, 7, 8, 9), 5, 6).dropRight(2).toList shouldBe List()
+      ArraySlice.of(Array(1, 2, 3, 4, 5, 6, 7, 8, 9), 5, 8).dropRight(2).toList shouldBe List(6)
     }
 
     "have a take" in {
@@ -215,6 +229,10 @@ class ArraySliceSpec extends AnyWordSpecCompat {
       ArraySlice.of(Array(1, 2)).take(3).toList shouldBe List(1, 2)
       ArraySlice.of(Array(1)).take(3).toList shouldBe List(1)
       ArraySlice.of(Array.empty[Int]).take(3).toList shouldBe Nil
+      ArraySlice.of(Array(1, 2, 3, 4, 5, 6, 7, 8, 9), 8, 9).take(2).toList shouldBe List(9)
+      ArraySlice.of(Array(1, 2, 3, 4, 5, 6, 7, 8, 9), 8, 8).take(2).toList shouldBe List()
+      ArraySlice.of(Array(1, 2, 3, 4, 5, 6, 7, 8, 9), 5, 6).take(2).toList shouldBe List(6)
+      ArraySlice.of(Array(1, 2, 3, 4, 5, 6, 7, 8, 9), 5, 8).take(2).toList shouldBe List(6, 7)
     }
 
     "have a takeRight" in {
@@ -227,42 +245,72 @@ class ArraySliceSpec extends AnyWordSpecCompat {
       ArraySlice.of(Array(1, 2)).takeRight(3).toList shouldBe List(1, 2)
       ArraySlice.of(Array(1)).takeRight(3).toList shouldBe List(1)
       ArraySlice.of(Array.empty[Int]).takeRight(3).toList shouldBe Nil
+      ArraySlice.of(Array(1, 2, 3, 4, 5, 6, 7, 8, 9), 8, 9).takeRight(2).toList shouldBe List(9)
+      ArraySlice.of(Array(1, 2, 3, 4, 5, 6, 7, 8, 9), 8, 8).takeRight(2).toList shouldBe List()
+      ArraySlice.of(Array(1, 2, 3, 4, 5, 6, 7, 8, 9), 5, 6).takeRight(2).toList shouldBe List(6)
+      ArraySlice.of(Array(1, 2, 3, 4, 5, 6, 7, 8, 9), 5, 8).takeRight(2).toList shouldBe List(7, 8)
     }
 
     "have a head" in {
       ArraySlice.of(Array(1, 2, 3, 4, 5, 6, 7, 8, 9)).head shouldBe 1
       ArraySlice.of(Array(4)).head shouldBe 4
       an[NoSuchElementException] shouldBe thrownBy(ArraySlice.of(Array.empty[String]).head)
+      ArraySlice.of(Array(1, 2, 3, 4, 5, 6, 7, 8, 9), 8, 9).head shouldBe 9
+      ArraySlice.of(Array(1, 2, 3, 4, 5, 6, 7, 8, 9), 7, 8).head shouldBe 8
+      ArraySlice.of(Array(1, 2, 3, 4, 5, 6, 7, 8, 9), 5, 6).head shouldBe 6
+      ArraySlice.of(Array(1, 2, 3, 4, 5, 6, 7, 8, 9), 0, 1).head shouldBe 1
     }
 
     "have a headOption" in {
       ArraySlice.of(Array(1, 2, 3, 4, 5, 6, 7, 8, 9)).headOption shouldBe Some(1)
       ArraySlice.of(Array(4)).headOption shouldBe Some(4)
       ArraySlice.of(Array.empty[String]).headOption shouldBe None
+      ArraySlice.of(Array(1, 2, 3, 4, 5, 6, 7, 8, 9), 8, 9).headOption shouldBe Some(9)
+      ArraySlice.of(Array(1, 2, 3, 4, 5, 6, 7, 8, 9), 7, 8).headOption shouldBe Some(8)
+      ArraySlice.of(Array(1, 2, 3, 4, 5, 6, 7, 8, 9), 5, 6).headOption shouldBe Some(6)
+      ArraySlice.of(Array(1, 2, 3, 4, 5, 6, 7, 8, 9), 0, 1).headOption shouldBe Some(1)
+      ArraySlice.of(Array(1, 2, 3, 4, 5, 6, 7, 8, 9), 1, 1).headOption shouldBe None
+      ArraySlice.of(Array(1, 2, 3, 4, 5, 6, 7, 8, 9), 11, 13).headOption shouldBe None
     }
 
     "have a tail" in {
       ArraySlice.of(Array(1, 2, 3, 4, 5, 6, 7, 8, 9)).tail.toList shouldBe List(2, 3, 4, 5, 6, 7, 8, 9)
       ArraySlice.of(Array(4)).tail.toList shouldBe Nil
       ArraySlice.of(Array.empty[String]).tail.toList shouldBe Nil
+      ArraySlice.of(Array(1, 2, 3, 4, 5, 6, 7, 8, 9), 8, 9).tail.toList shouldBe List()
+      ArraySlice.of(Array(1, 2, 3, 4, 5, 6, 7, 8, 9), 7, 9).tail.toList shouldBe List(9)
+      ArraySlice.of(Array(1, 2, 3, 4, 5, 6, 7, 8, 9), 5, 13).tail.toList shouldBe List(7, 8, 9)
+      ArraySlice.of(Array(1, 2, 3, 4, 5, 6, 7, 8, 9), 0, 7).tail.toList shouldBe List(2, 3, 4, 5, 6, 7)
     }
 
     "have a last" in {
       ArraySlice.of(Array(1, 2, 3, 4, 5, 6, 7, 8, 9)).last shouldBe 9
       ArraySlice.of(Array(4)).last shouldBe 4
       an[NoSuchElementException] shouldBe thrownBy(ArraySlice.of(Array.empty[String]).head)
+      ArraySlice.of(Array(1, 2, 3, 4, 5, 6, 7, 8, 9), 8, 9).last shouldBe 9
+      ArraySlice.of(Array(1, 2, 3, 4, 5, 6, 7, 8, 9), 7, 8).last shouldBe 8
+      ArraySlice.of(Array(1, 2, 3, 4, 5, 6, 7, 8, 9), 5, 13).last shouldBe 9
+      ArraySlice.of(Array(1, 2, 3, 4, 5, 6, 7, 8, 9), 0, 7).last shouldBe 7
     }
 
     "have a lastOption" in {
       ArraySlice.of(Array(1, 2, 3, 4, 5, 6, 7, 8, 9)).lastOption shouldBe Some(9)
       ArraySlice.of(Array(4)).lastOption shouldBe Some(4)
       ArraySlice.of(Array.empty[String]).lastOption shouldBe None
+      ArraySlice.of(Array(1, 2, 3, 4, 5, 6, 7, 8, 9), 8, 9).lastOption shouldBe Some(9)
+      ArraySlice.of(Array(1, 2, 3, 4, 5, 6, 7, 8, 9), 7, 8).lastOption shouldBe Some(8)
+      ArraySlice.of(Array(1, 2, 3, 4, 5, 6, 7, 8, 9), 5, 13).lastOption shouldBe Some(9)
+      ArraySlice.of(Array(1, 2, 3, 4, 5, 6, 7, 8, 9), 0, 7).lastOption shouldBe Some(7)
     }
 
     "have an init" in {
       ArraySlice.of(Array(1, 2, 3, 4, 5, 6, 7, 8, 9)).init.toList shouldBe List(1, 2, 3, 4, 5, 6, 7, 8)
       ArraySlice.of(Array(4)).init.toList shouldBe Nil
       ArraySlice.of(Array.empty[String]).init.toList shouldBe Nil
+      ArraySlice.of(Array(1, 2, 3, 4, 5, 6, 7, 8, 9), 8, 9).init.toList shouldBe List()
+      ArraySlice.of(Array(1, 2, 3, 4, 5, 6, 7, 8, 9), 7, 9).init.toList shouldBe List(8)
+      ArraySlice.of(Array(1, 2, 3, 4, 5, 6, 7, 8, 9), 5, 13).init.toList shouldBe List(6, 7, 8)
+      ArraySlice.of(Array(1, 2, 3, 4, 5, 6, 7, 8, 9), 0, 7).init.toList shouldBe List(1, 2, 3, 4, 5, 6)
     }
 
     "have a copyToArray" in {
