@@ -17,6 +17,19 @@ Working directly with mutable arrays, even in Scala, is not always as simple and
 While `Array` features Scala Collections API, the first reason to use arrays is to fully exploit its compactness and mutability
 for performance reasons. I've found it reasonable to have a separate, focused set of low-overhead tools dealing with an `Array`.
 
+Another concern was a proliferation of `ClassTag` context parameter, 
+making it hard to offer Array-based variants of a generic data-structures.
+This API requires now `ClassTag` only for explicit `.toArray[T1 >: T]` call, nowhere else.
+
+Why at all using arrays in the era of functional programming?
+---
+
+Arrays are the most primitive but very efficient data structures, with fast access time, 
+compact representation, unbeatable copy performance and taking advantage of the CPU cache line. 
+
+The FP solution is to exploit arrays but avoid sharing its mutable state around. 
+This is where the `Buffer` and the `Slice` concept fits in.
+
 Design
 ---
 
@@ -28,8 +41,13 @@ This library provides two complementary abstractions, two sides of the coin: mut
 
 The usual workflow will use `Buffer` to build an array and `Slice` to share the result outside of a component/function.
 
-Both `Buffer` and `Slice` come in variants, generic and specialized: `ArrayBuffer[T]` and `ArraySlice[T]`, 
-`IntBuffer` and `IntSlice`, `ByteBuffer` and `ByteSlice`.
+Both `Buffer` and `Slice` come in variants: 
+
+- generic `ArrayBuffer[T]` and `ArraySlice[T]`, 
+- specialized `IntBuffer` and `IntSlice` with additional numeric API, 
+- specialized `ByteBuffer` and `ByteSlice`.
+- `LazyMapArraySlice` provides very light mapping operation on `Slice` without forcing underlying array copy.
+- `DeferredArrayBuffer[T]` makes it possible to defer underlying array type decision for abstract types.
 
 Dependencies
 ---
@@ -88,10 +106,9 @@ buffer.appendSlice(slice2)
 Index tracking
 --
 
-Buffer manipulations, like `shift..`,`move..`, or `swap..` changes the buffer layout in the complex way.
+Buffer manipulations, like `shift..`, `move..`, or `swap..` can change the buffer layout in a complex way.
 
-An `IndexTracker` object provides set of functions to keep your external index buffers or lists in sync with those changes.
-
+An `IndexTracker` object provides set of functions to keep your external index buffer or list in sync with those changes.
 
 Examples
 ---
@@ -471,20 +488,14 @@ slice.find("slice".contains)
 slice.exists("slice".contains)
 // res105: Boolean = true
 
-slice.count(_.length > 1)
-// res106: Int = 1
-
-slice.count(_.length == 1)
-// res107: Int = 9
-
 slice.map(s => s+s)
-// res108: Slice[String] = Slice(aa,bb,cc,dd,eeee,ff,gg,hh,ii,jj)
+// res106: Slice[String] = Slice(aa,bb,cc,dd,eeee,ff,gg,hh,ii,jj)
 
 slice.map(s => s"($s)")
-// res109: Slice[String] = Slice((a),(b),(c),(d),(ee),(f),(g),(h),(i),(j))
+// res107: Slice[String] = Slice((a),(b),(c),(d),(ee),(f),(g),(h),(i),(j))
 
 slice.asIterable
-// res110: Iterable[String] = Iterable(
+// res108: Iterable[String] = Iterable(
 //   "a",
 //   "b",
 //   "c",
@@ -498,7 +509,7 @@ slice.asIterable
 // )
 
 slice.iterator.toList
-// res111: List[String] = List(
+// res109: List[String] = List(
 //   "a",
 //   "b",
 //   "c",
@@ -512,13 +523,13 @@ slice.iterator.toList
 // )
 
 slice.indexIterator("abeij".contains(_)).toList
-// res112: List[Int] = List(0, 1, 8, 9)
+// res110: List[Int] = List(0, 1, 8, 9)
 
 slice.iterator("abeij".contains(_)).toList
-// res113: List[String] = List("a", "b", "i", "j")
+// res111: List[String] = List("a", "b", "i", "j")
 
 slice.reverseIterator.toList
-// res114: List[String] = List(
+// res112: List[String] = List(
 //   "j",
 //   "i",
 //   "h",
@@ -532,13 +543,13 @@ slice.reverseIterator.toList
 // )
 
 slice.reverseIndexIterator("adgh".contains(_)).toList
-// res115: List[Int] = List(7, 6, 3, 0)
+// res113: List[Int] = List(7, 6, 3, 0)
 
 slice.reverseIterator("adgh".contains(_)).toList
-// res116: List[String] = List("h", "g", "d", "a")
+// res114: List[String] = List("h", "g", "d", "a")
 
 slice.toList
-// res117: List[String] = List(
+// res115: List[String] = List(
 //   "a",
 //   "b",
 //   "c",
@@ -552,7 +563,7 @@ slice.toList
 // )
 
 slice.toSeq
-// res118: Seq[String] = Vector(
+// res116: Seq[String] = Vector(
 //   "a",
 //   "b",
 //   "c",
@@ -566,7 +577,7 @@ slice.toSeq
 // )
 
 slice.toArray
-// res119: Array[String] = Array(
+// res117: Array[String] = Array(
 //   "a",
 //   "b",
 //   "c",
@@ -580,7 +591,7 @@ slice.toArray
 // )
 
 slice.copyToArray(3, new Array[String](15))
-// res120: Array[String] = Array(
+// res118: Array[String] = Array(
 //   null,
 //   null,
 //   null,
@@ -599,12 +610,54 @@ slice.copyToArray(3, new Array[String](15))
 // )
 
 slice.toBuffer
-// res121: Buffer[String] = [a,b,c,d,ee,f,g,h,i,j]
+// res119: Buffer[String] = [a,b,c,d,ee,f,g,h,i,j]
 
 slice.asBuffer
-// res122: Buffer[String] = [a,b,c,d,ee,f,g,h,i,j]
+// res120: Buffer[String] = [a,b,c,d,ee,f,g,h,i,j]
 
-val slice3 = slice.detach
-// slice3: Slice[String] = Slice(a,b,c,d,ee,f,g,h,i,j)
+val detached = slice.detach
+// detached: Slice[String] = Slice(a,b,c,d,ee,f,g,h,i,j)
 ```
 
+- Aggregating a `Slice`:
+
+```scala
+val slice3 = Slice.of("abcdefghijklmno".split(""))
+// slice3: Slice[String] = Slice(a,b,c,d,e,f,g,h,i,j,k,l,m,n,o)
+
+slice3.fold("---")(_ + _)
+// res121: String = "---abcdefghijklmno"
+
+slice3.reduce(_ + _)
+// res122: String = "abcdefghijklmno"
+
+val slice4 = IntSlice(0, 1, 2, 3, 4, 5, 6, 7, 8, 9)
+// slice4: IntSlice = Slice(0,1,2,3,4,5,6,7,8,9)
+
+slice4.sum
+// res123: Int = 45
+
+slice4.min
+// res124: Int = 0
+
+slice4.max
+// res125: Int = 9
+
+slice4.reduce(_ + _)
+// res126: Int = 45
+
+slice4.fold(10)(_ + _)
+// res127: Int = 55
+
+slice4.foldLeft(10)(_ + _)
+// res128: Int = 55
+
+slice4.foldRight(10)(_ + _)
+// res129: Int = 55
+
+slice4.foldLeft("---")(_ + _.toString)
+// res130: String = "---0123456789"
+
+slice4.foldRight("---")(_.toString + _)
+// res131: String = "0123456789---"
+```

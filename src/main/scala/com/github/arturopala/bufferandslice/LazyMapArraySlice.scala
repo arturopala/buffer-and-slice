@@ -20,7 +20,6 @@ import java.util.NoSuchElementException
 
 import scala.collection.AbstractIterable
 import scala.reflect.ClassTag
-import scala.util.control.NonFatal
 
 /** Lazily mapped slice of an underlying array.
   * @note Truly immutable only if an underlying array kept private, or if detached.

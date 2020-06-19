@@ -17,6 +17,19 @@ Working directly with mutable arrays, even in Scala, is not always as simple and
 While `Array` features Scala Collections API, the first reason to use arrays is to fully exploit its compactness and mutability
 for performance reasons. I've found it reasonable to have a separate, focused set of low-overhead tools dealing with an `Array`.
 
+Another concern was a proliferation of `ClassTag` context parameter, 
+making it hard to offer Array-based variants of a generic data-structures.
+This API requires now `ClassTag` only for explicit `.toArray[T1 >: T]` call, nowhere else.
+
+Why at all using arrays in the era of functional programming?
+---
+
+Arrays are the most primitive but very efficient data structures, with fast access time, 
+compact representation, unbeatable copy performance and taking advantage of the CPU cache line. 
+
+The FP solution is to exploit arrays but avoid sharing its mutable state around. 
+This is where the `Buffer` and the `Slice` concept fits in.
+
 Design
 ---
 
@@ -28,8 +41,13 @@ This library provides two complementary abstractions, two sides of the coin: mut
 
 The usual workflow will use `Buffer` to build an array and `Slice` to share the result outside of a component/function.
 
-Both `Buffer` and `Slice` come in variants, generic and specialized: `ArrayBuffer[T]` and `ArraySlice[T]`, 
-`IntBuffer` and `IntSlice`, `ByteBuffer` and `ByteSlice`.
+Both `Buffer` and `Slice` come in variants: 
+
+- generic `ArrayBuffer[T]` and `ArraySlice[T]`, 
+- specialized `IntBuffer` and `IntSlice` with additional numeric API, 
+- specialized `ByteBuffer` and `ByteSlice`.
+- `LazyMapArraySlice` provides very light mapping operation on `Slice` without forcing underlying array copy.
+- `DeferredArrayBuffer[T]` makes it possible to defer underlying array type decision for abstract types.
 
 Dependencies
 ---
@@ -88,10 +106,9 @@ buffer.appendSlice(slice2)
 Index tracking
 --
 
-Buffer manipulations, like `shift..`,`move..`, or `swap..` changes the buffer layout in the complex way.
+Buffer manipulations, like `shift..`, `move..`, or `swap..` can change the buffer layout in a complex way.
 
-An `IndexTracker` object provides set of functions to keep your external index buffers or lists in sync with those changes.
-
+An `IndexTracker` object provides set of functions to keep your external index buffer or list in sync with those changes.
 
 Examples
 ---
@@ -354,10 +371,6 @@ slice.find("slice".contains)
 
 slice.exists("slice".contains)
 
-slice.count(_.length > 1)
-
-slice.count(_.length == 1)
-
 slice.map(s => s+s)
 
 slice.map(s => s"($s)")
@@ -388,6 +401,37 @@ slice.toBuffer
 
 slice.asBuffer
 
-val slice3 = slice.detach
+val detached = slice.detach
 ```
 
+- Aggregating a `Slice`:
+
+```scala mdoc
+
+val slice3 = Slice.of("abcdefghijklmno".split(""))
+
+slice3.fold("---")(_ + _)
+
+slice3.reduce(_ + _)
+
+val slice4 = IntSlice(0, 1, 2, 3, 4, 5, 6, 7, 8, 9)
+
+slice4.sum
+
+slice4.min
+
+slice4.max
+
+slice4.reduce(_ + _)
+
+slice4.fold(10)(_ + _)
+
+slice4.foldLeft(10)(_ + _)
+
+slice4.foldRight(10)(_ + _)
+
+slice4.foldLeft("---")(_ + _.toString)
+
+slice4.foldRight("---")(_.toString + _)
+
+```
