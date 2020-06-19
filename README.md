@@ -116,7 +116,7 @@ Examples
 Buffer
 ---
 
-[Open in Scastie](https://scastie.scala-lang.org/arturopala/AeuggR2xTYC4lpNWLZoyug/4)
+[Open in Scastie](https://scastie.scala-lang.org/arturopala/AeuggR2xTYC4lpNWLZoyug/6)
 
 ```scala
 import com.github.arturopala.bufferandslice._
@@ -406,7 +406,7 @@ Buffer(1,2,3,4,5,6,7,8,9).map(s.apply).toList
 Slice
 --
 
-[Open in Scastie](https://scastie.scala-lang.org/arturopala/jo2JWppuRRyCkYL3SjmS7A/2)
+[Open in Scastie](https://scastie.scala-lang.org/arturopala/jo2JWppuRRyCkYL3SjmS7A/3)
 
 ```scala
 import com.github.arturopala.bufferandslice._
