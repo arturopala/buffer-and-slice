@@ -16,8 +16,6 @@
 
 package com.github.arturopala.bufferandslice
 
-import scala.reflect.ClassTag
-
 /** Lazy, specialized slice of the array of bytes.
   * @note Truly immutable only if an underlying array kept private, or if detached.
   */

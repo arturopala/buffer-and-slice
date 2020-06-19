@@ -47,6 +47,7 @@ Both `Buffer` and `Slice` come in variants:
 - specialized `IntBuffer` and `IntSlice` with additional numeric API, 
 - specialized `ByteBuffer` and `ByteSlice`.
 - `LazyMapArraySlice` provides very light mapping operation on `Slice` without forcing underlying array copy.
+- `RangeMapSlice` provides a slice of function of integers.
 - `DeferredArrayBuffer[T]` makes it possible to defer underlying array type decision for abstract types.
 
 Dependencies
@@ -433,5 +434,7 @@ slice4.foldRight(10)(_ + _)
 slice4.foldLeft("---")(_ + _.toString)
 
 slice4.foldRight("---")(_.toString + _)
+
+RangeMapSlice(x => s"($x)").take(10).drop(3).toList
 
 ```

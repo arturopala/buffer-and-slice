@@ -16,8 +16,6 @@
 
 package com.github.arturopala.bufferandslice
 
-import scala.reflect.ClassTag
-
 /** Common functions of an array-backed Slice.
   * @note Truly immutable only if an underlying array kept private, or if detached.
   * @tparam T type of the array's items
@@ -62,20 +60,13 @@ trait ArraySliceLike[T] extends Slice[T] {
 
   /** Lazily narrows Slice to provided range. */
   final override def slice(from: Int, to: Int): this.type = {
+
+    def fit(value: Int, upper: Int): Int = Math.min(Math.max(0, value), upper)
+
     val t = fit(to, length)
     val f = fit(from, t)
     if (f == 0 && t == length) this
     else wrap(fromIndex + f, fromIndex + t, array, detached)
-  }
-
-  @`inline` private def fit(value: Int, upper: Int): Int =
-    Math.min(Math.max(0, value), upper)
-
-  /** Returns a minimal copy of an underlying array, trimmed to the actual range. */
-  final override def toArray[T1 >: T: ClassTag]: Array[T1] = {
-    val newArray = new Array[T1](length)
-    java.lang.System.arraycopy(array, fromIndex, newArray, 0, length)
-    newArray
   }
 
   /** Returns a trimmed copy of an underlying array. */

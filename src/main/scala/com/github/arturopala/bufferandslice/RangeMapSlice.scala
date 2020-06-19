@@ -16,29 +16,15 @@
 
 package com.github.arturopala.bufferandslice
 
-import scala.reflect.ClassTag
-
-/** Lazily mapped slice of an underlying array.
-  * @note Truly immutable only if an underlying array kept private, or if detached.
-  * @tparam T type of the array's items
-  */
-abstract class LazyMapArraySlice[T] private (fromIndex: Int, toIndex: Int, detached: Boolean) extends Slice[T] {
-
-  /** Type of the underlying array items. */
-  type A
-
-  /** Underlying array. */
-  val array: Array[A]
-
-  /** Value mapping function. */
-  val mapF: A => T
+/** Lazily mapped slice of an index range. */
+class RangeMapSlice[T] private (fromIndex: Int, toIndex: Int, mapF: Int => T) extends Slice[T] {
 
   /** Sliced range length. */
   final override val length: Int = toIndex - fromIndex
 
   /** Returns value at the given index */
   @`inline` final override protected def read(index: Int): T =
-    mapF(array(fromIndex + index))
+    mapF(fromIndex + index)
 
   /** Creates a copy of the slice with modified value. */
   final override def update[T1 >: T](index: Int, value: T1): Slice[T1] = {
@@ -47,10 +33,10 @@ abstract class LazyMapArraySlice[T] private (fromIndex: Int, toIndex: Int, detac
     Slice.of(toBuffer[T1].update(index, value).asArray)
   }
 
-  /** Lazily composes mapping function and returns new Slice.
+  /** Lazily composes mapping function and returns new IndexMapSlice.
     * Does not modify nor copy underlying array. */
-  final override def map[K](f: T => K): LazyMapArraySlice[K] =
-    LazyMapArraySlice.lazilyMapped[K, A](fromIndex, toIndex, array, mapF.andThen(f), detached)
+  final override def map[K](f: T => K): RangeMapSlice[K] =
+    new RangeMapSlice[K](fromIndex, toIndex, mapF.andThen(f))
 
   /** Lazily narrows Slice to provided range. */
   final override def slice(from: Int, to: Int): this.type = {
@@ -59,50 +45,33 @@ abstract class LazyMapArraySlice[T] private (fromIndex: Int, toIndex: Int, detac
 
     val t = fit(to, length)
     val f = fit(from, t)
+
     if (f == 0 && t == length) this
     else
-      LazyMapArraySlice
-        .lazilyMapped[T, A](fromIndex + f, fromIndex + t, array, mapF, detached)
+      new RangeMapSlice[T](fromIndex + f, fromIndex + t, mapF)
         .asInstanceOf[this.type]
   }
 
   /** Returns an array of mapped values. */
-  final override def asArray: Array[T] =
-    ArrayOps.copyMapOf(fromIndex, toIndex, array, mapF)
+  final override def asArray: Array[T] = toBuffer[T].asArray
 
-  /** Detaches a slice creating a trimmed copy of an underlying data. */
-  final override def detach: this.type =
-    if (detached) this
-    else {
-      val newArray = ArrayOps.copyOf(array, length)
-      java.lang.System.arraycopy(array, fromIndex, newArray, 0, length)
-      LazyMapArraySlice
-        .lazilyMapped[T, A](0, length, newArray, mapF, detached = true)
-        .asInstanceOf[this.type]
-    }
+  /** Does nothing as this type of Slice does not have underlying mutable data. */
+  final override def detach: this.type = this
 
   /** Returns buffer with a copy of this Slice. */
   final override def toBuffer[T1 >: T]: Buffer[T1] =
     new DeferredArrayBuffer[T1](0).appendSlice(this.asInstanceOf[Slice[T1]])
 
   /** Returns a buffer with a copy of this Slice. */
-  final override def asBuffer: Buffer[T] = Buffer(asArray)
+  final override def asBuffer: Buffer[T] = toBuffer[T]
 
 }
 
-object LazyMapArraySlice {
+object RangeMapSlice {
 
-  private[bufferandslice] def lazilyMapped[T, K](
-    fromIndex: Int,
-    toIndex: Int,
-    _array: Array[K],
-    _mapF: K => T,
-    detached: Boolean
-  ): LazyMapArraySlice[T] =
-    new LazyMapArraySlice[T](fromIndex, toIndex, detached) {
-      type A = K
-      val array: Array[A] = _array
-      val mapF: A => T = _mapF
-    }
+  def apply[T](mapF: Int => T): RangeMapSlice[T] = new RangeMapSlice[T](0, Int.MaxValue, mapF)
+
+  def apply[T](mapF: Int => T, from: Int, to: Int): RangeMapSlice[T] =
+    new RangeMapSlice[T](Math.max(0, from), Math.max(from, to), mapF)
 
 }

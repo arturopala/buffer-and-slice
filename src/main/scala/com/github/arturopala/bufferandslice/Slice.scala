@@ -338,7 +338,11 @@ trait Slice[T] extends (Int => T) {
 
   /** Returns a trimmed copy of an underlying array.
     * @group Export */
-  def toArray[T1 >: T: ClassTag]: Array[T1]
+  final def toArray[T1 >: T: ClassTag]: Array[T1] = {
+    val newArray = new Array[T1](length)
+    copyToArray(0, newArray)
+    newArray
+  }
 
   /** Returns a trimmed copy of an underlying array.
     * @group Export */
@@ -351,7 +355,14 @@ trait Slice[T] extends (Int => T) {
 
   /** Dumps content to the array, starting from an index.
     * @group Export */
-  def copyToArray[T1 >: T](targetIndex: Int, targetArray: Array[T1]): Array[T1]
+  def copyToArray[T1 >: T](targetIndex: Int, targetArray: Array[T1]): Array[T1] = {
+    var i = 0
+    while (i < length) {
+      targetArray(targetIndex + i) = read(i)
+      i = i + 1
+    }
+    targetArray
+  }
 
   /** Returns a buffer with a copy of this Slice.
     * @group Export */
@@ -425,6 +436,13 @@ object Slice {
     else if (array.isInstanceOf[Array[Byte]])
       ByteSlice.of(array.asInstanceOf[Array[Byte]], from, to).asInstanceOf[Slice[T]]
     else ArraySlice.of(array, from, to)
+
+  /** Creates new unbound Slice of function of integers. */
+  def apply[T](mapF: Int => T): Slice[T] = RangeMapSlice(mapF, 0, Int.MaxValue)
+
+  /** Creates new bounded Slice of function of a range of integers. */
+  def apply[T](mapF: Int => T, from: Int, to: Int): Slice[T] =
+    RangeMapSlice(mapF, Math.max(0, from), Math.max(from, to))
 
   /** Creates an empty Slice of given type. */
   def empty[T]: Slice[T] = ArraySlice.empty[T]
