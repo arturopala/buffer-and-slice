@@ -51,8 +51,13 @@ trait Buffer[T] extends (Int => T) {
   /** Index of the last accessible value in the buffer, or -1 if empty. */
   private var topIndex: Int = -1
 
-  protected def uncheckedApply(index: Int): T
-  protected def uncheckedUpdate(index: Int, value: T): Unit
+  /** Returns value at the given index without checks.
+    * @group Internal */
+  protected def read(index: Int): T
+
+  /** Stores value at the given index without checks.
+    * @group Internal */
+  protected def write(index: Int, value: T): Unit
 
   /** Returns value at the provided index.
     * @group Abstract */
@@ -118,7 +123,7 @@ trait Buffer[T] extends (Int => T) {
     * or None if empty buffer.
     * @group List */
   @`inline` final def headOption: Option[T] =
-    if (topIndex < 0) None else Some(uncheckedApply(topIndex))
+    if (topIndex < 0) None else Some(read(topIndex))
 
   /** Returns value at the zero index.
     * @group List */
@@ -128,7 +133,7 @@ trait Buffer[T] extends (Int => T) {
     * or None if empty buffer.
     * @group List */
   @`inline` final def lastOption: Option[T] =
-    if (topIndex < 0) None else Some(uncheckedApply(0))
+    if (topIndex < 0) None else Some(read(0))
 
   /** Returns this buffer after decrementing topIndex .
     * @group List */
@@ -141,7 +146,7 @@ trait Buffer[T] extends (Int => T) {
   /** Returns Some value at the index, or None if index outside of range.
     * @group List */
   @`inline` final def get(index: Int): Option[T] =
-    if (index >= 0 && index <= topIndex) Some(uncheckedApply(index))
+    if (index >= 0 && index <= topIndex) Some(read(index))
     else None
 
   /** Updates value at the provided index using the function.
@@ -152,7 +157,7 @@ trait Buffer[T] extends (Int => T) {
     * @group Modify */
   final def modify(index: Int, map: T => T): this.type = {
     if (index >= 0 && index < length) {
-      uncheckedUpdate(index, map(uncheckedApply(index)))
+      write(index, map(read(index)))
       topIndex = Math.max(index, topIndex)
     }
     this
@@ -176,7 +181,7 @@ trait Buffer[T] extends (Int => T) {
   final def modifyAll(map: T => T): this.type = {
     var i = 0
     while (i < length) {
-      uncheckedUpdate(i, map(uncheckedApply(i)))
+      write(i, map(read(i)))
       i = i + 1
     }
     this
@@ -189,8 +194,8 @@ trait Buffer[T] extends (Int => T) {
   final def modifyAllWhen(map: T => T, pred: T => Boolean): this.type = {
     var i = 0
     while (i < length) {
-      val v = uncheckedApply(i)
-      if (pred(v)) uncheckedUpdate(i, map(v))
+      val v = read(i)
+      if (pred(v)) write(i, map(v))
       i = i + 1
     }
     this
@@ -208,7 +213,7 @@ trait Buffer[T] extends (Int => T) {
       var i = Math.max(0, fromIndex)
       val limit = Math.min(length, toIndex)
       while (i < limit) {
-        uncheckedUpdate(i, map(uncheckedApply(i)))
+        write(i, map(read(i)))
         i = i + 1
       }
       touch(i - 1)
@@ -230,8 +235,8 @@ trait Buffer[T] extends (Int => T) {
       var i = Math.max(0, fromIndex)
       val limit = Math.min(length, toIndex)
       while (i < limit) {
-        val v = uncheckedApply(i)
-        if (pred(v)) uncheckedUpdate(i, map(v))
+        val v = read(i)
+        if (pred(v)) write(i, map(v))
         i = i + 1
       }
       touch(i - 1)
@@ -343,7 +348,7 @@ trait Buffer[T] extends (Int => T) {
   final def insert(index: Int, value: T): this.type = {
     if (index >= 0) {
       shiftRight(index, 1)
-      uncheckedUpdate(index, value)
+      write(index, value)
       touch(index)
     }
     this
@@ -371,7 +376,7 @@ trait Buffer[T] extends (Int => T) {
         shiftRight(index, numberOfValues)
         var i = 0
         while (i < numberOfValues) {
-          uncheckedUpdate(index + i, source(sourceIndex + i))
+          write(index + i, source(sourceIndex + i))
           i = i + 1
         }
         touch(index + numberOfValues - 1)
@@ -422,7 +427,7 @@ trait Buffer[T] extends (Int => T) {
         shiftRight(index, numberOfValues)
         var i = 0
         while (i < numberOfValues && iterator.hasNext) {
-          uncheckedUpdate(index + i, iterator.next())
+          write(index + i, iterator.next())
           i = i + 1
         }
         touch(index + numberOfValues - 1)
@@ -444,7 +449,7 @@ trait Buffer[T] extends (Int => T) {
         shiftRight(index, numberOfValues)
         var i = index + numberOfValues - 1
         while (i >= index && iterator.hasNext) {
-          uncheckedUpdate(i, iterator.next())
+          write(i, iterator.next())
           i = i - 1
         }
         touch(index + numberOfValues - 1)
@@ -474,7 +479,7 @@ trait Buffer[T] extends (Int => T) {
         ensureIndex(index + numberOfValues - 1)
         var i = 0
         while (i < numberOfValues) {
-          uncheckedUpdate(index + i, source(sourceIndex + i))
+          write(index + i, source(sourceIndex + i))
           i = i + 1
         }
       }
@@ -492,7 +497,7 @@ trait Buffer[T] extends (Int => T) {
         ensureIndex(index + numberOfValues - 1)
         var i = 0
         while (i < numberOfValues && iterator.hasNext) {
-          uncheckedUpdate(index + i, iterator.next())
+          write(index + i, iterator.next())
           i = i + 1
         }
         touch(index + Math.min(i, numberOfValues) - 1)
@@ -510,7 +515,7 @@ trait Buffer[T] extends (Int => T) {
         ensureIndex(index + numberOfValues - 1)
         var i = index + numberOfValues - 1
         while (i >= index && iterator.hasNext) {
-          uncheckedUpdate(i, iterator.next())
+          write(i, iterator.next())
           i = i - 1
         }
         touch(index + numberOfValues - 1)
@@ -535,7 +540,7 @@ trait Buffer[T] extends (Int => T) {
   @`inline` final def removeWhen(pred: T => Boolean): this.type = {
     var i = 0
     while (i < length) {
-      if (pred(uncheckedApply(i))) {
+      if (pred(read(i))) {
         remove(i)
       } else {
         i = i + 1
@@ -588,9 +593,9 @@ trait Buffer[T] extends (Int => T) {
     */
   final def swap(first: Int, second: Int): this.type = {
     if (first >= 0 && second >= 0 && first != second && first < length && second < length) {
-      val v = uncheckedApply(first)
-      uncheckedUpdate(first, uncheckedApply(second))
-      uncheckedUpdate(second, v)
+      val v = read(first)
+      write(first, read(second))
+      write(second, v)
     }
     this
   }
@@ -607,7 +612,7 @@ trait Buffer[T] extends (Int => T) {
     * @group Stack */
   final def store(value: T): this.type = {
     if (topIndex < 0) topIndex = 0
-    uncheckedUpdate(topIndex, value)
+    write(topIndex, value)
     this
   }
 
@@ -647,7 +652,7 @@ trait Buffer[T] extends (Int => T) {
     var i: Int = 0
     def hasNext: Boolean = i <= topIndex
     def next(): T = {
-      val value = uncheckedApply(i)
+      val value = read(i)
       i = i + 1
       value
     }
@@ -660,7 +665,7 @@ trait Buffer[T] extends (Int => T) {
     var i: Int = topIndex
     def hasNext: Boolean = i >= 0
     def next(): T = {
-      val value = uncheckedApply(i)
+      val value = read(i)
       i = i - 1
       value
     }
@@ -671,7 +676,7 @@ trait Buffer[T] extends (Int => T) {
     var i = 0
     var result = false
     while (i < length) {
-      if (uncheckedApply(i) == value) {
+      if (read(i) == value) {
         result = true
         i = length
       }
@@ -685,7 +690,7 @@ trait Buffer[T] extends (Int => T) {
     var i = 0
     var result = false
     while (i < length) {
-      if (pred(uncheckedApply(i))) {
+      if (pred(read(i))) {
         result = true
         i = length
       }

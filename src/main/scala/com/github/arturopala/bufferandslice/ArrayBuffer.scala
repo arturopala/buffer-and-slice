@@ -27,10 +27,10 @@ final class ArrayBuffer[T](initialArray: Array[T]) extends ArrayBufferLike[T] {
 
   set(initialArray.length - 1)
 
-  @`inline` override protected def uncheckedApply(index: Int): T =
+  @`inline` override protected def read(index: Int): T =
     _array(index)
 
-  @`inline` override protected def uncheckedUpdate(index: Int, value: T): Unit =
+  @`inline` override protected def write(index: Int, value: T): Unit =
     _array.update(index, value)
 
   @`inline` override protected def copyFrom(

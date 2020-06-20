@@ -45,11 +45,11 @@ final class DeferredArrayBuffer[T](initialLength: Int) extends ArrayBufferLike[T
     }
 
   /** @throws RuntimeException if not yet initialized */
-  @`inline` override protected def uncheckedApply(index: Int): T =
+  @`inline` override protected def read(index: Int): T =
     if (pristine) throw new RuntimeException("Deferred buffer not yet initialized.")
     else _array(index)
 
-  @`inline` override protected def uncheckedUpdate(index: Int, value: T): Unit = {
+  @`inline` override protected def write(index: Int, value: T): Unit = {
     initializeWith(value)
     _array.update(index, value)
   }

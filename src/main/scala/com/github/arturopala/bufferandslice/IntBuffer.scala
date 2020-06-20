@@ -23,10 +23,10 @@ final class IntBuffer(initialSize: Int = 8) extends ArrayBufferLike[Int] {
 
   private var _array = new Array[Int](initialSize)
 
-  @`inline` override protected def uncheckedApply(index: Int): Int =
+  @`inline` override protected def read(index: Int): Int =
     _array(index)
 
-  @`inline` override protected def uncheckedUpdate(index: Int, value: Int): Unit =
+  @`inline` override protected def write(index: Int, value: Int): Unit =
     _array.update(index, value)
 
   @`inline` override protected def copyFrom(

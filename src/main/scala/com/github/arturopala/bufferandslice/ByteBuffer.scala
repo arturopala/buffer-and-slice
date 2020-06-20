@@ -23,10 +23,10 @@ final class ByteBuffer(initialSize: Int = 8) extends ArrayBufferLike[Byte] {
 
   private var _array = new Array[Byte](initialSize)
 
-  @`inline` override protected def uncheckedApply(index: Int): Byte =
+  @`inline` override protected def read(index: Int): Byte =
     _array(index)
 
-  @`inline` override protected def uncheckedUpdate(index: Int, value: Byte): Unit =
+  @`inline` override protected def write(index: Int, value: Byte): Unit =
     _array.update(index, value)
 
   @`inline` override protected def copyFrom(

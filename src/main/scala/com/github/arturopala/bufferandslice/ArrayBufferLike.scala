@@ -32,7 +32,7 @@ trait ArrayBufferLike[T] extends Buffer[T] {
     if (index < 0) throw new IndexOutOfBoundsException
     else {
       ensureIndex(index)
-      uncheckedUpdate(index, value)
+      write(index, value)
       set(Math.max(index, top))
       this
     }
