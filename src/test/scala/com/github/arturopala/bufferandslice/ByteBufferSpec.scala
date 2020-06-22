@@ -62,7 +62,7 @@ class ByteBufferSpec extends AnyWordSpecCompat {
       buffer(12) shouldBe 2
       buffer(13) shouldBe 3
       buffer(14) shouldBe 0
-      buffer.asArray shouldBe Array(7, 7, 4, 1, 5, 2, 0, 0, 0, 0, 6, 1, 2, 3)
+      buffer.asArray shouldBe Array(7, 7, 4, 1, 5, 2, 0, 0, 0, 0, 6, 1, 2, 3).map(_.toByte)
       buffer.length shouldBe 14
       buffer(1000) = 3
       buffer(1000) shouldBe 3
@@ -72,36 +72,41 @@ class ByteBufferSpec extends AnyWordSpecCompat {
     "append a slice" in {
       val buffer = new ByteBuffer()
       buffer.appendSlice(ByteSlice.empty).asArray shouldBe Array.empty[Byte]
-      buffer.appendSlice(ByteSlice(1, 2, 3, 4, 5)).asArray shouldBe Array(1, 2, 3, 4, 5)
-      buffer.appendSlice(ByteSlice(2, 3, 4, 5)).asArray shouldBe Array(1, 2, 3, 4, 5, 2, 3, 4, 5)
-      buffer.appendSlice(ByteSlice(3, 4, 5)).asArray shouldBe Array(1, 2, 3, 4, 5, 2, 3, 4, 5, 3, 4, 5)
-      buffer.appendSlice(ByteSlice.empty).asArray shouldBe Array(1, 2, 3, 4, 5, 2, 3, 4, 5, 3, 4, 5)
-      buffer.appendSlice(ByteSlice(0, 0, 0, 0)).asArray shouldBe Array(1, 2, 3, 4, 5, 2, 3, 4, 5, 3, 4, 5, 0, 0, 0, 0)
+      buffer.appendSlice(ByteSlice(1, 2, 3, 4, 5)).asArray shouldBe Array(1, 2, 3, 4, 5).map(_.toByte)
+      buffer.appendSlice(ByteSlice(2, 3, 4, 5)).asArray shouldBe Array(1, 2, 3, 4, 5, 2, 3, 4, 5).map(_.toByte)
+      buffer.appendSlice(ByteSlice(3, 4, 5)).asArray shouldBe Array(1, 2, 3, 4, 5, 2, 3, 4, 5, 3, 4, 5).map(_.toByte)
+      buffer.appendSlice(ByteSlice.empty).asArray shouldBe Array(1, 2, 3, 4, 5, 2, 3, 4, 5, 3, 4, 5).map(_.toByte)
+      buffer.appendSlice(ByteSlice(0, 0, 0, 0)).asArray shouldBe Array(1, 2, 3, 4, 5, 2, 3, 4, 5, 3, 4, 5, 0, 0, 0,
+        0).map(_.toByte)
     }
 
     "insert a slice" in {
       val buffer = new ByteBuffer()
       buffer.insertSlice(0, ByteSlice.empty).asArray shouldBe Array.empty[Byte]
-      buffer.insertSlice(3, ByteSlice(1, 2, 3, 4, 5)).asArray shouldBe Array(0, 0, 0, 1, 2, 3, 4, 5)
-      buffer.insertSlice(1, ByteSlice(2, 3, 4, 5)).asArray shouldBe Array(0, 2, 3, 4, 5, 0, 0, 1, 2, 3, 4, 5)
-      buffer.insertSlice(10, ByteSlice(3, 4, 5)).asArray shouldBe Array(0, 2, 3, 4, 5, 0, 0, 1, 2, 3, 3, 4, 5, 4, 5)
-      buffer.insertSlice(7, ByteSlice.empty).asArray shouldBe Array(0, 2, 3, 4, 5, 0, 0, 1, 2, 3, 3, 4, 5, 4, 5)
+      buffer.insertSlice(3, ByteSlice(1, 2, 3, 4, 5)).asArray shouldBe Array(0, 0, 0, 1, 2, 3, 4, 5).map(_.toByte)
+      buffer.insertSlice(1, ByteSlice(2, 3, 4, 5)).asArray shouldBe Array(0, 2, 3, 4, 5, 0, 0, 1, 2, 3, 4,
+        5).map(_.toByte)
+      buffer.insertSlice(10, ByteSlice(3, 4, 5)).asArray shouldBe Array(0, 2, 3, 4, 5, 0, 0, 1, 2, 3, 3, 4, 5, 4,
+        5).map(_.toByte)
+      buffer.insertSlice(7, ByteSlice.empty).asArray shouldBe Array(0, 2, 3, 4, 5, 0, 0, 1, 2, 3, 3, 4, 5, 4,
+        5).map(_.toByte)
       buffer.insertSlice(0, ByteSlice(1, 2, 3, 4, 5)).asArray shouldBe Array(1, 2, 3, 4, 5, 0, 2, 3, 4, 5, 0, 0, 1, 2,
-        3, 3, 4, 5, 4, 5)
+        3, 3, 4, 5, 4, 5).map(_.toByte)
       buffer.insertSlice(25, ByteSlice(1, 2, 3, 4, 5)).asArray shouldBe Array(1, 2, 3, 4, 5, 0, 2, 3, 4, 5, 0, 0, 1, 2,
-        3, 3, 4, 5, 4, 5, 0, 0, 0, 0, 0, 1, 2, 3, 4, 5)
+        3, 3, 4, 5, 4, 5, 0, 0, 0, 0, 0, 1, 2, 3, 4, 5).map(_.toByte)
     }
 
     "replace from a slice" in {
       val buffer = new ByteBuffer()
       buffer.replaceFromSlice(0, ByteSlice.empty).asArray shouldBe Array.empty[Byte]
-      buffer.replaceFromSlice(3, ByteSlice(1, 2, 3, 4, 5)).asArray shouldBe Array(0, 0, 0, 1, 2, 3, 4, 5)
-      buffer.replaceFromSlice(0, ByteSlice(1, 2, 3, 4, 5)).asArray shouldBe Array(1, 2, 3, 4, 5, 3, 4, 5)
+      buffer.replaceFromSlice(3, ByteSlice(1, 2, 3, 4, 5)).asArray shouldBe Array(0, 0, 0, 1, 2, 3, 4, 5).map(_.toByte)
+      buffer.replaceFromSlice(0, ByteSlice(1, 2, 3, 4, 5)).asArray shouldBe Array(1, 2, 3, 4, 5, 3, 4, 5).map(_.toByte)
       buffer.replaceFromSlice(10, ByteSlice(1, 2, 3, 4, 5)).asArray shouldBe Array(1, 2, 3, 4, 5, 3, 4, 5, 0, 0, 1, 2,
-        3, 4, 5)
-      buffer.replaceFromSlice(7, ByteSlice(1, 2, 3)).asArray shouldBe Array(1, 2, 3, 4, 5, 3, 4, 1, 2, 3, 1, 2, 3, 4, 5)
+        3, 4, 5).map(_.toByte)
+      buffer.replaceFromSlice(7, ByteSlice(1, 2, 3)).asArray shouldBe Array(1, 2, 3, 4, 5, 3, 4, 1, 2, 3, 1, 2, 3, 4,
+        5).map(_.toByte)
       buffer.replaceFromSlice(4, ByteSlice(0, 0, 0, 0, 0, 0, 0, 0)).asArray shouldBe Array(1, 2, 3, 4, 0, 0, 0, 0, 0, 0,
-        0, 0, 3, 4, 5)
+        0, 0, 3, 4, 5).map(_.toByte)
     }
 
     "have an empty" in {
@@ -161,9 +166,9 @@ class ByteBufferSpec extends AnyWordSpecCompat {
 
     "have an emptyCopy" in {
       val buffer = ByteBuffer(1, 3, 5)
-      buffer.emptyCopy.append(7).asArray shouldBe Array(7)
-      buffer.emptyCopy.append(127).asArray shouldBe Array(127)
-      buffer.asArray shouldBe Array(1, 3, 5)
+      buffer.emptyCopy.append(7).asArray shouldBe Array(7).map(_.toByte)
+      buffer.emptyCopy.append(127).asArray shouldBe Array(127).map(_.toByte)
+      buffer.asArray shouldBe Array(1, 3, 5).map(_.toByte)
     }
   }
 

@@ -94,20 +94,20 @@ class DeferredArrayBufferSpec extends AnyWordSpecCompat {
       val a = new A
       val b = new B
       DeferredArrayBuffer(10).length shouldBe ArrayBuffer[A](10).length
-      DeferredArrayBuffer().push(a).toArray shouldBe ArrayBuffer[A]().push(a).toArray
+      DeferredArrayBuffer().push(a).toArray[A] shouldBe ArrayBuffer[A]().push(a).toArray[A]
       DeferredArrayBuffer().push(a).peek shouldBe ArrayBuffer[A]().push(a).peek
       DeferredArrayBuffer().push(a).push(b).copy.toArray shouldBe
-        ArrayBuffer[A]().push(a).push(b).copy.toArray
+        ArrayBuffer[A]().push(a).push(b).copy.toArray[A]
       DeferredArrayBuffer().push(a).emptyCopy.push(b).toArray shouldBe
-        ArrayBuffer[A]().push(a).emptyCopy.push(b).toArray
+        ArrayBuffer[A]().push(a).emptyCopy.push(b).toArray[A]
       DeferredArrayBuffer().push(a).push(b).apply(0) shouldBe
         ArrayBuffer[A]().push(a).push(b).apply(0)
       DeferredArrayBuffer().push(a).update(0, b).apply(0) shouldBe
         ArrayBuffer[A]().push(a).update(0, b).apply(0)
       DeferredArrayBuffer().push(a).shiftLeft(0, 1).toArray shouldBe
-        ArrayBuffer[A]().push(a).shiftLeft(0, 1).toArray
+        ArrayBuffer[A]().push(a).shiftLeft(0, 1).toArray[A]
       DeferredArrayBuffer[A](4).shiftLeft(3, 2).toArray shouldBe
-        ArrayBuffer[A](4).shiftLeft(3, 2).toArray
+        ArrayBuffer[A](4).shiftLeft(3, 2).toArray[A]
 
     }
   }

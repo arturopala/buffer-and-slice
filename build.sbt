@@ -2,10 +2,10 @@ val scala213 = "2.13.2"
 val scala212 = "2.12.11"
 val scala211 = "2.11.12"
 val dottyNext = "0.24.0-RC1"
-val dottyStable = "0.23.0"
+val dottyStable = "0.24.0"
 val scalaJSVersion = "1.0.1"
 val scalaNativeVersion = "0.4.0-M2"
-val mUnitVersion = "0.7.4"
+val mUnitVersion = "0.7.9"
 
 val scala2Versions = List(scala213, scala212, scala211)
 val scala3Versions = List(dottyNext, dottyStable)

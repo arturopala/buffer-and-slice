@@ -20,12 +20,12 @@ class ByteSliceSpec extends AnyWordSpecCompat {
 
   "ByteSlice" should {
     "wrap a whole array" in {
-      ByteSlice.of(Array(0, 1, 2, 3, 4)).toArray[Byte] shouldBe Array(0, 1, 2, 3, 4)
+      ByteSlice.of(Array(0, 1, 2, 3, 4)).toArray[Byte] shouldBe Array(0, 1, 2, 3, 4).map(_.toByte)
       ByteSlice.of(Array.empty[Byte]).toArray[Byte] shouldBe Array.empty[Byte]
     }
 
     "wrap a slice of an array" in {
-      ByteSlice.of(Array(0, 1, 2, 3, 4), 1, 3).toArray[Byte] shouldBe Array(1, 2)
+      ByteSlice.of(Array(0, 1, 2, 3, 4), 1, 3).toArray[Byte] shouldBe Array(1, 2).map(_.toByte)
     }
 
     "have isEmpty" in {
@@ -220,10 +220,11 @@ class ByteSliceSpec extends AnyWordSpecCompat {
 
     "have a copyToArray" in {
       ByteSlice.empty.copyToArray(0, new Array[Byte](0)) shouldBe Array.empty[Byte]
-      ByteSlice(1, 2, 3).copyToArray(0, new Array[Byte](10)) shouldBe Array(1, 2, 3, 0, 0, 0, 0, 0, 0, 0)
-      ByteSlice(1, 2, 3).copyToArray(5, new Array[Byte](10)) shouldBe Array(0, 0, 0, 0, 0, 1, 2, 3, 0, 0)
-      ByteSlice(1, 1, 1, 1, 1).copyToArray(5, new Array[Byte](10)) shouldBe Array(0, 0, 0, 0, 0, 1, 1, 1, 1, 1)
-      ByteSlice(3, 2, 1, 2, 3).copyToArray(0, new Array[Byte](5)) shouldBe Array(3, 2, 1, 2, 3)
+      ByteSlice(1, 2, 3).copyToArray(0, new Array[Byte](10)) shouldBe Array(1, 2, 3, 0, 0, 0, 0, 0, 0, 0).map(_.toByte)
+      ByteSlice(1, 2, 3).copyToArray(5, new Array[Byte](10)) shouldBe Array(0, 0, 0, 0, 0, 1, 2, 3, 0, 0).map(_.toByte)
+      ByteSlice(1, 1, 1, 1, 1).copyToArray(5, new Array[Byte](10)) shouldBe Array(0, 0, 0, 0, 0, 1, 1, 1, 1,
+        1).map(_.toByte)
+      ByteSlice(3, 2, 1, 2, 3).copyToArray(0, new Array[Byte](5)) shouldBe Array(3, 2, 1, 2, 3).map(_.toByte)
     }
 
     "have a detach" in {
