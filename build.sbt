@@ -1,11 +1,11 @@
-val scala213 = "2.13.2"
+val scala213 = "2.13.3"
 val scala212 = "2.12.11"
 val scala211 = "2.11.12"
-val dottyNext = "0.25.0-RC1"
-val dottyStable = "0.24.0"
-val scalaJSVersion = "1.0.1"
+val dottyNext = "0.27.0-RC1"
+val dottyStable = "0.26.0"
+val scalaJSVersion = "1.1.1"
 val scalaNativeVersion = "0.4.0-M2"
-val mUnitVersion = "0.7.9"
+val mUnitVersion = "0.7.12"
 
 val scala2Versions = List(scala213, scala212, scala211)
 val scala3Versions = List(dottyNext, dottyStable)
@@ -47,8 +47,8 @@ lazy val jSSettings = List(
   crossScalaVersions := scala2Versions,
   scalaJSLinkerConfig ~= (_.withModuleKind(ModuleKind.CommonJSModule)),
   libraryDependencies ++= List(
-    "org.scala-js" %% "scalajs-test-interface" % scalaJSVersion % Test,
-    "org.scala-js" %% "scalajs-junit-test-runtime" % scalaJSVersion % Test,
+    "org.scala-js" %% "scalajs-test-interface"     % scalaJSVersion % Test,
+    "org.scala-js" %% "scalajs-junit-test-runtime" % scalaJSVersion % Test
   )
 )
 
@@ -62,16 +62,15 @@ lazy val nativeSettings = List(
 )
 
 lazy val root = crossProject(JSPlatform, JVMPlatform, NativePlatform)
-    .crossType(CrossType.Pure)
-    .in(file("."))
-    .settings(sharedSettings)
-    .jvmSettings(jVMSettings)
-    .jsSettings(jSSettings)
-    .nativeSettings(nativeSettings)
-    .jvmConfigure(
-      _.enablePlugins(AutomateHeaderPlugin, GhpagesPlugin, SiteScaladocPlugin)
-    )
-
+  .crossType(CrossType.Pure)
+  .in(file("."))
+  .settings(sharedSettings)
+  .jvmSettings(jVMSettings)
+  .jsSettings(jSSettings)
+  .nativeSettings(nativeSettings)
+  .jvmConfigure(
+    _.enablePlugins(AutomateHeaderPlugin, GhpagesPlugin, SiteScaladocPlugin)
+  )
 
 lazy val rootJVM = root.jvm
 lazy val rootJS = root.js
@@ -82,14 +81,14 @@ lazy val docs = project
   .dependsOn(rootJVM)
   .settings(
     sharedSettings,
-    mdocIn := baseDirectory.in(rootJVM).value  / ".." / "src" / "docs",
+    mdocIn := baseDirectory.in(rootJVM).value / ".." / "src" / "docs",
     mdocOut := baseDirectory.in(rootJVM).value / "..",
     mdocVariables := Map(
-      "VERSION" -> version.in(rootJVM).value,
-      "SCALA_NATIVE_VERSION" -> scalaNativeVersion,
-      "SCALA_JS_VERSION" -> scalaJSVersion,
-      "DOTTY_NEXT_VERSION" -> dottyNext,
-      "DOTTY_STABLE_VERSION" -> dottyStable,
+      "VERSION"                  -> version.in(rootJVM).value,
+      "SCALA_NATIVE_VERSION"     -> scalaNativeVersion,
+      "SCALA_JS_VERSION"         -> scalaJSVersion,
+      "DOTTY_NEXT_VERSION"       -> dottyNext,
+      "DOTTY_STABLE_VERSION"     -> dottyStable,
       "SUPPORTED_SCALA_VERSIONS" -> allScalaVersions.map(v => s"`$v`").mkString(", ")
     ),
     skip in publish := true
