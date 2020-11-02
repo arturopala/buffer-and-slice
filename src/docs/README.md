@@ -1,4 +1,5 @@
 ![Build](https://github.com/arturopala/buffer-and-slice/workflows/Build/badge.svg) [![Maven Central](https://maven-badges.herokuapp.com/maven-central/com.github.arturopala/buffer-and-slice_2.13/badge.svg)](https://maven-badges.herokuapp.com/maven-central/com.github.arturopala/buffer-and-slice_2.13)
+[![Scala.js](https://www.scala-js.org/assets/badges/scalajs-1.3.0.svg)](https://www.scala-js.org)
 
 Buffer\[T] and Slice\[T]
 ===
@@ -325,7 +326,7 @@ Slice
 
 [Open in Scastie](https://scastie.scala-lang.org/arturopala/jo2JWppuRRyCkYL3SjmS7A/3)
 
-```scala mdoc
+```scala mdoc:width=140
 import com.github.arturopala.bufferandslice._
 
 val array = Array("a","b","c","d","ee","f","g","h","i","j")

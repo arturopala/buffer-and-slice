@@ -1,14 +1,15 @@
 ![Build](https://github.com/arturopala/buffer-and-slice/workflows/Build/badge.svg) [![Maven Central](https://maven-badges.herokuapp.com/maven-central/com.github.arturopala/buffer-and-slice_2.13/badge.svg)](https://maven-badges.herokuapp.com/maven-central/com.github.arturopala/buffer-and-slice_2.13)
+[![Scala.js](https://www.scala-js.org/assets/badges/scalajs-1.3.0.svg)](https://www.scala-js.org)
 
 Buffer\[T] and Slice\[T]
 ===
 
 This is a micro-library for Scala providing lightweight Buffer and Slice abstractions.
 
-    "com.github.arturopala" %% "buffer-and-slice" % "1.33.0-SNAPSHOT"
+    "com.github.arturopala" %% "buffer-and-slice" % "1.34.0-SNAPSHOT"
 
 Cross-compiles to Scala versions `2.13.3`, `2.12.11`, `2.11.12`, `0.27.0-RC1`, `0.26.0`, 
-and ScalaJS version `1.1.1`, and ScalaNative version `0.4.0-M2`.
+and ScalaJS version `1.3.0`, and ScalaNative version `0.4.0-M2`.
 
 Motivation
 ---
@@ -144,7 +145,7 @@ Buffer(1,2,3).apply(1)
 // res10: Int = 2
 
 Buffer(1,2,3).get(2)
-// res11: Option[Int] = Some(3)
+// res11: Option[Int] = Some(value = 3)
 
 Buffer("a","b","c").head
 // res12: String = "c"
@@ -334,7 +335,7 @@ Buffer(1,2,3).peek(1)
 // res67: Int = 2
 
 Buffer(1,2,3).peekOption(2)
-// res68: Option[Int] = Some(1)
+// res68: Option[Int] = Some(value = 1)
 
 Buffer(1,2,3).peekOption(3)
 // res69: Option[Int] = None
@@ -413,18 +414,7 @@ Slice
 import com.github.arturopala.bufferandslice._
 
 val array = Array("a","b","c","d","ee","f","g","h","i","j")
-// array: Array[String] = Array(
-//   "a",
-//   "b",
-//   "c",
-//   "d",
-//   "ee",
-//   "f",
-//   "g",
-//   "h",
-//   "i",
-//   "j"
-// )
+// array: Array[String] = Array("a", "b", "c", "d", "ee", "f", "g", "h", "i", "j")
 
 val slice = Slice.of(array)
 // slice: Slice[String] = Slice(a,b,c,d,ee,f,g,h,i,j)
@@ -442,7 +432,7 @@ slice.apply(5)
 // res89: String = "f"
 
 slice.get(0)
-// res90: Option[String] = Some("a")
+// res90: Option[String] = Some(value = "a")
 
 slice.get(50)
 // res91: Option[String] = None
@@ -475,7 +465,7 @@ slice.head
 // res100: String = "a"
 
 slice.headOption
-// res101: Option[String] = Some("a")
+// res101: Option[String] = Some(value = "a")
 
 slice.init
 // res102: Slice[String] = Slice(a,b,c,d,ee,f,g,h,i)
@@ -484,7 +474,7 @@ slice.last
 // res103: String = "j"
 
 slice.find("slice".contains)
-// res104: Option[String] = Some("c")
+// res104: Option[String] = Some(value = "c")
 
 slice.exists("slice".contains)
 // res105: Boolean = true
@@ -496,32 +486,10 @@ slice.map(s => s"($s)")
 // res107: Slice[String] = Slice((a),(b),(c),(d),(ee),(f),(g),(h),(i),(j))
 
 slice.asIterable
-// res108: Iterable[String] = Iterable(
-//   "a",
-//   "b",
-//   "c",
-//   "d",
-//   "ee",
-//   "f",
-//   "g",
-//   "h",
-//   "i",
-//   "j"
-// )
+// res108: Iterable[String] = Iterable("a", "b", "c", "d", "ee", "f", "g", "h", "i", "j")
 
 slice.iterator.toList
-// res109: List[String] = List(
-//   "a",
-//   "b",
-//   "c",
-//   "d",
-//   "ee",
-//   "f",
-//   "g",
-//   "h",
-//   "i",
-//   "j"
-// )
+// res109: List[String] = List("a", "b", "c", "d", "ee", "f", "g", "h", "i", "j")
 
 slice.indexIterator("abeij".contains(_)).toList
 // res110: List[Int] = List(0, 1, 8, 9)
@@ -530,18 +498,7 @@ slice.iterator("abeij".contains(_)).toList
 // res111: List[String] = List("a", "b", "i", "j")
 
 slice.reverseIterator.toList
-// res112: List[String] = List(
-//   "j",
-//   "i",
-//   "h",
-//   "g",
-//   "f",
-//   "ee",
-//   "d",
-//   "c",
-//   "b",
-//   "a"
-// )
+// res112: List[String] = List("j", "i", "h", "g", "f", "ee", "d", "c", "b", "a")
 
 slice.reverseIndexIterator("adgh".contains(_)).toList
 // res113: List[Int] = List(7, 6, 3, 0)
@@ -550,65 +507,16 @@ slice.reverseIterator("adgh".contains(_)).toList
 // res114: List[String] = List("h", "g", "d", "a")
 
 slice.toList
-// res115: List[String] = List(
-//   "a",
-//   "b",
-//   "c",
-//   "d",
-//   "ee",
-//   "f",
-//   "g",
-//   "h",
-//   "i",
-//   "j"
-// )
+// res115: List[String] = List("a", "b", "c", "d", "ee", "f", "g", "h", "i", "j")
 
 slice.toSeq
-// res116: Seq[String] = Vector(
-//   "a",
-//   "b",
-//   "c",
-//   "d",
-//   "ee",
-//   "f",
-//   "g",
-//   "h",
-//   "i",
-//   "j"
-// )
+// res116: Seq[String] = Vector("a", "b", "c", "d", "ee", "f", "g", "h", "i", "j")
 
 slice.toArray
-// res117: Array[String] = Array(
-//   "a",
-//   "b",
-//   "c",
-//   "d",
-//   "ee",
-//   "f",
-//   "g",
-//   "h",
-//   "i",
-//   "j"
-// )
+// res117: Array[String] = Array("a", "b", "c", "d", "ee", "f", "g", "h", "i", "j")
 
 slice.copyToArray(3, new Array[String](15))
-// res118: Array[String] = Array(
-//   null,
-//   null,
-//   null,
-//   "a",
-//   "b",
-//   "c",
-//   "d",
-//   "ee",
-//   "f",
-//   "g",
-//   "h",
-//   "i",
-//   "j",
-//   null,
-//   null
-// )
+// res118: Array[String] = Array(null, null, null, "a", "b", "c", "d", "ee", "f", "g", "h", "i", "j", null, null)
 
 slice.toBuffer
 // res119: Buffer[String] = [a,b,c,d,ee,f,g,h,i,j]
