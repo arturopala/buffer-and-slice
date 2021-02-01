@@ -2,4 +2,4 @@
 -XX:+CMSClassUnloadingEnabled
 -Dfile.encoding=UTF-8
 -XX:+UseG1GC
--Xmx1G
+-Xmx2G
