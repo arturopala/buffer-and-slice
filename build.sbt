@@ -1,11 +1,11 @@
 val scala213 = "2.13.4"
-val scala212 = "2.12.11"
+val scala212 = "2.12.13"
 val scala211 = "2.11.12"
 val dottyNext = "3.0.0-M3"
 val dottyStable = "3.0.0-M2"
-val scalaJSVersion = "1.3.1"
-val scalaNativeVersion = "0.4.0-M2"
-val mUnitVersion = "0.7.20"
+val scalaJSVersion = "1.4.0"
+val scalaNativeVersion = "0.4.0"
+val mUnitVersion = "0.7.21"
 
 val scala2Versions = List(scala213, scala212, scala211)
 val scala3Versions = List(dottyNext, dottyStable)
@@ -44,21 +44,23 @@ lazy val jVMSettings = List(
 )
 
 lazy val jSSettings = List(
-  crossScalaVersions := scala2Versions,
+  crossScalaVersions := allScalaVersions,
   scalaJSLinkerConfig ~= (_.withModuleKind(ModuleKind.CommonJSModule)),
   libraryDependencies ++= List(
-    "org.scala-js" %% "scalajs-test-interface"     % scalaJSVersion % Test,
-    "org.scala-js" %% "scalajs-junit-test-runtime" % scalaJSVersion % Test
+    ("org.scala-js" %% "scalajs-test-interface" % scalaJSVersion % Test)
+      .withDottyCompat(scalaVersion.value),
+    ("org.scala-js" %% "scalajs-junit-test-runtime" % scalaJSVersion % Test)
+      .withDottyCompat(scalaVersion.value)
   )
 )
 
 lazy val nativeSettings = List(
-  scalaVersion := scala211,
-  crossScalaVersions := List(scala211),
+  scalaVersion := scala213,
+  crossScalaVersions := Nil,
   libraryDependencies ++= List(
-    "org.scala-native" %%% "test-interface" % scalaNativeVersion % Test
-  ),
-  nativeLinkStubs in Test := true
+    "org.scala-native" %%% "test-interface" % scalaNativeVersion % Test,
+    "org.scala-native" %%% "junit-runtime"  % nativeVersion      % Test
+  )
 )
 
 lazy val root = crossProject(JSPlatform, JVMPlatform, NativePlatform)
@@ -94,3 +96,5 @@ lazy val docs = project
     skip in publish := true
   )
   .enablePlugins(MdocPlugin)
+
+addCompilerPlugin("org.scala-native" % "junit-plugin" % nativeVersion cross CrossVersion.full)
