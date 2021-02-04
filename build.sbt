@@ -56,7 +56,7 @@ lazy val jSSettings = List(
 
 lazy val nativeSettings = List(
   scalaVersion := scala213,
-  crossScalaVersions := Nil,
+  crossScalaVersions := scala2Versions,
   libraryDependencies ++= List(
     "org.scala-native" %%% "test-interface" % scalaNativeVersion % Test,
     "org.scala-native" %%% "junit-runtime"  % nativeVersion      % Test
@@ -87,7 +87,7 @@ lazy val docs = project
     mdocOut := baseDirectory.in(rootJVM).value / "..",
     mdocVariables := Map(
       "VERSION"                  -> version.in(rootJVM).value,
-      "SCALA_NATIVE_VERSION"     -> "0.4.0-M2" /*scalaNativeVersion*/,
+      "SCALA_NATIVE_VERSION"     -> scalaNativeVersion,
       "SCALA_JS_VERSION"         -> scalaJSVersion,
       "DOTTY_NEXT_VERSION"       -> dottyNext,
       "DOTTY_STABLE_VERSION"     -> dottyStable,
