@@ -4,8 +4,8 @@ val scala211 = "2.11.12"
 val dottyNext = "3.0.0-M3"
 val dottyStable = "3.0.0-M2"
 val scalaJSVersion = "1.4.0"
-val scalaNativeVersion = "0.4.0"
-val mUnitVersion = "0.7.21"
+val scalaNativeVersion = "0.4.0-M2"
+val mUnitVersion = "0.7.20"
 
 val scala2Versions = List(scala213, scala212, scala211)
 val scala3Versions = List(dottyNext, dottyStable)
@@ -55,11 +55,10 @@ lazy val jSSettings = List(
 )
 
 lazy val nativeSettings = List(
-  scalaVersion := scala213,
-  crossScalaVersions := Nil,
+  scalaVersion := scala211,
+  crossScalaVersions := List(scala211),
   libraryDependencies ++= List(
-    "org.scala-native" %%% "test-interface" % scalaNativeVersion % Test,
-    "org.scala-native" %%% "junit-runtime"  % nativeVersion      % Test
+    "org.scala-native" %%% "test-interface" % scalaNativeVersion % Test
   )
 )
 
