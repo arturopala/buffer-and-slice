@@ -48,7 +48,7 @@ object ArrayOps {
     val length = Math.max(0, toIndex - fromIndex)
     val array2: Array[T] =
       if (array.length > 0) newArray(map(array(fromIndex)), length)
-      else Array.empty[AnyRef].asInstanceOf[Array[T]]
+      else Array.empty[Any].asInstanceOf[Array[T]]
 
     var i = 0
     while (i < length) {

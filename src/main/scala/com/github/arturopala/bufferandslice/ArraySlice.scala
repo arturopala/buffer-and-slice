@@ -60,6 +60,6 @@ object ArraySlice {
   def of[T](array: Array[T], from: Int, to: Int): ArraySlice[T] =
     new ArraySlice(Math.max(0, Math.min(from, array.length)), Math.min(Math.max(from, to), array.length), array, false)
 
-  def empty[T]: ArraySlice[T] = ArraySlice.of(Array.empty[AnyRef].asInstanceOf[Array[T]])
+  def empty[T]: ArraySlice[T] = ArraySlice.of(Array.empty[Any].asInstanceOf[Array[T]])
 
 }

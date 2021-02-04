@@ -139,7 +139,7 @@ final class DeferredArrayBuffer[T](initialLength: Int) extends ArrayBufferLike[T
     */
   override def asSlice: Slice[T] =
     if (pristine) {
-      if (initialSize == 0) Slice.empty[AnyRef].asInstanceOf[Slice[T]]
+      if (initialSize == 0) Slice.empty[Any].asInstanceOf[Slice[T]]
       else throw new RuntimeException("Deferred buffer not yet initialized. Maybe try using ArrayBuffer instead.")
     } else new ArraySlice(0, length, _array, detached = false)
 
