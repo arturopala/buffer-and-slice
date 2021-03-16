@@ -11,28 +11,41 @@ val scala2Versions = List(scala213, scala212, scala211)
 val scala3Versions = List(dottyNext, dottyStable)
 val allScalaVersions = scala2Versions ++ scala3Versions
 
+inThisBuild(
+  List(
+    organization := "com.github.arturopala",
+    homepage := Some(url("https://github.com/arturopala/buffer-and-slice")),
+    licenses := List("Apache-2.0" -> url("http://www.apache.org/licenses/LICENSE-2.0")),
+    developers := List(
+      Developer(
+        "arturopala",
+        "Artur Opala",
+        "opala.artur@gmail.com",
+        url("https://uk.linkedin.com/in/arturopala")
+      )
+    ),
+    organizationName := "Artur Opala",
+    startYear := Some(2020),
+    licenses += ("Apache-2.0", new URL("https://www.apache.org/licenses/LICENSE-2.0.txt"))
+  )
+)
+
 ThisBuild / scalaVersion := scala213
 
 lazy val sharedSettings = Seq(
   name := "buffer-and-slice",
-  organization := "com.github.arturopala",
-  organizationName := "Artur Opala",
-  startYear := Some(2020),
-  licenses += ("Apache-2.0", new URL("https://www.apache.org/licenses/LICENSE-2.0.txt")),
   scalaVersion := scala213,
   excludeFilter in (Compile, unmanagedResources) := NothingFilter,
   scalafmtOnCompile in Compile := true,
   scalafmtOnCompile in Test := true,
-  releaseVersionBump := sbtrelease.Version.Bump.Major,
-  publishTo := sonatypePublishToBundle.value,
-  git.remoteRepo := "git@github.com:arturopala/buffer-and-slice.git",
   testFrameworks += new TestFramework("munit.Framework"),
   logBuffered := false,
   scalacOptions in (Compile, doc) ++= Seq(
     "-groups"
   ),
   parallelExecution in Test := false,
-  libraryDependencies += "org.scalameta" %%% "munit" % mUnitVersion % Test
+  libraryDependencies += "org.scalameta" %%% "munit" % mUnitVersion % Test,
+  headerLicense := Some(HeaderLicense.ALv2("2020", "Artur Opala"))
 )
 
 skip in publish := true
@@ -40,7 +53,8 @@ crossScalaVersions := List()
 libraryDependencies += "org.scalameta" %%% "munit" % mUnitVersion % Test
 
 lazy val jVMSettings = List(
-  crossScalaVersions := allScalaVersions
+  crossScalaVersions := allScalaVersions,
+  git.remoteRepo := "git@github.com:arturopala/buffer-and-slice.git"
 )
 
 lazy val jSSettings = List(
