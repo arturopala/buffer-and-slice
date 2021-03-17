@@ -17,8 +17,7 @@ jobs:
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           version_scheme: semantic
-          version_type: minor    
-          branch: master
+          version_type: minor
       - name: Release to Sonatype
         run: sbt ci-release
         env:
