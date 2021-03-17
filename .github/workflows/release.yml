@@ -11,13 +11,12 @@ jobs:
       - run: git fetch --tags --unshallow -f  
       - name: Setup scala
         uses: olafurpg/setup-scala@v10
-      - name: Compute and set release tag
-        id: compute_tag
-        uses: craig-day/compute-tag@v11
+      - name: Compute release version and push tag
+        id: tag_version
+        uses: mathieudutour/github-tag-action@v5.3
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          version_scheme: semantic
-          version_type: minor
+          default_bump: minor
       - name: Release to Sonatype
         run: sbt ci-release
         env:
@@ -36,10 +35,10 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          tag_name: ${{ steps.compute_tag.outputs.next_tag }}
-          release_name: ${{ steps.compute_tag.outputs.next_tag }}
+          tag_name: ${{ steps.tag_version.outputs.new_tag }}
+          release_name: Release ${{ steps.tag_version.outputs.new_version }}
           body: |
-            Release ${{ steps.compute_tag.outputs.next_tag }}
+            Release ${{ steps.tag_version.outputs.new_version }}
 
             ### Things that changed in this release
             ${{ steps.changelog.outputs.changelog }}
