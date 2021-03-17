@@ -56,7 +56,7 @@ lazy val jVMSettings = List(
   crossScalaVersions := allScalaVersions,
   gitHubPagesOrgName := "arturopala",
   gitHubPagesRepoName := "buffer-and-slice",
-  gitHubPagesSiteDir := baseDirectory.value / ".." / "src" / "site"
+  gitHubPagesSiteDir := baseDirectory.value / "target" / "site"
 )
 
 lazy val jSSettings = List(
