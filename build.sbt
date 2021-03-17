@@ -102,7 +102,7 @@ lazy val docs = project
     mdocIn := baseDirectory.in(rootJVM).value / ".." / "src" / "docs",
     mdocOut := baseDirectory.in(rootJVM).value / "..",
     mdocVariables := Map(
-      "VERSION"                  -> previousStableVersion.in(rootJVM).value.getOrElse("0.1.0"),
+      "VERSION"                  -> previousStableVersion.value.getOrElse("0.1.0"),
       "SCALA_NATIVE_VERSION"     -> scalaNativeVersion,
       "SCALA_JS_VERSION"         -> scalaJSVersion,
       "DOTTY_NEXT_VERSION"       -> dottyNext,
