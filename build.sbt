@@ -54,7 +54,9 @@ libraryDependencies += "org.scalameta" %%% "munit" % mUnitVersion % Test
 
 lazy val jVMSettings = List(
   crossScalaVersions := allScalaVersions,
-  git.remoteRepo := "git@github.com:arturopala/buffer-and-slice.git"
+  gitHubPagesOrgName := "arturopala",
+  gitHubPagesRepoName := "buffer-and-slice",
+  gitHubPagesSiteDir := baseDirectory.value / ".." / "src" / "site"
 )
 
 lazy val jSSettings = List(
@@ -85,7 +87,7 @@ lazy val root = crossProject(JSPlatform, JVMPlatform, NativePlatform)
   .jsSettings(jSSettings)
   .nativeSettings(nativeSettings)
   .jvmConfigure(
-    _.enablePlugins(AutomateHeaderPlugin, GhpagesPlugin, SiteScaladocPlugin)
+    _.enablePlugins(AutomateHeaderPlugin, GitHubPagesPlugin, SiteScaladocPlugin)
   )
 
 lazy val rootJVM = root.jvm

@@ -1,0 +1,28 @@
+name: Site
+on:
+  workflow_dispatch:
+
+jobs:
+  site:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: Setup scala
+        uses: olafurpg/setup-scala@v10
+      - name: Generate documentation
+        run: sbt docs/mdoc 
+      - name: Commit documentation changes
+        uses: EndBug/add-and-commit@v7
+        with:
+          author_name: Artur Opala
+          author_email: opala.artur@gmail.com
+          message: 'Update documentation'
+          add: '*.md'    
+      - name: Publish documentation on Github
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          echo "> Publish GitHub Pages"
+          sbt publishToGitHubPages   
+    

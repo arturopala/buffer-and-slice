@@ -4,8 +4,8 @@ addSbtPlugin("de.heikoseeberger" % "sbt-header"    % "5.6.0")
 
 addSbtPlugin("com.geirsson" % "sbt-ci-release" % "1.5.6")
 
-addSbtPlugin("com.typesafe.sbt" % "sbt-site"    % "1.4.0")
-addSbtPlugin("com.typesafe.sbt" % "sbt-ghpages" % "0.6.3")
+addSbtPlugin("com.typesafe.sbt" % "sbt-site"         % "1.4.0")
+addSbtPlugin("io.kevinlee"      % "sbt-github-pages" % "0.4.0")
 
 addSbtPlugin("ch.epfl.lamp" % "sbt-dotty" % "0.5.3")
 

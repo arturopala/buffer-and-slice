@@ -43,16 +43,5 @@ jobs:
             ### Things that changed in this release
             ${{ steps.changelog.outputs.changelog }}
           draft: false
-          prerelease: false
-      - name: Generate documentation
-        run: sbt docs/mdoc 
-      - name: Commit documentation changes
-        uses: EndBug/add-and-commit@v7
-        with:
-          author_name: Artur Opala
-          author_email: opala.artur@gmail.com
-          message: 'Update documentation'
-          add: '*.md'    
-      - name: Push site to gh-pages
-        run: sbt ghpagesPushSite    
+          prerelease: false   
     
