@@ -16,11 +16,12 @@ dist
 /RUNNING_PID
 /.settings
 *.iws
-.metals/
-.bloop/
 project/metals.sbt
 launch.json
 .DS_Store
 /_site/
 /*.hnir
-.vscode/settings.json
+.vscode/
+.bsp/
+.metals/
+.bloop/
