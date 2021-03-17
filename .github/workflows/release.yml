@@ -11,15 +11,6 @@ jobs:
       - run: git fetch --tags --unshallow -f  
       - name: Setup scala
         uses: olafurpg/setup-scala@v10
-      - name: Generate documentation
-        run: sbt docs/mdoc 
-      - name: Commit documentation changes
-        uses: EndBug/add-and-commit@v7
-        with:
-          author_name: Artur Opala
-          author_email: opala.artur@gmail.com
-          message: 'Update documentation'
-          add: '*.md'
       - name: Compute and set release tag
         id: compute_tag
         uses: craig-day/compute-tag@v11
@@ -55,6 +46,15 @@ jobs:
             ${{ steps.changelog.outputs.changelog }}
           draft: false
           prerelease: false
+      - name: Generate documentation
+        run: sbt docs/mdoc 
+      - name: Commit documentation changes
+        uses: EndBug/add-and-commit@v7
+        with:
+          author_name: Artur Opala
+          author_email: opala.artur@gmail.com
+          message: 'Update documentation'
+          add: '*.md'    
       - name: Push site to gh-pages
         run: sbt ghpagesPushSite    
     
