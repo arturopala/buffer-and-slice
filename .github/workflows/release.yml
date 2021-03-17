@@ -3,7 +3,7 @@ on:
   workflow_dispatch:
 
 jobs:
-  publish:
+  release:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -26,6 +26,7 @@ jobs:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           version_scheme: semantic
           version_type: minor    
+          branch: master
       - name: Release to Sonatype
         run: sbt ci-release
         env:
@@ -33,8 +34,6 @@ jobs:
           PGP_SECRET: ${{ secrets.PGP_SECRET }}
           SONATYPE_PASSWORD: ${{ secrets.SONATYPE_PASSWORD }}
           SONATYPE_USERNAME: ${{ secrets.SONATYPE_USERNAME }}
-      - name: Push site to gh-pages
-        run: sbt ghpagesPushSite
       - name: Generate release changelog
         id: changelog
         uses: metcalfc/changelog-generator@v0.4.4
@@ -55,4 +54,6 @@ jobs:
             ${{ steps.changelog.outputs.changelog }}
           draft: false
           prerelease: false
+      - name: Push site to gh-pages
+        run: sbt ghpagesPushSite    
     
