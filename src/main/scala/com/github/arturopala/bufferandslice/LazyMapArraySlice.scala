@@ -16,8 +16,6 @@
 
 package com.github.arturopala.bufferandslice
 
-import scala.reflect.ClassTag
-
 /** Lazily mapped slice of an underlying array.
   * @note Truly immutable only if an underlying array kept private, or if detached.
   * @tparam T type of the array's items

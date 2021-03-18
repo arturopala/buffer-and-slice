@@ -13,6 +13,7 @@ val allScalaVersions = scala2Versions ++ scala3Versions
 
 inThisBuild(
   List(
+    scalaVersion := scala213,
     organization := "com.github.arturopala",
     homepage := Some(url("https://github.com/arturopala/buffer-and-slice")),
     licenses := List("Apache-2.0" -> url("http://www.apache.org/licenses/LICENSE-2.0")),
@@ -26,11 +27,13 @@ inThisBuild(
     ),
     organizationName := "Artur Opala",
     startYear := Some(2020),
-    licenses += ("Apache-2.0", new URL("https://www.apache.org/licenses/LICENSE-2.0.txt"))
+    licenses += ("Apache-2.0", new URL("https://www.apache.org/licenses/LICENSE-2.0.txt")),
+    scalafixDependencies += "com.github.liancheng" %% "organize-imports" % "0.5.0",
+    semanticdbEnabled := true,
+    semanticdbVersion := scalafixSemanticdb.revision,
+    scalafixScalaBinaryVersion := "2.13"
   )
 )
-
-ThisBuild / scalaVersion := scala213
 
 lazy val sharedSettings = Seq(
   name := "buffer-and-slice",
@@ -40,9 +43,8 @@ lazy val sharedSettings = Seq(
   scalafmtOnCompile in Test := true,
   testFrameworks += new TestFramework("munit.Framework"),
   logBuffered := false,
-  scalacOptions in (Compile, doc) ++= Seq(
-    "-groups"
-  ),
+  scalacOptions in (Compile, doc) += "-groups",
+  scalacOptions += "-Ywarn-unused", // required by `RemoveUnused` rule
   parallelExecution in Test := false,
   libraryDependencies += "org.scalameta" %%% "munit" % mUnitVersion % Test,
   headerLicense := Some(HeaderLicense.ALv2("2020", "Artur Opala"))

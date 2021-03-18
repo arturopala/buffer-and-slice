@@ -17,7 +17,6 @@
 package com.github.arturopala.bufferandslice
 
 import java.util.NoSuchElementException
-
 import scala.collection.AbstractIterable
 import scala.reflect.ClassTag
 
