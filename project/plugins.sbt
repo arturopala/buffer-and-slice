@@ -3,7 +3,7 @@ addSbtPlugin("org.scoverage"     % "sbt-scoverage" % "1.6.1")
 addSbtPlugin("de.heikoseeberger" % "sbt-header"    % "5.6.0")
 addSbtPlugin("ch.epfl.scala"     % "sbt-scalafix"  % "0.9.26")
 
-addSbtPlugin("com.geirsson" % "sbt-ci-release" % "1.5.6")
+addSbtPlugin("com.geirsson" % "sbt-ci-release" % "1.5.7")
 
 addSbtPlugin("com.typesafe.sbt" % "sbt-site"         % "1.4.0")
 addSbtPlugin("io.kevinlee"      % "sbt-github-pages" % "0.4.0")
