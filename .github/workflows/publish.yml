@@ -1,7 +1,6 @@
-name: Publish (snapshot or stable)
+name: Publish to Sonatype
 on:
   push:
-    branches: [master, main]
     tags: ["*"]
 jobs:
   publish:
