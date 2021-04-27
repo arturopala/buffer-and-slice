@@ -1,4 +1,4 @@
-name: Site
+name: Generate README and scaladoc
 on:
   workflow_dispatch:
 
