@@ -10,7 +10,7 @@ jobs:
         uses: actions/checkout@v2
         with:
           fetch-depth: 0
-      - run: git fetch --tags --unshallow -f  
+      - run: git fetch --tags
       - name: Setup Scala
         uses: olafurpg/setup-scala@v10
       - name: Setup GPG
