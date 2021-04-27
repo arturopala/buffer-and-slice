@@ -1,7 +1,6 @@
 name: Publish (snapshot or stable)
 on:
   push:
-    branches: [master, main]
     tags: ["*"]
 jobs:
   publish:
