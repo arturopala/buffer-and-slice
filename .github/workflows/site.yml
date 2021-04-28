@@ -1,6 +1,10 @@
 name: Generate README and scaladoc
 on:
   workflow_dispatch:
+  push:
+    paths:
+      - 'src/docs/**'
+  release:  
 
 jobs:
   site:
