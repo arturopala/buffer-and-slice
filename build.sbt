@@ -1,3 +1,9 @@
+val githubRepoName = "buffer-and-slice"
+
+val developerName = "Artur Opala"
+val developerEmail = "opala.artur@gmail.com"
+val githubUserName = "arturopala"
+
 val scala213 = "2.13.4"
 val scala212 = "2.12.13"
 val scala211 = "2.11.12"
@@ -14,29 +20,30 @@ val allScalaVersions = scala2Versions ++ scala3Versions
 inThisBuild(
   List(
     scalaVersion := scala213,
-    organization := "com.github.arturopala",
-    homepage := Some(url("https://github.com/arturopala/buffer-and-slice")),
+    organization := s"com.github.$githubUserName",
+    homepage := Some(url(s"https://github.com/$githubUserName/$githubRepoName")),
     licenses := List("Apache-2.0" -> url("http://www.apache.org/licenses/LICENSE-2.0")),
     developers := List(
       Developer(
-        "arturopala",
-        "Artur Opala",
-        "opala.artur@gmail.com",
-        url("https://uk.linkedin.com/in/arturopala")
+        githubUserName,
+        developerName,
+        developerEmail,
+        url(s"https://uk.linkedin.com/in/$githubUserName")
       )
     ),
-    organizationName := "Artur Opala",
+    organizationName := developerName,
     startYear := Some(2020),
     licenses += ("Apache-2.0", new URL("https://www.apache.org/licenses/LICENSE-2.0.txt")),
     scalafixDependencies += "com.github.liancheng" %% "organize-imports" % "0.5.0",
     semanticdbEnabled := true,
     semanticdbVersion := scalafixSemanticdb.revision,
-    scalafixScalaBinaryVersion := "2.13"
+    scalafixScalaBinaryVersion := "2.13",
+    versionScheme := Some("early-semver")
   )
 )
 
 lazy val sharedSettings = Seq(
-  name := "buffer-and-slice",
+  name := githubRepoName,
   scalaVersion := scala213,
   Compile / excludeFilter := NothingFilter,
   unmanagedResources / excludeFilter := NothingFilter,
@@ -46,18 +53,20 @@ lazy val sharedSettings = Seq(
   doc / scalacOptions += "-groups",
   scalacOptions.withRank(KeyRanks.Invisible) += "-Ywarn-unused", // required by `RemoveUnused` rule
   (Test / parallelExecution) := false,
-  libraryDependencies += "org.scalameta" %%% "munit" % mUnitVersion % Test,
-  headerLicense := Some(HeaderLicense.ALv2("2020", "Artur Opala"))
+  headerLicense := Some(HeaderLicense.ALv2("2020", developerName)),
+  libraryDependencies ++= Seq(
+    "org.scalameta" %%% "munit"            % mUnitVersion % Test,
+    "org.scalameta" %%% "munit-scalacheck" % mUnitVersion % Test
+  )
 )
 
 publish / skip := true
 crossScalaVersions := List()
-libraryDependencies += "org.scalameta" %%% "munit" % mUnitVersion % Test
 
 lazy val jVMSettings = List(
   crossScalaVersions := allScalaVersions,
-  gitHubPagesOrgName := "arturopala",
-  gitHubPagesRepoName := "buffer-and-slice",
+  gitHubPagesOrgName := githubUserName,
+  gitHubPagesRepoName := githubRepoName,
   gitHubPagesSiteDir := baseDirectory.value / "target" / "site"
 )
 
