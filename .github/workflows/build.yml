@@ -1,4 +1,4 @@
-name: Build
+name: Build and test
 
 on:
   push:
@@ -7,6 +7,7 @@ on:
     paths-ignore:
       - '.github/**'
       - 'README.md'
+      - 'src/docs/**'
 
   pull_request:
     branches: [ master, main ]
