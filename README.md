@@ -1,12 +1,12 @@
 ![Build](https://github.com/arturopala/buffer-and-slice/workflows/Build/badge.svg) [![Maven Central](https://maven-badges.herokuapp.com/maven-central/com.github.arturopala/buffer-and-slice_2.13/badge.svg)](https://maven-badges.herokuapp.com/maven-central/com.github.arturopala/buffer-and-slice_2.13)
-[![Scala.js](https://www.scala-js.org/assets/badges/scalajs-1.5.1.svg)](https://www.scala-js.org)
+[![Scala.js](https://www.scala-js.org/assets/badges/scalajs-1.5.0.svg)](https://www.scala-js.org)
 
 Buffer\[T] and Slice\[T]
 ===
 
 This is a micro-library for Scala providing lightweight Buffer and Slice abstractions.
 
-    "com.github.arturopala" %% "buffer-and-slice" % "1.50.0"
+    "com.github.arturopala" %% "buffer-and-slice" % "1.51.0"
 
 Cross-compiles to Scala versions `2.13.4`, `2.12.13`, `2.11.12`, `3.0.0-RC3`, `3.0.0-RC2`, 
 and ScalaJS version `1.5.1`, and ScalaNative version `0.4.0`.
