@@ -4,17 +4,17 @@ val developerName = "Artur Opala"
 val developerEmail = "opala.artur@gmail.com"
 val githubUserName = "arturopala"
 
-val scala213 = "2.13.4"
+val scala213 = "2.13.5"
 val scala212 = "2.12.13"
 val scala211 = "2.11.12"
-val dottyNext = "3.0.0-RC3"
-val dottyStable = "3.0.0-RC2"
+val dottyNext = "3.0.0"
+val dottyStable = "3.0.0"
 val scalaJSVersion = "1.5.1"
 val scalaNativeVersion = "0.4.0"
-val mUnitVersion = "0.7.25"
+val mUnitVersion = "0.7.26"
 
 val scala2Versions = List(scala213, scala212, scala211)
-val scala3Versions = List(dottyNext, dottyStable)
+val scala3Versions = List(dottyStable /*,dottyNext*/ )
 val allScalaVersions = scala2Versions ++ scala3Versions
 
 inThisBuild(

@@ -5,10 +5,10 @@ addSbtPlugin("ch.epfl.scala"     % "sbt-scalafix"  % "0.9.26")
 
 addSbtPlugin("com.geirsson" % "sbt-ci-release" % "1.5.7")
 
-addSbtPlugin("com.typesafe.sbt" % "sbt-site"         % "1.4.0")
-addSbtPlugin("io.kevinlee"      % "sbt-github-pages" % "0.4.0")
+addSbtPlugin("com.typesafe.sbt" % "sbt-site"         % "1.4.1")
+addSbtPlugin("io.kevinlee"      % "sbt-github-pages" % "0.5.0")
 
-addSbtPlugin("org.scalameta" % "sbt-mdoc" % "2.2.19")
+addSbtPlugin("org.scalameta" % "sbt-mdoc" % "2.2.20")
 
 addSbtPlugin("org.portable-scala" % "sbt-scalajs-crossproject"      % "1.0.0")
 addSbtPlugin("org.portable-scala" % "sbt-scala-native-crossproject" % "1.0.0")
