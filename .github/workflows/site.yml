@@ -2,6 +2,7 @@ name: Generate README and scaladoc
 on:
   workflow_dispatch:
   push:
+    branches: [ master, main ]
     paths:
       - 'src/docs/**'
       - '*.scala'
@@ -24,7 +25,8 @@ jobs:
           author_name: Artur Opala
           author_email: opala.artur@gmail.com
           message: 'Update README'
-          add: '*.md'    
+          add: '*.md'   
+          branch: master 
       - name: Publish API documentation on Github
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
