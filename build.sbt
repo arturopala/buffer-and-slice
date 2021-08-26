@@ -4,17 +4,16 @@ val developerName = "Artur Opala"
 val developerEmail = "opala.artur@gmail.com"
 val githubUserName = "arturopala"
 
-val scala213 = "2.13.5"
+val scala213 = "2.13.6"
 val scala212 = "2.12.13"
 val scala211 = "2.11.12"
-val dottyNext = "3.0.0"
-val dottyStable = "3.0.0"
-val scalaJSVersion = "1.5.1"
+val scala3 = "3.0.1"
+val scalaJSVersion = "1.6.0"
 val scalaNativeVersion = "0.4.0"
-val mUnitVersion = "0.7.26"
+val mUnitVersion = "0.7.28"
 
 val scala2Versions = List(scala213, scala212, scala211)
-val scala3Versions = List(dottyStable /*,dottyNext*/ )
+val scala3Versions = List(scala3)
 val allScalaVersions = scala2Versions ++ scala3Versions
 
 inThisBuild(
@@ -116,8 +115,7 @@ lazy val docs = project
       "VERSION"                  -> previousStableVersion.value.getOrElse("0.1.0"),
       "SCALA_NATIVE_VERSION"     -> scalaNativeVersion,
       "SCALA_JS_VERSION"         -> scalaJSVersion,
-      "DOTTY_NEXT_VERSION"       -> dottyNext,
-      "DOTTY_STABLE_VERSION"     -> dottyStable,
+      "DOTTY_STABLE_VERSION"     -> scala3,
       "SUPPORTED_SCALA_VERSIONS" -> allScalaVersions.map(v => s"`$v`").mkString(", ")
     ),
     publish / skip := true
