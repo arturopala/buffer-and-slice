@@ -88,7 +88,7 @@ Heavier operations, making a copy of an array:
 - detaching a slice first-time, if not detached already
 - updating a slice
 - making a copy of a buffer
-- exporting slice or buffer (`toArray`, `toList`, `toBuffer`)
+- exporting collections from a slice or a buffer (`toArray`, `toList`, `toBuffer`)
 
 E.g. the following code makes no copy of an array `a`:
 
