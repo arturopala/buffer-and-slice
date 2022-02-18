@@ -6,7 +6,7 @@ Buffer\[T] and Slice\[T]
 
 This is a micro-library for Scala providing lightweight Buffer and Slice abstractions.
 
-    "com.github.arturopala" %% "buffer-and-slice" % "1.54.0"
+    "com.github.arturopala" %% "buffer-and-slice" % "1.55.0"
 
 Cross-compiles to Scala versions `2.13.6`, `2.12.15`, `2.11.12`, `3.1.1`, 
 and ScalaJS version `1.9.0`, and ScalaNative version `0.4.3`.
@@ -88,7 +88,7 @@ Heavier operations, making a copy of an array:
 - detaching a slice first-time, if not detached already
 - updating a slice
 - making a copy of a buffer
-- exporting collections from a slice or a buffer (`toArray`, `toList`, `toBuffer`)
+- exporting slice or buffer (`toArray`, `toList`, `toBuffer`)
 
 E.g. the following code makes no copy of an array `a`:
 
