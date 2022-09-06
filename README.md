@@ -8,8 +8,8 @@ This is a micro-library for Scala providing lightweight Buffer and Slice abstrac
 
     "com.github.arturopala" %% "buffer-and-slice" % "1.55.0"
 
-Cross-compiles to Scala versions `2.13.6`, `2.12.15`, `2.11.12`, `3.1.1`, 
-and ScalaJS version `1.9.0`, and ScalaNative version `0.4.3`.
+Cross-compiles to Scala versions `2.13.8`, `2.12.16`, `2.11.12`, `3.1.2`, 
+and ScalaJS version `1.10.0`, and ScalaNative version `0.4.4`.
 
 Motivation
 ---
