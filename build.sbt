@@ -8,8 +8,8 @@ val scala213 = "2.13.8"
 val scala212 = "2.12.16"
 val scala211 = "2.11.12"
 val scala3 = "3.1.2"
-val scalaJSVersion = "1.10.0"
-val scalaNativeVersion = "0.4.4"
+val scalaJSVersion = "1.10.1"
+val scalaNativeVersion = "0.4.7"
 val mUnitVersion = "1.0.0-M6"
 
 val scala2Versions = List(scala213, scala212, scala211)
