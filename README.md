@@ -1,5 +1,8 @@
 ![Build](https://github.com/arturopala/buffer-and-slice/workflows/Build/badge.svg) [![Maven Central](https://maven-badges.herokuapp.com/maven-central/com.github.arturopala/buffer-and-slice_2.13/badge.svg)](https://maven-badges.herokuapp.com/maven-central/com.github.arturopala/buffer-and-slice_2.13)
-[![Scala.js](https://www.scala-js.org/assets/badges/scalajs-1.5.0.svg)](https://www.scala-js.org)
+[![Scala.js](https://www.scala-js.org/assets/badges/scalajs-1.12.0.svg)](https://www.scala-js.org)
+![Code size](https://img.shields.io/github/languages/code-size/arturopala/buffer-and-slice)
+![GitHub](https://img.shields.io/github/license/arturopala/buffer-and-slice)
+![Lift](https://lift.sonatype.com/api/badge/github.com/arturopala/buffer-and-slice)
 
 Buffer\[T] and Slice\[T]
 ===
@@ -8,8 +11,8 @@ This is a micro-library for Scala providing lightweight Buffer and Slice abstrac
 
     "com.github.arturopala" %% "buffer-and-slice" % "1.57.0"
 
-Cross-compiles to Scala versions `2.13.8`, `2.12.16`, `2.11.12`, `3.1.2`, 
-and ScalaJS version `1.10.1`, and ScalaNative version `0.4.7`.
+Cross-compiles to Scala versions `2.13.10`, `2.12.17`, `3.2.2`, 
+and ScalaJS version `1.12.0`, and ScalaNative version `0.4.9`.
 
 Motivation
 ---
