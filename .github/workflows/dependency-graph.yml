@@ -3,13 +3,7 @@ name: Update dependency graph
 on:
   push:
     branches:
-      - master # default branch of the project
+      - main # default branch of the project
 jobs:
   dependency-graph:
-    name: Update dependency graph
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v3
-      - uses: scalacenter/sbt-dependency-submission@v2
-        with:
-          modules-ignore: docs_2.13
+    uses: arturopala/workflows/.github/workflows/dependency-graph.yml@main

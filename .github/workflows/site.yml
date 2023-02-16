@@ -4,33 +4,17 @@ on:
   push:
     branches: [ master, main ]
     paths:
+      - '.github/site.yml'
       - 'src/docs/**'
-      - '*.scala'
-  release:  
+      - 'src/site/**'
+      - '*.scala' 
 
 jobs:
   site:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v2
-      - run: git fetch --tags --unshallow -f
-      - name: Setup scala
-        uses: olafurpg/setup-scala@v10
-      - name: Generate README
-        run: sbt dynver docs/mdoc 
-      - name: Commit README changes
-        uses: EndBug/add-and-commit@v7
-        with:
-          author_name: Artur Opala
-          author_email: opala.artur@gmail.com
-          message: 'Update README'
-          add: '*.md'   
-          branch: master 
-      - name: Publish API documentation on Github
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: |
-          echo "> Publish GitHub Pages"
-          sbt makeSite publishToGitHubPages   
+    uses: arturopala/workflows/.github/workflows/site.yml@main
+    with:
+      author_name: Artur Opala
+      author_email: opala.artur@gmail.com
+    secrets:
+      PAT: ${{ secrets.PAT }}  
     

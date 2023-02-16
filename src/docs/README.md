@@ -1,5 +1,8 @@
 ![Build](https://github.com/arturopala/buffer-and-slice/workflows/Build/badge.svg) [![Maven Central](https://maven-badges.herokuapp.com/maven-central/com.github.arturopala/buffer-and-slice_2.13/badge.svg)](https://maven-badges.herokuapp.com/maven-central/com.github.arturopala/buffer-and-slice_2.13)
-[![Scala.js](https://www.scala-js.org/assets/badges/scalajs-1.5.0.svg)](https://www.scala-js.org)
+[![Scala.js](https://www.scala-js.org/assets/badges/scalajs-1.12.0.svg)](https://www.scala-js.org)
+![Code size](https://img.shields.io/github/languages/code-size/arturopala/buffer-and-slice)
+![GitHub](https://img.shields.io/github/license/arturopala/buffer-and-slice)
+![Lift](https://lift.sonatype.com/api/badge/github.com/arturopala/buffer-and-slice)
 
 Buffer\[T] and Slice\[T]
 ===

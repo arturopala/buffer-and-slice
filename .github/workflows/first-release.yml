@@ -1,0 +1,10 @@
+name: Release first version
+on:
+  workflow_dispatch:
+
+jobs:
+  release:
+    uses: arturopala/workflows/.github/workflows/first-release.yml@main
+    secrets:
+      PAT: ${{ secrets.PAT }}   
+    

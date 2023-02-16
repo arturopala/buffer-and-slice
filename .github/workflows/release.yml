@@ -4,35 +4,7 @@ on:
 
 jobs:
   release:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v2
-      - run: git fetch --tags --unshallow -f  
-      - name: Compute release version and push tag
-        id: tag_version
-        uses: mathieudutour/github-tag-action@v5.3
-        with:
-          github_token: ${{ secrets.PAT }}
-          default_bump: minor
-      - name: Generate release changelog
-        id: changelog
-        uses: metcalfc/changelog-generator@v0.4.4
-        with:
-          myToken: ${{ secrets.PAT }}
-      - name: Create GitHub Release
-        id: create_release
-        uses: actions/create-release@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.PAT }}
-        with:
-          tag_name: ${{ steps.tag_version.outputs.new_tag }}
-          release_name: Release ${{ steps.tag_version.outputs.new_version }}
-          body: |
-            Release ${{ steps.tag_version.outputs.new_version }}
-
-            ### Things that changed in this release
-            ${{ steps.changelog.outputs.changelog }}
-          draft: false
-          prerelease: false   
+    uses: arturopala/workflows/.github/workflows/release.yml@main
+    secrets:
+      PAT: ${{ secrets.PAT }}  
     
