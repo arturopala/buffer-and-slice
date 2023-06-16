@@ -4,17 +4,20 @@ val developerName = "Artur Opala"
 val developerEmail = "opala.artur@gmail.com"
 val githubUserName = "arturopala"
 
-val scala213 = "2.13.10"
-val scala212 = "2.12.17"
+val scala213 = "2.13.11"
+val scala212 = "2.12.18"
 val scala211 = "2.11.12"
-val scala3 = "3.2.2"
-val scalaJSVersion = "1.12.0"
-val scalaNativeVersion = "0.4.9"
-val mUnitVersion = "1.0.0-M7"
+val scala3 = "3.3.0"
+val scalaJSVersion = "1.13.1"
+val scalaNativeVersion = "0.4.14"
+val mUnitVersion = "1.0.0-M8"
 
 val scala2Versions = List(scala213, scala212)
 val scala3Versions = List(scala3)
 val allScalaVersions = scala2Versions ++ scala3Versions
+
+ThisBuild / libraryDependencySchemes += "org.scala-lang.modules" %% "scala-xml"        % VersionScheme.Always
+ThisBuild / scalafixDependencies += "com.github.liancheng"       %% "organize-imports" % "0.6.0"
 
 inThisBuild(
   List(
