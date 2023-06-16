@@ -9,10 +9,10 @@ Buffer\[T] and Slice\[T]
 
 This is a micro-library for Scala providing lightweight Buffer and Slice abstractions.
 
-    "com.github.arturopala" %% "buffer-and-slice" % "1.58.0"
+    "com.github.arturopala" %% "buffer-and-slice" % "1.60.0"
 
-Cross-compiles to Scala versions `2.13.10`, `2.12.17`, `3.2.2`, 
-and ScalaJS version `1.12.0`, and ScalaNative version `0.4.9`.
+Cross-compiles to Scala versions `2.13.11`, `2.12.18`, `3.3.0`, 
+and ScalaJS version `1.13.1`, and ScalaNative version `0.4.14`.
 
 Motivation
 ---
