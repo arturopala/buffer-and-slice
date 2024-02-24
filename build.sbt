@@ -4,12 +4,12 @@ val developerName = "Artur Opala"
 val developerEmail = "opala.artur@gmail.com"
 val githubUserName = "arturopala"
 
-val scala213 = "2.13.12"
-val scala212 = "2.12.18"
-val scala3 = "3.3.1"
+val scala213 = "2.13.13"
+val scala212 = "2.12.19"
+val scala3 = "3.4.0"
 val scalaJSVersion = "1.14.0"
-val scalaNativeVersion = "0.4.15"
-val mUnitVersion = "1.0.0-M10"
+val scalaNativeVersion = "0.4.17"
+val mUnitVersion = "1.0.0-M11"
 
 val scala2Versions = List(scala213, scala212)
 val scala3Versions = List(scala3)
